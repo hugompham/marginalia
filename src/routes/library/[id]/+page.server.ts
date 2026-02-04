@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.order('created_at', { ascending: true }),
 		locals.supabase
 			.from('api_keys')
-			.select('provider, model, encrypted_key')
+			.select('provider, model')
 			.eq('user_id', session.user.id)
 	]);
 
@@ -48,15 +48,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Parse API keys into a map by provider
-	const apiKeyMap: Record<AIProvider, { model: string; encryptedKey: string } | null> = {
+	const apiKeyMap: Record<AIProvider, { model: string } | null> = {
 		openai: null,
 		anthropic: null
 	};
 
 	for (const key of apiKeys ?? []) {
 		apiKeyMap[key.provider as AIProvider] = {
-			model: key.model,
-			encryptedKey: key.encrypted_key
+			model: key.model
 		};
 	}
 
