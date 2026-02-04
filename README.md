@@ -71,18 +71,26 @@ ENCRYPTION_KEY=your_32_byte_key
 The app uses Supabase for authentication and data storage. Tables include:
 
 - `profiles`: User preferences and settings
+- `api_keys`: Encrypted AI provider API keys
 - `collections`: Groups of highlights from a single source
 - `highlights`: Individual highlighted passages
+- `tags`: User-defined tags for organizing highlights
+- `highlight_tags`: Junction table for highlight-tag relationships
 - `cards`: Flashcards with FSRS scheduling state
 - `reviews`: Review history for analytics
-- `api_keys`: Encrypted AI provider API keys
+- `pending_questions`: AI-generated questions awaiting user approval
 
 Row Level Security (RLS) policies ensure users can only access their own data.
 
-### Edge Function Secrets
+### Edge Functions
 
-The account deletion flow uses a Supabase Edge Function with admin privileges.
-Set the service role key for functions using:
+The app uses several Supabase Edge Functions:
+
+- `generate-questions`: AI-powered flashcard generation from highlights
+- `scrape-url`: Web article scraping and content extraction
+- `delete-account`: Secure account deletion with admin privileges
+
+Set the service role key for functions requiring admin access:
 
 ```bash
 supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
@@ -117,11 +125,20 @@ src/
 ├── routes/
 │   ├── api/            # API endpoints
 │   ├── auth/           # Authentication pages
-│   ├── import/         # Import flows
+│   ├── cards/          # Individual card views
+│   ├── import/         # Import flows (paste, URL, Kindle)
 │   ├── library/        # Collections and highlights
 │   ├── review/         # Review session
 │   └── settings/       # User settings
 └── app.css             # Global styles
+
+supabase/
+├── functions/          # Edge Functions (Deno)
+│   ├── _shared/        # Shared utilities (CORS)
+│   ├── delete-account/ # Account deletion
+│   ├── generate-questions/ # AI question generation
+│   └── scrape-url/     # Web scraping
+└── migrations/         # Database migrations
 ```
 
 ## License
