@@ -5,7 +5,7 @@
  * Uses the Web Crypto API for secure, native encryption.
  *
  * Security notes:
- * - Key must be a 64-character hex string (32 bytes / 256 bits)
+ * - Key must be either a 64-character hex string or a 32-byte base64 string
  * - Each encryption uses a random 96-bit IV
  * - GCM mode provides authenticated encryption (integrity + confidentiality)
  *
@@ -91,20 +91,38 @@ async function getKey(): Promise<CryptoKey> {
 		throw new Error('ENCRYPTION_KEY environment variable is not set');
 	}
 
-	// The key should be a 64-character hex string (32 bytes)
-	if (ENCRYPTION_KEY.length !== 64) {
-		throw new Error('ENCRYPTION_KEY must be a 64-character hex string (32 bytes)');
+	const trimmed = ENCRYPTION_KEY.trim();
+
+	let keyBytes: Uint8Array | null = null;
+
+	// Hex (64 chars -> 32 bytes)
+	if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+		const bytes = new Uint8Array(32);
+		for (let i = 0; i < 32; i++) {
+			bytes[i] = parseInt(trimmed.slice(i * 2, i * 2 + 2), 16);
+		}
+		keyBytes = bytes;
+	} else {
+		// Base64 (32 bytes -> 44 chars with padding, but accept any valid base64 length)
+		try {
+			const decoded = Uint8Array.from(atob(trimmed), (c) => c.charCodeAt(0));
+			if (decoded.length === 32) {
+				keyBytes = decoded;
+			}
+		} catch {
+			// fall through to error below
+		}
 	}
 
-	// Convert hex string to bytes
-	const keyBytes = new Uint8Array(32);
-	for (let i = 0; i < 32; i++) {
-		keyBytes[i] = parseInt(ENCRYPTION_KEY.slice(i * 2, i * 2 + 2), 16);
+	if (!keyBytes) {
+		throw new Error(
+			'ENCRYPTION_KEY must be 32 bytes (base64) or 64 hex characters'
+		);
 	}
 
 	return crypto.subtle.importKey(
 		'raw',
-		keyBytes,
+		keyBytes.buffer as ArrayBuffer,
 		{ name: ALGORITHM },
 		false,
 		['encrypt', 'decrypt']
