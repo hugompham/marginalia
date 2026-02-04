@@ -3,8 +3,9 @@ node_modules
 # Claude
 .claude/
 
-# Supabase
-supabase/
+# Supabase local runtime (keep migrations and config)
+supabase/.branches/
+supabase/.temp/
 
 # Output
 .output
