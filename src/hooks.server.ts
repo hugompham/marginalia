@@ -47,18 +47,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.url.pathname.startsWith(route)
 	);
 
-	// Check auth for protected routes
-	if (isProtectedRoute) {
-		const session = await event.locals.getSession();
-		if (!session) {
-			throw redirect(303, '/auth/login');
-		}
-	}
+	const requiresAuth = isProtectedRoute || event.url.pathname === '/';
 
-	// Dashboard (/) requires auth too, but redirect to login gracefully
-	if (event.url.pathname === '/') {
-		const session = await event.locals.getSession();
-		if (!session) {
+	// Check auth for protected routes and dashboard (validate JWT)
+	if (requiresAuth) {
+		const user = await event.locals.getUser();
+		if (!user) {
 			throw redirect(303, '/auth/login');
 		}
 	}
