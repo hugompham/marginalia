@@ -4,7 +4,7 @@ A spaced repetition app for reading highlights. Import your highlights from book
 
 ## Features
 
-- **Import Highlights**: Paste highlights manually, scrape web articles, or import from Kindle
+- **Import Highlights**: Paste highlights manually, scrape web articles, or upload Kindle `My Clippings.txt`
 - **AI Question Generation**: Generate flashcards from highlights using OpenAI or Anthropic APIs (BYOK)
 - **Spaced Repetition**: FSRS algorithm optimizes review intervals for maximum retention
 - **Review Sessions**: Swipeable card interface with rating buttons
@@ -60,8 +60,10 @@ Create a `.env` file with the following:
 PUBLIC_SUPABASE_URL=your_supabase_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# Encryption (generate with: openssl rand -base64 32)
-ENCRYPTION_KEY=your_32_byte_base64_key
+# Encryption (32 bytes; base64 or hex)
+# Base64: openssl rand -base64 32
+# Hex: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+ENCRYPTION_KEY=your_32_byte_key
 ```
 
 ## Database Setup
@@ -76,6 +78,15 @@ The app uses Supabase for authentication and data storage. Tables include:
 - `api_keys`: Encrypted AI provider API keys
 
 Row Level Security (RLS) policies ensure users can only access their own data.
+
+### Edge Function Secrets
+
+The account deletion flow uses a Supabase Edge Function with admin privileges.
+Set the service role key for functions using:
+
+```bash
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
 
 ## Development
 
