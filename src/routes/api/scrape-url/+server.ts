@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 
 interface RequestBody {
 	url: string;
@@ -29,8 +29,12 @@ export const POST: RequestHandler = async ({ request, locals, fetch }) => {
 		}
 
 		// Call the Supabase Edge Function
-		const supabaseUrl = env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-		const supabaseAnonKey = env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY;
+		const supabaseUrl =
+			env.PUBLIC_SUPABASE_URL ||
+			(typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined);
+		const supabaseAnonKey =
+			env.PUBLIC_SUPABASE_ANON_KEY ||
+			(typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined);
 
 		if (!supabaseUrl || !supabaseAnonKey) {
 			// Fall back to direct scraping if Edge Function not available
