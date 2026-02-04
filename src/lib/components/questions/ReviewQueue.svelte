@@ -24,13 +24,19 @@
 
 	let { questions, highlights, onSave, onCancel, isSaving = false }: Props = $props();
 
+	let localQuestions = $state<GeneratedQuestion[]>([]);
 	let questionStatuses = $state<Map<number, 'pending' | 'approved' | 'rejected'>>(new Map());
 	let editingQuestion = $state<{ index: number; question: GeneratedQuestion } | null>(null);
+
+	// Keep a local, editable copy of questions for UI edits
+	$effect(() => {
+		localQuestions = questions.map((q) => ({ ...q }));
+	});
 
 	// Initialize all questions as pending
 	$effect(() => {
 		const newStatuses = new Map<number, 'pending' | 'approved' | 'rejected'>();
-		questions.forEach((_, index) => {
+		localQuestions.forEach((_, index) => {
 			if (!questionStatuses.has(index)) {
 				newStatuses.set(index, 'pending');
 			} else {
@@ -54,7 +60,7 @@
 
 	function approveAll() {
 		const newStatuses = new Map<number, 'pending' | 'approved' | 'rejected'>();
-		questions.forEach((_, index) => {
+		localQuestions.forEach((_, index) => {
 			newStatuses.set(index, 'approved');
 		});
 		questionStatuses = newStatuses;
@@ -62,26 +68,31 @@
 
 	function rejectAll() {
 		const newStatuses = new Map<number, 'pending' | 'approved' | 'rejected'>();
-		questions.forEach((_, index) => {
+		localQuestions.forEach((_, index) => {
 			newStatuses.set(index, 'rejected');
 		});
 		questionStatuses = newStatuses;
 	}
 
 	function openEditModal(index: number) {
-		editingQuestion = { index, question: { ...questions[index] } };
+		editingQuestion = { index, question: { ...localQuestions[index] } };
 	}
 
 	function handleEditSave(updated: GeneratedQuestion) {
 		if (editingQuestion !== null) {
-			questions[editingQuestion.index] = updated;
-			approveQuestion(editingQuestion.index);
+			const editIndex = editingQuestion.index;
+			localQuestions = localQuestions.map((q, index) =>
+				index === editIndex ? updated : q
+			);
+			approveQuestion(editIndex);
 			editingQuestion = null;
 		}
 	}
 
 	function handleSave() {
-		const approved = questions.filter((_, index) => questionStatuses.get(index) === 'approved');
+		const approved = localQuestions.filter(
+			(_, index) => questionStatuses.get(index) === 'approved'
+		);
 		onSave(approved);
 	}
 
@@ -117,7 +128,7 @@
 	</div>
 
 	<div class="flex-1 space-y-3 overflow-y-auto p-4">
-		{#each questions as question, index}
+		{#each localQuestions as question, index}
 			<QuestionCard
 				{question}
 				highlightText={getHighlightText(question.highlightId)}
