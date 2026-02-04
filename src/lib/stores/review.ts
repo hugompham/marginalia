@@ -72,7 +72,8 @@ function createReviewStore() {
 		/**
 		 * Record an answer for the current card
 		 */
-		answerCard(rating: Rating) {
+		answerCard(rating: Rating): ReviewResult | null {
+			let reviewResult: ReviewResult | null = null;
 			update((session) => {
 				if (!session || session.isComplete) return session;
 
@@ -92,6 +93,7 @@ function createReviewStore() {
 					difficultyBefore: card.difficulty,
 					stateBefore: card.state
 				};
+				reviewResult = result;
 
 				// Update the card in the session (for potential relearning)
 				const updatedCards = [...session.cards];
@@ -112,6 +114,7 @@ function createReviewStore() {
 					isComplete
 				};
 			});
+			return reviewResult;
 		},
 
 		/**

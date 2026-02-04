@@ -11,12 +11,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const body = await request.json();
-	const { cardId, rating, stabilityBefore, difficultyBefore, stateBefore } = body as {
+	const { cardId, rating, stabilityBefore, difficultyBefore, stateBefore, durationMs } = body as {
 		cardId: string;
 		rating: Rating;
 		stabilityBefore: number;
 		difficultyBefore: number;
 		stateBefore: CardState;
+		durationMs?: number | null;
 	};
 
 	if (!cardId || !rating) {
@@ -90,7 +91,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		rating,
 		stability_before: stabilityBefore,
 		difficulty_before: difficultyBefore,
-		state_before: stateBefore
+		state_before: stateBefore,
+		duration_ms: durationMs ?? null
 	});
 
 	if (reviewError) {

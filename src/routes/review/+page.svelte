@@ -32,7 +32,7 @@
 
 		// Save review to database
 		const card = $currentCard;
-		reviewSession.answerCard(rating);
+		const reviewResult = reviewSession.answerCard(rating);
 
 		// In background, save the review result
 		await fetch('/api/review', {
@@ -41,9 +41,10 @@
 			body: JSON.stringify({
 				cardId: card.id,
 				rating,
-				stabilityBefore: card.stability,
-				difficultyBefore: card.difficulty,
-				stateBefore: card.state
+				stabilityBefore: reviewResult?.stabilityBefore ?? card.stability,
+				difficultyBefore: reviewResult?.difficultyBefore ?? card.difficulty,
+				stateBefore: reviewResult?.stateBefore ?? card.state,
+				durationMs: reviewResult?.durationMs ?? null
 			})
 		});
 	}
