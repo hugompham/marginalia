@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { encrypt } from '$lib/utils/crypto';
+import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.getSession();
@@ -146,14 +147,27 @@ export const actions: Actions = {
 		const session = await locals.getSession();
 		if (!session) throw redirect(303, '/auth/login');
 
-		// Delete user data (cascade will handle related tables)
-		await locals.supabase.from('profiles').delete().eq('id', session.user.id);
+		if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
+			return fail(500, { error: 'Supabase configuration missing' });
+		}
 
-		// Sign out
+		const response = await fetch(`${PUBLIC_SUPABASE_URL}/functions/v1/delete-account`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${session.access_token}`,
+				apikey: PUBLIC_SUPABASE_ANON_KEY
+			}
+		});
+
+		if (!response.ok) {
+			const data = await response.json().catch(() => ({}));
+			console.error('Failed to delete account:', data);
+			return fail(500, { error: data.error || 'Failed to delete account' });
+		}
+
+		// Sign out (clears auth cookies)
 		await locals.supabase.auth.signOut();
-
-		// Note: In production, you'd also need to delete the auth.users entry
-		// which requires admin privileges or a server-side function
 
 		throw redirect(303, '/auth/login');
 	}
