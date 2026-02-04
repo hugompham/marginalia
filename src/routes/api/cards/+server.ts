@@ -45,6 +45,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Collection not found' }, { status: 404 });
 		}
 
+		// Verify highlights belong to the user and collection
+		const highlightIds = Array.from(new Set(questions.map((q) => q.highlightId)));
+		const { data: highlights, error: highlightsError } = await supabase
+			.from('highlights')
+			.select('id')
+			.eq('user_id', session.user.id)
+			.eq('collection_id', collectionId)
+			.in('id', highlightIds);
+
+		if (highlightsError || !highlights || highlights.length !== highlightIds.length) {
+			return json({ error: 'One or more highlights are invalid' }, { status: 400 });
+		}
+
 		// Create cards from approved questions
 		const cardsToInsert = questions.map((q) => ({
 			user_id: session.user.id,
