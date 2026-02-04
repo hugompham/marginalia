@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		/* Color tokens as CSS variables for dynamic theming */
+		--color-canvas: #faf9f7;
+		--color-surface: #ffffff;
+		--color-subtle: #f5f3f0;
+
+		--color-text-primary: #1a1a1a;
+		--color-text-secondary: #6b6b6b;
+		--color-text-tertiary: #9b9b9b;
+
+		--color-accent: #c2694f;
+		--color-accent-hover: #a85640;
+		--color-success: #4a7c59;
+		--color-warning: #c9a227;
+		--color-error: #b54b4b;
+
+		--color-border: #e8e6e3;
+		--color-border-strong: #d4d1cc;
+
+		/* Spacing scale */
+		--space-xs: 4px;
+		--space-sm: 8px;
+		--space-md: 12px;
+		--space-lg: 16px;
+		--space-xl: 24px;
+		--space-2xl: 32px;
+		--space-3xl: 48px;
+
+		/* Animation durations */
+		--duration-fast: 150ms;
+		--duration-normal: 250ms;
+		--duration-slow: 400ms;
+
+		/* Easing functions */
+		--ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+		--ease-enter: cubic-bezier(0, 0, 0.2, 1);
+		--ease-exit: cubic-bezier(0.4, 0, 1, 1);
+	}
+
+	/* Base typography */
+	html {
+		font-family: 'Inter', system-ui, sans-serif;
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--color-text-primary);
+		background-color: var(--color-canvas);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	body {
+		min-height: 100vh;
+		min-height: 100dvh;
+	}
+
+	/* Heading typography */
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: 'Newsreader', Georgia, serif;
+		font-weight: 500;
+		line-height: 1.25;
+		color: var(--color-text-primary);
+	}
+
+	/* Focus styles */
+	:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	/* Selection */
+	::selection {
+		background-color: rgba(194, 105, 79, 0.2);
+	}
+}
+
+@layer components {
+	/* Card component base */
+	.card {
+		@apply rounded-card bg-surface border border-border shadow-card;
+		@apply transition-shadow duration-fast ease-out;
+	}
+
+	.card:hover {
+		@apply shadow-card-hover;
+	}
+
+	/* Button base styles */
+	.btn {
+		@apply inline-flex items-center justify-center gap-2;
+		@apply px-5 py-3 rounded-button font-medium text-base;
+		@apply transition-all duration-fast ease-out;
+		@apply focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+		@apply disabled:opacity-50 disabled:cursor-not-allowed;
+	}
+
+	.btn-primary {
+		@apply btn bg-accent text-white;
+		@apply hover:bg-accent-hover active:bg-accent-hover;
+	}
+
+	.btn-secondary {
+		@apply btn bg-transparent border border-border text-primary;
+		@apply hover:bg-subtle active:bg-subtle;
+	}
+
+	.btn-ghost {
+		@apply btn bg-transparent text-secondary;
+		@apply hover:bg-subtle hover:text-primary;
+	}
+
+	/* Input base styles */
+	.input {
+		@apply w-full px-3.5 py-3 rounded-input;
+		@apply bg-surface border border-border;
+		@apply text-primary placeholder:text-tertiary;
+		@apply transition-all duration-fast ease-out;
+		@apply focus:border-accent focus:shadow-focus focus:outline-none;
+	}
+
+	/* Highlight styles for reading */
+	.highlight {
+		@apply bg-yellow-100/60 rounded px-0.5 -mx-0.5;
+	}
+
+	.highlight-selected {
+		@apply bg-accent/20 rounded px-0.5 -mx-0.5;
+	}
+}
+
+@layer utilities {
+	/* Text utilities */
+	.text-balance {
+		text-wrap: balance;
+	}
+
+	/* Safe area padding for mobile */
+	.safe-area-inset-bottom {
+		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	.safe-area-inset-top {
+		padding-top: env(safe-area-inset-top, 0);
+	}
+
+	/* Hide scrollbar but keep functionality */
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Touch action for swipe gestures */
+	.touch-pan-y {
+		touch-action: pan-y;
+	}
+
+	.touch-pan-x {
+		touch-action: pan-x;
+	}
+}
