@@ -48,20 +48,22 @@
 			</Card>
 		</a>
 
-		<!-- Kindle (Coming Soon) -->
-		<Card padding="lg" class="flex items-center gap-lg opacity-50 cursor-not-allowed">
-			<div class="p-md rounded-button bg-warning/10">
-				<BookMarked class="text-warning" size={24} />
-			</div>
-			<div class="flex-1">
-				<h3 class="font-heading text-lg text-primary">
-					Kindle Sync
-				</h3>
-				<p class="text-sm text-secondary">
-					Sync highlights from your Kindle library
-				</p>
-			</div>
-			<span class="text-xs text-tertiary bg-subtle px-sm py-xs rounded">Coming Soon</span>
-		</Card>
+		<!-- Kindle -->
+		<a href="/import/kindle" class="block group">
+			<Card padding="lg" class="flex items-center gap-lg">
+				<div class="p-md rounded-button bg-warning/10 group-hover:bg-warning/20 transition-colors">
+					<BookMarked class="text-warning" size={24} />
+				</div>
+				<div class="flex-1">
+					<h3 class="font-heading text-lg text-primary group-hover:text-warning transition-colors">
+						Kindle Import
+					</h3>
+					<p class="text-sm text-secondary">
+						Upload your My Clippings.txt file
+					</p>
+				</div>
+				<ChevronRight class="text-tertiary group-hover:text-warning transition-colors" size={20} />
+			</Card>
+		</a>
 	</div>
 </div>
