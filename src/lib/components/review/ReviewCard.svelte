@@ -74,12 +74,33 @@
 		}
 	}
 
+	function escapeHtml(value: string): string {
+		return value
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	// Render cloze text with blank or answer
 	function renderCloze(text: string, showAnswer: boolean): string {
-		if (showAnswer) {
-			return text.replace(/\{\{c1::(.+?)\}\}/g, '<mark class="bg-accent/20 px-1 rounded">$1</mark>');
+		const regex = /\{\{c1::(.*?)\}\}/g;
+		let result = '';
+		let lastIndex = 0;
+		let match: RegExpExecArray | null;
+
+		while ((match = regex.exec(text)) !== null) {
+			result += escapeHtml(text.slice(lastIndex, match.index));
+			const answer = escapeHtml(match[1]);
+			result += showAnswer
+				? `<mark class="bg-accent/20 px-1 rounded">${answer}</mark>`
+				: '<span class="inline-block w-24 border-b-2 border-accent">&nbsp;</span>';
+			lastIndex = regex.lastIndex;
 		}
-		return text.replace(/\{\{c1::.+?\}\}/g, '<span class="inline-block w-24 border-b-2 border-accent">&nbsp;</span>');
+
+		result += escapeHtml(text.slice(lastIndex));
+		return result;
 	}
 
 	// Swipe indicator color

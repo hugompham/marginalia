@@ -141,18 +141,31 @@
 		goto('/import/url');
 	}
 
+	function escapeHtml(value: string): string {
+		return value
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	// Format content for display (convert markdown-ish to HTML)
 	function formatContent(content: string): string {
 		return content
 			.split('\n\n')
 			.map((para) => {
-				if (para.startsWith('## ')) {
-					return `<h2 class="font-heading text-xl text-primary mt-xl mb-md">${para.slice(3)}</h2>`;
+				const trimmed = para.trim();
+				if (!trimmed) return '';
+				if (trimmed.startsWith('## ')) {
+					const title = escapeHtml(trimmed.slice(3));
+					return `<h2 class="font-heading text-xl text-primary mt-xl mb-md">${title}</h2>`;
 				}
-				if (para.startsWith('> ')) {
-					return `<blockquote class="border-l-2 border-accent pl-md italic text-secondary">${para.slice(2)}</blockquote>`;
+				if (trimmed.startsWith('> ')) {
+					const quote = escapeHtml(trimmed.slice(2));
+					return `<blockquote class="border-l-2 border-accent pl-md italic text-secondary">${quote}</blockquote>`;
 				}
-				return `<p class="text-primary leading-relaxed mb-md">${para}</p>`;
+				return `<p class="text-primary leading-relaxed mb-md">${escapeHtml(trimmed)}</p>`;
 			})
 			.join('');
 	}

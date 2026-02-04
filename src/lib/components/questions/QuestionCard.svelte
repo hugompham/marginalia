@@ -34,8 +34,29 @@
 		conceptual: 'bg-purple-100 text-purple-700'
 	};
 
+	function escapeHtml(value: string): string {
+		return value
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	function formatClozeText(text: string): string {
-		return text.replace(/\{\{c1::([^}]+)\}\}/g, '<span class="bg-accent/20 text-accent font-medium px-1 rounded">[...]</span>');
+		const regex = /\{\{c1::(.*?)\}\}/g;
+		let result = '';
+		let lastIndex = 0;
+		let match: RegExpExecArray | null;
+
+		while ((match = regex.exec(text)) !== null) {
+			result += escapeHtml(text.slice(lastIndex, match.index));
+			result += '<span class="bg-accent/20 text-accent font-medium px-1 rounded">[...]</span>';
+			lastIndex = regex.lastIndex;
+		}
+
+		result += escapeHtml(text.slice(lastIndex));
+		return result;
 	}
 
 	function getConfidenceColor(confidence: number): string {
