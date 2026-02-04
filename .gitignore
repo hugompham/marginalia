@@ -3,6 +3,9 @@ node_modules
 # Claude
 .claude/
 
+# Supabase
+supabase/
+
 # Output
 .output
 .vercel
