@@ -2,7 +2,6 @@
 	import type { Snippet } from 'svelte';
 	import Sidebar from './Sidebar.svelte';
 	import BottomNav from './BottomNav.svelte';
-	import { Toast } from '$components/ui';
 
 	interface Props {
 		children: Snippet;
@@ -24,7 +23,4 @@
 
 	<!-- Mobile bottom navigation -->
 	<BottomNav />
-
-	<!-- Toast notifications -->
-	<Toast />
 </div>
