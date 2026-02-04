@@ -42,7 +42,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				author: author || null,
 				source_type: dbSourceType,
 				source_url: sourceUrl || null,
-				highlight_count: highlights.length,
+				// Let DB triggers maintain counts to avoid double counting
+				highlight_count: 0,
 				card_count: 0
 			})
 			.select()
