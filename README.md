@@ -125,7 +125,6 @@ src/
 ├── routes/
 │   ├── api/            # API endpoints
 │   ├── auth/           # Authentication pages
-│   ├── cards/          # Individual card views
 │   ├── import/         # Import flows (paste, URL, Kindle)
 │   ├── library/        # Collections and highlights
 │   ├── review/         # Review session
