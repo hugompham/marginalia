@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { Header } from '$components/layout';
 	import { Button, Card } from '$components/ui';
+	import { toast } from '$components/ui/Toast.svelte';
 	import { ReviewCard, SessionProgress, SessionComplete } from '$components/review';
 	import {
 		reviewSession,
@@ -13,6 +14,7 @@
 	import { X, Brain, Sparkles, AlertCircle, Clock } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Rating, Card as CardType } from '$lib/types';
+	import { fetchWithRetry } from '$lib/utils/fetch';
 
 	interface Props {
 		data: PageData;
@@ -34,19 +36,31 @@
 		const card = $currentCard;
 		const reviewResult = reviewSession.answerCard(rating);
 
-		// In background, save the review result
-		await fetch('/api/review', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				cardId: card.id,
-				rating,
-				stabilityBefore: reviewResult?.stabilityBefore ?? card.stability,
-				difficultyBefore: reviewResult?.difficultyBefore ?? card.difficulty,
-				stateBefore: reviewResult?.stateBefore ?? card.state,
-				durationMs: reviewResult?.durationMs ?? null
-			})
-		});
+		// Save the review result with retry logic
+		try {
+			await fetchWithRetry(
+				'/api/review',
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						cardId: card.id,
+						rating,
+						stabilityBefore: reviewResult?.stabilityBefore ?? card.stability,
+						difficultyBefore: reviewResult?.difficultyBefore ?? card.difficulty,
+						stateBefore: reviewResult?.stateBefore ?? card.state,
+						durationMs: reviewResult?.durationMs ?? null
+					})
+				},
+				{
+					maxRetries: 3,
+					initialDelay: 1000
+				}
+			);
+		} catch (error) {
+			console.error('Failed to save review after retries:', error);
+			toast.error('Failed to save review. Your progress may not be saved.');
+		}
 	}
 
 	function handleClose() {

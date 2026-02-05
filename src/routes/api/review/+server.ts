@@ -2,13 +2,10 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { processReview } from '$lib/services/spaced-repetition/fsrs';
 import type { Card, CardState, Rating } from '$lib/types';
+import { requireAuth } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const user = await requireAuth({ request, locals } as any);
 
 	const body = await request.json();
 	const { cardId, rating, stabilityBefore, difficultyBefore, stateBefore, durationMs } = body as {
@@ -29,7 +26,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.from('cards')
 		.select('*')
 		.eq('id', cardId)
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.id)
 		.single();
 
 	if (fetchError || !card) {

@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import { generateQuestions, type AIConfig } from '$lib/services/ai';
 import { decrypt } from '$lib/utils/crypto';
 import type { Highlight, Collection, QuestionType, AIProvider } from '$lib/types';
+import { requireAuth } from '$lib/server/auth';
 
 interface RequestBody {
 	highlights: Highlight[];
@@ -12,11 +13,7 @@ interface RequestBody {
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const user = await requireAuth({ request, locals } as any);
 
 	try {
 		const body: RequestBody = await request.json();
@@ -30,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: apiKeys, error: keysError } = await locals.supabase
 			.from('api_keys')
 			.select('provider, model, encrypted_key')
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 			.eq('is_active', true);
 
 		if (keysError || !apiKeys?.length) {

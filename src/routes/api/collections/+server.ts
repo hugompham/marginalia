@@ -1,5 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAuth } from '$lib/server/auth';
+import { mapCollection } from '$lib/utils/mappers';
 
 interface HighlightInput {
 	text: string;
@@ -16,11 +18,7 @@ interface RequestBody {
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const user = await requireAuth({ request, locals } as any);
 
 	try {
 		const body: RequestBody = await request.json();
@@ -37,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: collection, error: collectionError } = await locals.supabase
 			.from('collections')
 			.insert({
-				user_id: session.user.id,
+				user_id: user.id,
 				title,
 				author: author || null,
 				source_type: dbSourceType,
@@ -56,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Create highlights
 		const highlightsToInsert = highlights.map((h) => ({
-			user_id: session.user.id,
+			user_id: user.id,
 			collection_id: collection.id,
 			text: h.text,
 			note: h.note || null,
@@ -76,12 +74,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Failed to create highlights' }, { status: 500 });
 		}
 
+		const mappedCollection = mapCollection(collection);
+
 		return json({
 			collection: {
-				id: collection.id,
-				title: collection.title,
-				author: collection.author,
-				highlightCount: collection.highlight_count
+				id: mappedCollection.id,
+				title: mappedCollection.title,
+				author: mappedCollection.author,
+				highlightCount: mappedCollection.highlightCount
 			}
 		});
 	} catch (error) {

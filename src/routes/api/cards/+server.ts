@@ -1,15 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { QuestionType } from '$lib/types';
-
-interface GeneratedQuestion {
-	highlightId: string;
-	questionType: QuestionType;
-	question: string;
-	answer: string;
-	clozeText?: string;
-	confidence: number;
-}
+import type { GeneratedQuestion } from '$lib/types';
+import { requireAuth } from '$lib/server/auth';
 
 interface RequestBody {
 	questions: GeneratedQuestion[];
@@ -17,11 +9,7 @@ interface RequestBody {
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const user = await requireAuth({ request, locals } as any);
 
 	const supabase = locals.supabase;
 
@@ -38,7 +26,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.from('collections')
 			.select('id')
 			.eq('id', collectionId)
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 			.single();
 
 		if (collectionError || !collection) {
@@ -50,7 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: highlights, error: highlightsError } = await supabase
 			.from('highlights')
 			.select('id')
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 			.eq('collection_id', collectionId)
 			.in('id', highlightIds);
 
@@ -60,7 +48,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Create cards from approved questions
 		const cardsToInsert = questions.map((q) => ({
-			user_id: session.user.id,
+			user_id: user.id,
 			highlight_id: q.highlightId,
 			question: q.question,
 			answer: q.answer,

@@ -1,17 +1,14 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/public';
+import { requireAuth } from '$lib/server/auth';
 
 interface RequestBody {
 	url: string;
 }
 
 export const POST: RequestHandler = async ({ request, locals, fetch }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	await requireAuth({ request, locals } as any);
 
 	try {
 		const body: RequestBody = await request.json();
@@ -22,10 +19,19 @@ export const POST: RequestHandler = async ({ request, locals, fetch }) => {
 		}
 
 		// Validate URL
+		let parsedUrl: URL;
 		try {
-			new URL(url);
+			parsedUrl = new URL(url);
 		} catch {
 			return json({ error: 'Invalid URL' }, { status: 400 });
+		}
+
+		// SSRF protection: block private IP ranges
+		if (!isPublicUrl(parsedUrl)) {
+			return json(
+				{ error: 'Access to private/local IP addresses is not allowed' },
+				{ status: 400 }
+			);
 		}
 
 		// Call the Supabase Edge Function
@@ -68,6 +74,43 @@ export const POST: RequestHandler = async ({ request, locals, fetch }) => {
 		);
 	}
 };
+
+function isPublicUrl(url: URL): boolean {
+	const hostname = url.hostname.toLowerCase();
+
+	// Block localhost
+	if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+		return false;
+	}
+
+	// Block private IPv4 ranges
+	const ipv4Match = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+	if (ipv4Match) {
+		const [, a, b, c, d] = ipv4Match.map(Number);
+		// 10.0.0.0/8
+		if (a === 10) return false;
+		// 172.16.0.0/12
+		if (a === 172 && b >= 16 && b <= 31) return false;
+		// 192.168.0.0/16
+		if (a === 192 && b === 168) return false;
+		// 169.254.0.0/16 (link-local)
+		if (a === 169 && b === 254) return false;
+		// 127.0.0.0/8 (loopback)
+		if (a === 127) return false;
+	}
+
+	// Block link-local IPv6 (fe80::/10)
+	if (hostname.startsWith('fe80:') || hostname.startsWith('[fe80:')) {
+		return false;
+	}
+
+	// Block localhost IPv6
+	if (hostname === '::1' || hostname === '[::1]') {
+		return false;
+	}
+
+	return true;
+}
 
 // Fallback direct scraping for development
 async function scrapeDirectly(url: string) {
