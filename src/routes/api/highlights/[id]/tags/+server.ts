@@ -7,7 +7,7 @@ import { requireAuth } from '$lib/server/auth';
  * Add a tag to a highlight
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { tagId } = await request.json();
 
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.from('highlights')
 		.select('id')
 		.eq('id', params.id)
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.user.id)
 		.single();
 
 	if (!highlight) {
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
  * Remove a tag from a highlight
  */
 export const DELETE: RequestHandler = async ({ params, request, locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { tagId } = await request.json();
 
@@ -65,7 +65,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 		.from('highlights')
 		.select('id')
 		.eq('id', params.id)
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.user.id)
 		.single();
 
 	if (!highlight) {

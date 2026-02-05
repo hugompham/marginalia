@@ -8,12 +8,12 @@ import { mapTag } from '$lib/utils/mappers';
  * List all tags for the authenticated user
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { data: tags, error } = await locals.supabase
 		.from('tags')
 		.select('*')
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.user.id)
 		.order('name');
 
 	if (error) {
@@ -29,7 +29,7 @@ export const GET: RequestHandler = async ({ locals }) => {
  * Create a new tag
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { name, color } = await request.json();
 
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { data: tag, error } = await locals.supabase
 		.from('tags')
 		.insert({
-			user_id: session.user.id,
+			user_id: user.user.id,
 			name: name.trim(),
 			color: color || null
 		})

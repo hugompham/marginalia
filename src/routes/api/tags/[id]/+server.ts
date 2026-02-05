@@ -8,7 +8,7 @@ import { mapTag } from '$lib/utils/mappers';
  * Update a tag
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { name, color } = await request.json();
 
@@ -23,7 +23,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			color: color || null
 		})
 		.eq('id', params.id)
-		.eq('user_id', session.user.id)
+		.eq('user_id', user.user.id)
 		.select()
 		.single();
 
@@ -47,13 +47,13 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  * Delete a tag
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	const session = await requireAuth(locals);
+	const user = await requireAuth(locals);
 
 	const { error } = await locals.supabase
 		.from('tags')
 		.delete()
 		.eq('id', params.id)
-		.eq('user_id', session.user.id);
+		.eq('user_id', user.user.id);
 
 	if (error) {
 		console.error('Failed to delete tag:', error);
