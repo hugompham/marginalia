@@ -186,8 +186,8 @@
 					/>
 				</div>
 
-				<div>
-					<label class="label mb-sm block">Color</label>
+				<fieldset>
+					<legend class="label mb-sm block">Color</legend>
 					<div class="flex gap-sm flex-wrap">
 						{#each DEFAULT_COLORS as color}
 							<button
@@ -199,11 +199,11 @@
 								style="background-color: {color}; border-color: {formColor === color
 									? color
 									: 'transparent'}"
-								aria-label="Select color"
+								aria-label="Select color {color}"
 							></button>
 						{/each}
 					</div>
-				</div>
+				</fieldset>
 			</div>
 		{/snippet}
 
@@ -227,8 +227,8 @@
 					/>
 				</div>
 
-				<div>
-					<label class="label mb-sm block">Color</label>
+				<fieldset>
+					<legend class="label mb-sm block">Color</legend>
 					<div class="flex gap-sm flex-wrap">
 						{#each DEFAULT_COLORS as color}
 							<button
@@ -240,11 +240,11 @@
 								style="background-color: {color}; border-color: {formColor === color
 									? color
 									: 'transparent'}"
-								aria-label="Select color"
+								aria-label="Select color {color}"
 							></button>
 						{/each}
 					</div>
-				</div>
+				</fieldset>
 			</div>
 		{/snippet}
 

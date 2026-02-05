@@ -14,7 +14,12 @@
 	}
 
 	let { data, form }: Props = $props();
-	let tags = $state<Tag[]>(data.tags);
+	let tags = $state<Tag[]>([]);
+
+	// Sync tags when data changes
+	$effect(() => {
+		tags = data.tags || [];
+	});
 
 	let showApiKeyModal = $state(false);
 	let showDeleteConfirm = $state(false);
