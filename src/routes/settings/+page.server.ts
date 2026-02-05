@@ -3,14 +3,10 @@ import type { Actions, PageServerLoad } from './$types';
 import { encrypt } from '$lib/utils/crypto';
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { mapTags } from '$lib/utils/mappers';
+import { getAuthenticatedSession } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.getSession();
-	const user = await locals.getUser();
-
-	if (!session || !user) {
-		throw redirect(303, '/auth/login');
-	}
+	const { user } = await getAuthenticatedSession(locals);
 
 	// Fetch profile
 	const { data: profile } = await locals.supabase

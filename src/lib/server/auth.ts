@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { json, redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
 /**
@@ -18,4 +18,34 @@ export async function requireAuth(event: RequestEvent) {
 	}
 
 	return user;
+}
+
+/**
+ * Get authenticated session for page loads
+ * Uses getUser() to verify JWT, then returns both user and session
+ *
+ * @param locals - Request locals with Supabase client
+ * @param redirectTo - Optional path to redirect to if not authenticated
+ * @returns Object with user and session, or throws redirect
+ */
+export async function getAuthenticatedSession(
+	locals: App.Locals,
+	redirectTo = '/auth/login'
+) {
+	// Verify JWT authentication
+	const {
+		data: { user },
+		error: userError
+	} = await locals.supabase.auth.getUser();
+
+	if (userError || !user) {
+		throw redirect(303, redirectTo);
+	}
+
+	// Get session (already validated above)
+	const {
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+
+	return { user, session };
 }

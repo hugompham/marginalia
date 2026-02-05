@@ -1,15 +1,11 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { mapCollections } from '$lib/utils/mappers';
+import { getAuthenticatedSession } from '$lib/server/auth';
 
 const PAGE_SIZE = 20;
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		throw redirect(303, '/auth/login');
-	}
+	const { session } = await getAuthenticatedSession(locals);
 
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const offset = (page - 1) * PAGE_SIZE;
