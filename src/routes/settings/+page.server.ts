@@ -127,14 +127,12 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const dailyReviewGoal = parseInt(formData.get('dailyReviewGoal') as string) || 20;
 		const questionTypes = formData.getAll('questionTypes') as string[];
-		const theme = (formData.get('theme') as 'light' | 'dark') || 'light';
 
 		const { error } = await locals.supabase
 			.from('profiles')
 			.update({
 				daily_review_goal: dailyReviewGoal,
-				preferred_question_types: questionTypes.length > 0 ? questionTypes : ['cloze', 'definition'],
-				theme
+				preferred_question_types: questionTypes.length > 0 ? questionTypes : ['cloze', 'definition']
 			})
 			.eq('id', session.user.id);
 

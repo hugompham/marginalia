@@ -4,7 +4,8 @@
 	import { Button, Card, Input, Modal } from '$components/ui';
 	import { TagManager } from '$components/tags';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { Key, LogOut, User, Trash2, Settings, Brain, Tag as TagIcon } from 'lucide-svelte';
+	import { Key, LogOut, User, Trash2, Settings, Brain, Tag as TagIcon, Palette, Sun, Moon } from 'lucide-svelte';
+	import { theme, setTheme } from '$lib/stores/theme';
 	import type { PageData, ActionData } from './$types';
 	import type { Tag } from '$lib/types';
 
@@ -20,6 +21,20 @@
 	$effect(() => {
 		tags = data.tags || [];
 	});
+
+	// Theme handling
+	async function selectTheme(newTheme: 'light' | 'dark') {
+		if ($theme === newTheme) return;
+		const oldTheme = $theme;
+
+		try {
+			await setTheme(newTheme);
+			toast.success(`Switched to ${newTheme} mode`);
+		} catch {
+			theme.set(oldTheme);
+			toast.error('Failed to update theme');
+		}
+	}
 
 	let showApiKeyModal = $state(false);
 	let showDeleteConfirm = $state(false);
@@ -92,6 +107,45 @@
 						Sign Out
 					</Button>
 				</form>
+			</div>
+		</Card>
+	</section>
+
+	<!-- Appearance Section -->
+	<section>
+		<h2 class="font-heading text-lg text-primary mb-md flex items-center gap-sm">
+			<Palette size={20} />
+			Appearance
+		</h2>
+		<Card padding="lg">
+			<div class="flex justify-between items-center">
+				<p class="font-medium text-primary mb-sm">Theme</p>
+				<div class="flex gap-sm">
+					<button
+						type="button"
+						onclick={() => selectTheme('light')}
+						class="flex items-center gap-sm px-lg py-sm rounded-button border text-sm font-medium transition-all duration-fast ease-out
+							{$theme === 'light'
+								? 'border-accent bg-accent/10 text-accent'
+								: 'border-border bg-transparent text-secondary hover:bg-subtle hover:text-primary'}"
+						aria-pressed={$theme === 'light'}
+					>
+						<Sun size={16} />
+						Light
+					</button>
+					<button
+						type="button"
+						onclick={() => selectTheme('dark')}
+						class="flex items-center gap-sm px-lg py-sm rounded-button border text-sm font-medium transition-all duration-fast ease-out
+							{$theme === 'dark'
+								? 'border-accent bg-accent/10 text-accent'
+								: 'border-border bg-transparent text-secondary hover:bg-subtle hover:text-primary'}"
+						aria-pressed={$theme === 'dark'}
+					>
+						<Moon size={16} />
+						Dark
+					</button>
+				</div>
 			</div>
 		</Card>
 	</section>
@@ -225,21 +279,6 @@
 				}}
 			>
 				<div class="space-y-lg">
-					<div>
-						<label for="theme" class="block text-sm font-medium text-primary mb-sm">
-							Theme
-						</label>
-						<select
-							id="theme"
-							name="theme"
-							class="input"
-							value={data.profile?.theme ?? 'light'}
-						>
-							<option value="light">Light</option>
-							<option value="dark">Dark</option>
-						</select>
-					</div>
-
 					<div>
 						<label for="dailyGoal" class="block text-sm font-medium text-primary mb-sm">
 							Daily review goal

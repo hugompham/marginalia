@@ -7,3 +7,4 @@ export { default as Toast, toast } from './Toast.svelte';
 export { default as Spinner } from './Spinner.svelte';
 export { default as Skeleton } from './Skeleton.svelte';
 export { default as CardSkeleton } from './CardSkeleton.svelte';
+export { default as Toggle } from './Toggle.svelte';
