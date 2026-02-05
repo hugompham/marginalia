@@ -2,8 +2,9 @@
 	import { Header } from '$components/layout';
 	import { Button, Card } from '$components/ui';
 	import { CollectionCard } from '$components/highlights';
-	import { Plus, BookOpen, Search } from 'lucide-svelte';
+	import { Plus, BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-svelte';
 	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		data: PageData;
@@ -20,6 +21,14 @@
 				c.author?.toLowerCase().includes(searchQuery.toLowerCase())
 		)
 	);
+
+	const showPagination = $derived(data.totalPages > 1);
+	const hasPrev = $derived(data.currentPage > 1);
+	const hasNext = $derived(data.currentPage < data.totalPages);
+
+	function goToPage(page: number) {
+		goto(`/library?page=${page}`);
+	}
 </script>
 
 {#snippet headerActions()}
@@ -55,6 +64,35 @@
 				<CollectionCard {collection} />
 			{/each}
 		</div>
+
+		<!-- Pagination -->
+		{#if showPagination && !searchQuery}
+			<div class="flex items-center justify-between mt-xl pt-lg border-t border-border">
+				<Button
+					variant="ghost"
+					size="sm"
+					disabled={!hasPrev}
+					onclick={() => goToPage(data.currentPage - 1)}
+				>
+					<ChevronLeft size={16} />
+					Previous
+				</Button>
+
+				<span class="text-sm text-secondary">
+					Page {data.currentPage} of {data.totalPages}
+				</span>
+
+				<Button
+					variant="ghost"
+					size="sm"
+					disabled={!hasNext}
+					onclick={() => goToPage(data.currentPage + 1)}
+				>
+					Next
+					<ChevronRight size={16} />
+				</Button>
+			</div>
+		{/if}
 	{:else if searchQuery}
 		<Card padding="lg" class="text-center">
 			<Search class="text-tertiary mx-auto mb-md" size={32} />
