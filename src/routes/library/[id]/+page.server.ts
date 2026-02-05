@@ -1,14 +1,11 @@
+import { getAuthenticatedSession } from '$lib/server/auth';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { AIProvider, Tag, Highlight } from '$lib/types';
 import { mapCollection, mapHighlights, mapTags } from '$lib/utils/mappers';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		throw redirect(303, '/auth/login');
-	}
+	const { session } = await getAuthenticatedSession(locals);
 
 	const { id } = params;
 

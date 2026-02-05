@@ -1,14 +1,10 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { Card, CardState } from '$lib/types';
 import { mapCard } from '$lib/utils/mappers';
+import { getAuthenticatedSession } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const session = await locals.getSession();
-
-	if (!session) {
-		throw redirect(303, '/auth/login');
-	}
+	const { session } = await getAuthenticatedSession(locals);
 
 	const userId = session.user.id;
 
