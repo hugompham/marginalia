@@ -14,6 +14,13 @@
 
 	let { data, children }: Props = $props();
 
+	// Apply theme to HTML element
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			document.documentElement.setAttribute('data-theme', data.theme);
+		}
+	});
+
 	onMount(() => {
 		// Listen for auth state changes
 		const {
@@ -30,6 +37,7 @@
 
 	// Show shell only for authenticated routes
 	const showShell = $derived(data.session !== null);
+	const userEmail = $derived(data.session?.user?.email);
 </script>
 
 <svelte:head>
@@ -37,7 +45,7 @@
 </svelte:head>
 
 {#if showShell}
-	<Shell>
+	<Shell {userEmail}>
 		{@render children()}
 	</Shell>
 {:else}

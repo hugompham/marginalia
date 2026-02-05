@@ -5,14 +5,15 @@
 
 	interface Props {
 		children: Snippet;
+		userEmail?: string;
 	}
 
-	let { children }: Props = $props();
+	let { children, userEmail }: Props = $props();
 </script>
 
 <div class="min-h-screen bg-canvas">
 	<!-- Desktop sidebar -->
-	<Sidebar />
+	<Sidebar {userEmail} />
 
 	<!-- Main content area -->
 	<main class="desktop:ml-64 pb-20 desktop:pb-0">

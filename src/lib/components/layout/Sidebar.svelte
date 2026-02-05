@@ -2,6 +2,12 @@
 	import { page } from '$app/stores';
 	import { Home, BookOpen, Plus, Settings, Brain } from 'lucide-svelte';
 
+	interface Props {
+		userEmail?: string;
+	}
+
+	let { userEmail = 'User' }: Props = $props();
+
 	const navItems = [
 		{ href: '/', label: 'Home', icon: 'home' },
 		{ href: '/library', label: 'Library', icon: 'library' },
@@ -14,6 +20,9 @@
 		if (href === '/') return pathname === '/';
 		return pathname.startsWith(href);
 	}
+
+	// Get first letter of email for avatar
+	const initial = $derived(userEmail[0]?.toUpperCase() || 'U');
 </script>
 
 <aside
@@ -64,9 +73,9 @@
 	<div class="px-md py-lg border-t border-border">
 		<div class="flex items-center gap-md px-md py-sm text-sm text-secondary">
 			<div class="w-8 h-8 rounded-full bg-subtle flex items-center justify-center">
-				<span class="text-xs font-medium">U</span>
+				<span class="text-xs font-medium">{initial}</span>
 			</div>
-			<span class="truncate">User</span>
+			<span class="truncate" title={userEmail}>{userEmail}</span>
 		</div>
 	</div>
 </aside>
