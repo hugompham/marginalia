@@ -8,7 +8,7 @@ interface RequestBody {
 }
 
 export const POST: RequestHandler = async ({ request, locals, fetch }) => {
-	await requireAuth({ request, locals } as any);
+	await requireAuth(locals);
 
 	try {
 		const body: RequestBody = await request.json();

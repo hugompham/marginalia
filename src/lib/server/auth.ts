@@ -7,11 +7,11 @@ import type { RequestEvent } from '@sveltejs/kit';
  *
  * Use this instead of getSession() for stronger JWT-based authentication
  */
-export async function requireAuth(event: RequestEvent) {
+export async function requireAuth(locals: App.Locals) {
 	const {
 		data: { user },
 		error
-	} = await event.locals.supabase.auth.getUser();
+	} = await locals.supabase.auth.getUser();
 
 	if (error || !user) {
 		throw json({ error: 'Unauthorized' }, { status: 401 });
