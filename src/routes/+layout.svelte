@@ -6,6 +6,7 @@
 	import { Toast } from '$components/ui';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { theme } from '$lib/stores/theme';
 
 	interface Props {
 		data: LayoutData;
@@ -14,11 +15,12 @@
 
 	let { data, children }: Props = $props();
 
-	// Apply theme to HTML element
+	// Initialize theme from server data (runs during SSR and client)
+	theme.set(data.theme);
+
+	// Keep in sync after client-side navigation
 	$effect(() => {
-		if (typeof document !== 'undefined') {
-			document.documentElement.setAttribute('data-theme', data.theme);
-		}
+		theme.set(data.theme);
 	});
 
 	onMount(() => {

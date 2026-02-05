@@ -12,20 +12,8 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		data: { session }
 	} = await locals.supabase.auth.getSession();
 
-	// Fetch user theme preference if logged in
-	let theme: 'light' | 'dark' = 'light';
-	if (user) {
-		const { data: profile } = await locals.supabase
-			.from('profiles')
-			.select('theme')
-			.eq('id', user.id)
-			.single();
-
-		theme = (profile?.theme as 'light' | 'dark') ?? 'light';
-	}
-
 	return {
 		session,
-		theme
+		theme: locals.theme
 	};
 };
