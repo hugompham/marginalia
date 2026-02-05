@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { requireAuth } from '$lib/server/auth';
 
 interface RequestBody {
@@ -9,6 +9,8 @@ interface RequestBody {
 
 export const POST: RequestHandler = async ({ request, locals, fetch }) => {
 	await requireAuth(locals);
+
+	const session = await locals.getSession();
 
 	try {
 		const body: RequestBody = await request.json();
@@ -35,39 +37,37 @@ export const POST: RequestHandler = async ({ request, locals, fetch }) => {
 		}
 
 		// Call the Supabase Edge Function
-		const supabaseUrl =
-			env.PUBLIC_SUPABASE_URL ||
-			(typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_URL : undefined);
-		const supabaseAnonKey =
-			env.PUBLIC_SUPABASE_ANON_KEY ||
-			(typeof process !== 'undefined' ? process.env.PUBLIC_SUPABASE_ANON_KEY : undefined);
-
-		if (!supabaseUrl || !supabaseAnonKey) {
-			// Fall back to direct scraping if Edge Function not available
+		if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY || !session) {
 			return await scrapeDirectly(url);
 		}
 
-		const response = await fetch(`${supabaseUrl}/functions/v1/scrape-url`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${supabaseAnonKey}`
-			},
-			body: JSON.stringify({ url })
-		});
+		try {
+			const response = await fetch(`${PUBLIC_SUPABASE_URL}/functions/v1/scrape-url`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`,
+					apikey: PUBLIC_SUPABASE_ANON_KEY
+				},
+				body: JSON.stringify({ url })
+			});
 
-		if (!response.ok) {
-			const errorData = await response.json().catch(() => ({}));
-			return json(
-				{ error: errorData.error || 'Failed to fetch article' },
-				{ status: response.status }
-			);
+			if (!response.ok) {
+				console.warn('Edge function failed, falling back to direct scraping:', response.status);
+				return await scrapeDirectly(url);
+			}
+
+			const data = await response.json();
+			return json(data);
+		} catch (edgeFunctionError) {
+			console.warn('Edge function error, falling back to direct scraping:', edgeFunctionError);
+			return await scrapeDirectly(url);
 		}
-
-		const data = await response.json();
-		return json(data);
 	} catch (error) {
-		console.error('Scrape error:', error);
+		console.error('Scrape error (outer catch):', error);
+		if (error instanceof Error) {
+			console.error('Error stack:', error.stack);
+		}
 		return json(
 			{ error: error instanceof Error ? error.message : 'Failed to fetch article' },
 			{ status: 500 }
@@ -115,34 +115,61 @@ function isPublicUrl(url: URL): boolean {
 // Fallback direct scraping for development
 async function scrapeDirectly(url: string) {
 	try {
+		console.log('Direct scraping started for:', url);
 		const response = await fetch(url, {
 			headers: {
-				'User-Agent': 'Mozilla/5.0 (compatible; Marginalia/1.0)',
-				Accept: 'text/html,application/xhtml+xml'
+				'User-Agent':
+					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+				Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+				'Accept-Language': 'en-US,en;q=0.9',
+				'Accept-Encoding': 'gzip, deflate, br'
 			}
 		});
 
+		console.log('Direct scraping response status:', response.status);
 		if (!response.ok) {
+			console.error('Direct scraping failed with status:', response.status);
 			return json({ error: `Failed to fetch: ${response.status}` }, { status: 400 });
 		}
 
 		const html = await response.text();
+		console.log('HTML length:', html.length);
 
 		// Basic extraction using regex (simplified for fallback)
 		const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
 		const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
+		console.log('Extracted title:', title);
 
-		// Extract meta description
-		const descMatch = html.match(
+		// Extract meta description - try multiple formats
+		let excerpt = null;
+		const descMatch1 = html.match(
 			/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i
 		);
-		const excerpt = descMatch ? descMatch[1] : null;
+		const descMatch2 = html.match(
+			/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i
+		);
+		const descMatch3 = html.match(
+			/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i
+		);
+		const descMatch4 = html.match(
+			/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i
+		);
+		excerpt = descMatch1?.[1] || descMatch2?.[1] || descMatch3?.[1] || descMatch4?.[1] || null;
+		console.log('Extracted excerpt:', excerpt ? excerpt.substring(0, 100) + '...' : 'none');
 
-		// Extract author from meta
-		const authorMatch = html.match(
+		// Extract author from meta - try multiple formats
+		let author = null;
+		const authorMatch1 = html.match(
 			/<meta[^>]+name=["']author["'][^>]+content=["']([^"']+)["']/i
 		);
-		const author = authorMatch ? authorMatch[1] : null;
+		const authorMatch2 = html.match(
+			/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']author["']/i
+		);
+		const authorMatch3 = html.match(
+			/<meta[^>]+property=["']article:author["'][^>]+content=["']([^"']+)["']/i
+		);
+		author = authorMatch1?.[1] || authorMatch2?.[1] || authorMatch3?.[1] || null;
+		console.log('Extracted author:', author);
 
 		// Basic content extraction - get all paragraph text
 		const paragraphs: string[] = [];
