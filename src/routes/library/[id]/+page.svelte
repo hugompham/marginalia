@@ -4,19 +4,11 @@
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { HighlightList } from '$components/highlights';
+	import { TagPicker } from '$components/tags';
 	import { GenerationModal, ReviewQueue } from '$components/questions';
-	import { Sparkles, BookOpen, AlertCircle, Settings } from 'lucide-svelte';
+	import { Sparkles, BookOpen, AlertCircle, Settings, Filter } from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { QuestionType, Highlight } from '$lib/types';
-
-	interface GeneratedQuestion {
-		highlightId: string;
-		questionType: QuestionType;
-		question: string;
-		answer: string;
-		clozeText?: string;
-		confidence: number;
-	}
+	import type { GeneratedQuestion, Highlight, Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
@@ -31,12 +23,74 @@
 	let isGenerating = $state(false);
 	let isSaving = $state(false);
 	let generatedQuestions = $state<GeneratedQuestion[]>([]);
+	let filterTags = $state<Tag[]>([]);
 
 	const highlightsWithoutCards = $derived(data.highlights.filter((h) => !h.hasCards));
 
-	const selectedHighlights = $derived(
-		data.highlights.filter((h) => selectedIds.has(h.id))
+	// Filter highlights by selected tags
+	const filteredHighlights = $derived(
+		filterTags.length === 0
+			? data.highlights
+			: data.highlights.filter((h) =>
+					filterTags.every((filterTag) => h.tags.some((tag) => tag.id === filterTag.id))
+				)
 	);
+
+	const selectedHighlights = $derived(
+		filteredHighlights.filter((h) => selectedIds.has(h.id))
+	);
+
+	async function handleTagAdd(highlightId: string, tag: Tag) {
+		try {
+			const response = await fetch(`/api/highlights/${highlightId}/tags`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ tagId: tag.id })
+			});
+
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || 'Failed to add tag');
+			}
+
+			// Update local state
+			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
+			if (highlightIndex !== -1) {
+				data.highlights[highlightIndex].tags = [...data.highlights[highlightIndex].tags, tag];
+			}
+
+			toast.success('Tag added');
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : 'Failed to add tag');
+		}
+	}
+
+	async function handleTagRemove(highlightId: string, tag: Tag) {
+		try {
+			const response = await fetch(`/api/highlights/${highlightId}/tags`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ tagId: tag.id })
+			});
+
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || 'Failed to remove tag');
+			}
+
+			// Update local state
+			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
+			if (highlightIndex !== -1) {
+				data.highlights[highlightIndex].tags = data.highlights[highlightIndex].tags.filter(
+					(t) => t.id !== tag.id
+				);
+			}
+
+			toast.success('Tag removed');
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : 'Failed to remove tag');
+		}
+	}
 
 	// Check if user has any API key configured
 	const hasApiKey = $derived(data.apiKeys.openai !== null || data.apiKeys.anthropic !== null);
@@ -184,6 +238,24 @@
 		</div>
 	</Card>
 
+	<!-- Tag Filter -->
+	{#if data.availableTags.length > 0}
+		<Card padding="md" class="mb-md">
+			<div class="flex items-center gap-md">
+				<Filter size={16} class="text-secondary" />
+				<span class="text-sm text-secondary">Filter by tags:</span>
+				<div class="flex-1">
+					<TagPicker
+						availableTags={data.availableTags}
+						selectedTags={filterTags}
+						ontagadd={(tag) => (filterTags = [...filterTags, tag])}
+						ontagremove={(tag) => (filterTags = filterTags.filter((t) => t.id !== tag.id))}
+					/>
+				</div>
+			</div>
+		</Card>
+	{/if}
+
 	<!-- API Key Warning -->
 	{#if !hasApiKey}
 		<Card padding="md" class="mb-xl border-warning/20 bg-warning/5">
@@ -210,11 +282,14 @@
 		{/if}
 	</div>
 
-	{#if data.highlights.length > 0}
+	{#if filteredHighlights.length > 0}
 		<HighlightList
-			highlights={data.highlights}
+			highlights={filteredHighlights}
+			availableTags={data.availableTags}
 			selectable={highlightsWithoutCards.length > 0}
 			bind:selectedIds
+			ontagadd={handleTagAdd}
+			ontagremove={handleTagRemove}
 		/>
 	{:else}
 		<Card padding="lg" class="text-center">

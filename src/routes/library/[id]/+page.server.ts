@@ -1,6 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { Collection, Highlight, AIProvider } from '$lib/types';
+import type { AIProvider, Tag, Highlight } from '$lib/types';
+import { mapCollection, mapHighlights, mapTags } from '$lib/utils/mappers';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const session = await locals.getSession();
@@ -11,8 +12,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const { id } = params;
 
-	// Fetch collection, highlights, and API keys in parallel
-	const [collectionResult, highlightsResult, apiKeysResult] = await Promise.all([
+	// Fetch collection, highlights, tags, and API keys in parallel
+	const [collectionResult, highlightsResult, tagsResult, highlightTagsResult, apiKeysResult] = await Promise.all([
 		locals.supabase
 			.from('collections')
 			.select('*')
@@ -26,6 +27,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.eq('user_id', session.user.id)
 			.order('created_at', { ascending: true }),
 		locals.supabase
+			.from('tags')
+			.select('*')
+			.eq('user_id', session.user.id)
+			.order('name'),
+		locals.supabase
+			.from('highlight_tags')
+			.select('highlight_id, tag_id'),
+		locals.supabase
 			.from('api_keys')
 			.select('provider, model')
 			.eq('user_id', session.user.id)
@@ -33,6 +42,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const { data: collection, error: collectionError } = collectionResult;
 	const { data: highlights, error: highlightsError } = highlightsResult;
+	const { data: tagsData, error: tagsError } = tagsResult;
+	const { data: highlightTagsData, error: highlightTagsError } = highlightTagsResult;
 	const { data: apiKeys, error: apiKeysError } = apiKeysResult;
 
 	if (collectionError || !collection) {
@@ -41,6 +52,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	if (highlightsError) {
 		console.error('Failed to load highlights:', highlightsError);
+	}
+
+	if (tagsError || highlightTagsError) {
+		console.error('Failed to load tags:', tagsError || highlightTagsError);
 	}
 
 	if (apiKeysError) {
@@ -59,38 +74,32 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		};
 	}
 
+	// Map tags
+	const tags = tagsData ? mapTags(tagsData) : [];
+
+	// Create a map of highlight_id -> Tag[]
+	const highlightTagMap = new Map<string, Tag[]>();
+	for (const ht of highlightTagsData ?? []) {
+		const tag = tags.find((t) => t.id === ht.tag_id);
+		if (tag) {
+			if (!highlightTagMap.has(ht.highlight_id)) {
+				highlightTagMap.set(ht.highlight_id, []);
+			}
+			highlightTagMap.get(ht.highlight_id)!.push(tag);
+		}
+	}
+
+	// Extend highlights with tags
+	type HighlightWithTags = Highlight & { tags: Tag[] };
+	const highlightsWithTags: HighlightWithTags[] = mapHighlights(highlights ?? []).map((h) => ({
+		...h,
+		tags: highlightTagMap.get(h.id) || []
+	}));
+
 	return {
-		collection: {
-			id: collection.id,
-			userId: collection.user_id,
-			title: collection.title,
-			author: collection.author,
-			sourceType: collection.source_type as Collection['sourceType'],
-			sourceUrl: collection.source_url,
-			coverImageUrl: collection.cover_image_url,
-			highlightCount: collection.highlight_count,
-			cardCount: collection.card_count,
-			createdAt: new Date(collection.created_at),
-			updatedAt: new Date(collection.updated_at)
-		} as Collection,
-		highlights: (highlights ?? []).map(
-			(h): Highlight => ({
-				id: h.id,
-				collectionId: h.collection_id,
-				userId: h.user_id,
-				text: h.text,
-				note: h.note,
-				chapter: h.chapter,
-				pageNumber: h.page_number,
-				locationPercent: h.location_percent ? parseFloat(h.location_percent) : null,
-				contextBefore: h.context_before,
-				contextAfter: h.context_after,
-				hasCards: h.has_cards,
-				isArchived: h.is_archived,
-				createdAt: new Date(h.created_at),
-				updatedAt: new Date(h.updated_at)
-			})
-		),
+		collection: mapCollection(collection),
+		highlights: highlightsWithTags,
+		availableTags: tags,
 		apiKeys: apiKeyMap
 	};
 };

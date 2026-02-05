@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { encrypt } from '$lib/utils/crypto';
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { mapTags } from '$lib/utils/mappers';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.getSession();
@@ -36,6 +37,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	});
 
+	// Fetch tags
+	const { data: tagsData } = await locals.supabase
+		.from('tags')
+		.select('*')
+		.eq('user_id', user.id)
+		.order('name');
+
 	return {
 		user,
 		profile: profile
@@ -45,7 +53,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 					theme: profile.theme
 				}
 			: null,
-		apiKeys: apiKeyMap
+		apiKeys: apiKeyMap,
+		tags: tagsData ? mapTags(tagsData) : []
 	};
 };
 
@@ -122,12 +131,14 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const dailyReviewGoal = parseInt(formData.get('dailyReviewGoal') as string) || 20;
 		const questionTypes = formData.getAll('questionTypes') as string[];
+		const theme = (formData.get('theme') as 'light' | 'dark') || 'light';
 
 		const { error } = await locals.supabase
 			.from('profiles')
 			.update({
 				daily_review_goal: dailyReviewGoal,
-				preferred_question_types: questionTypes.length > 0 ? questionTypes : ['cloze', 'definition']
+				preferred_question_types: questionTypes.length > 0 ? questionTypes : ['cloze', 'definition'],
+				theme
 			})
 			.eq('id', session.user.id);
 

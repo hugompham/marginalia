@@ -2,9 +2,11 @@
 	import { enhance } from '$app/forms';
 	import { Header } from '$components/layout';
 	import { Button, Card, Input, Modal } from '$components/ui';
+	import { TagManager } from '$components/tags';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { Key, LogOut, User, Trash2, Settings, Brain } from 'lucide-svelte';
+	import { Key, LogOut, User, Trash2, Settings, Brain, Tag as TagIcon } from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
+	import type { Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
@@ -12,6 +14,7 @@
 	}
 
 	let { data, form }: Props = $props();
+	let tags = $state<Tag[]>(data.tags);
 
 	let showApiKeyModal = $state(false);
 	let showDeleteConfirm = $state(false);
@@ -180,6 +183,22 @@
 		</div>
 	</section>
 
+	<!-- Tags Section -->
+	<section>
+		<h2 class="font-heading text-lg text-primary mb-md flex items-center gap-sm">
+			<TagIcon size={20} />
+			Tags
+		</h2>
+		<Card padding="lg">
+			<TagManager
+				{tags}
+				onTagCreated={(tag) => (tags = [...tags, tag])}
+				onTagUpdated={(tag) => (tags = tags.map((t) => (t.id === tag.id ? tag : t)))}
+				onTagDeleted={(tagId) => (tags = tags.filter((t) => t.id !== tagId))}
+			/>
+		</Card>
+	</section>
+
 	<!-- Review Settings -->
 	<section>
 		<h2 class="font-heading text-lg text-primary mb-md flex items-center gap-sm">
@@ -201,6 +220,21 @@
 				}}
 			>
 				<div class="space-y-lg">
+					<div>
+						<label for="theme" class="block text-sm font-medium text-primary mb-sm">
+							Theme
+						</label>
+						<select
+							id="theme"
+							name="theme"
+							class="input"
+							value={data.profile?.theme ?? 'light'}
+						>
+							<option value="light">Light</option>
+							<option value="dark">Dark</option>
+						</select>
+					</div>
+
 					<div>
 						<label for="dailyGoal" class="block text-sm font-medium text-primary mb-sm">
 							Daily review goal

@@ -1,20 +1,27 @@
 <script lang="ts">
 	import { Card } from '$components/ui';
+	import { TagPicker } from '$components/tags';
 	import { Sparkles, MoreHorizontal } from 'lucide-svelte';
-	import type { Highlight } from '$lib/types';
+	import type { Highlight, Tag } from '$lib/types';
 
 	interface Props {
-		highlight: Highlight;
+		highlight: Highlight & { tags?: Tag[] };
+		availableTags?: Tag[];
 		selectable?: boolean;
 		selected?: boolean;
 		onselect?: () => void;
+		ontagadd?: (tag: Tag) => void;
+		ontagremove?: (tag: Tag) => void;
 	}
 
 	let {
 		highlight,
+		availableTags = [],
 		selectable = false,
 		selected = false,
-		onselect
+		onselect,
+		ontagadd,
+		ontagremove
 	}: Props = $props();
 </script>
 
@@ -47,6 +54,18 @@
 		<p class="mt-md text-sm text-secondary italic">
 			Note: {highlight.note}
 		</p>
+	{/if}
+
+	<!-- Tags -->
+	{#if availableTags.length > 0 && !selectable}
+		<div class="mt-md">
+			<TagPicker
+				{availableTags}
+				selectedTags={highlight.tags || []}
+				ontagadd={(tag) => ontagadd?.(tag)}
+				ontagremove={(tag) => ontagremove?.(tag)}
+			/>
+		</div>
 	{/if}
 
 	<div class="flex items-center justify-between mt-lg pt-md border-t border-border">
