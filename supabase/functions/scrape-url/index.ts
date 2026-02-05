@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { DOMParser, Element } from 'https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 interface RequestBody {
 	url: string;
@@ -27,6 +28,43 @@ function extractMetaContent(doc: Document, selectors: string[]): string | null {
 		}
 	}
 	return null;
+}
+
+function isPublicUrl(url: URL): boolean {
+	const hostname = url.hostname.toLowerCase();
+
+	// Block localhost
+	if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+		return false;
+	}
+
+	// Block private IPv4 ranges
+	const ipv4Match = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+	if (ipv4Match) {
+		const [, a, b, c, d] = ipv4Match.map(Number);
+		// 10.0.0.0/8
+		if (a === 10) return false;
+		// 172.16.0.0/12
+		if (a === 172 && b >= 16 && b <= 31) return false;
+		// 192.168.0.0/16
+		if (a === 192 && b === 168) return false;
+		// 169.254.0.0/16 (link-local)
+		if (a === 169 && b === 254) return false;
+		// 127.0.0.0/8 (loopback)
+		if (a === 127) return false;
+	}
+
+	// Block link-local IPv6 (fe80::/10)
+	if (hostname.startsWith('fe80:') || hostname.startsWith('[fe80:')) {
+		return false;
+	}
+
+	// Block localhost IPv6
+	if (hostname === '::1' || hostname === '[::1]') {
+		return false;
+	}
+
+	return true;
 }
 
 function extractArticleContent(doc: Document): string {
@@ -97,6 +135,37 @@ serve(async (req) => {
 	}
 
 	try {
+		// Verify JWT token
+		const authHeader = req.headers.get('Authorization');
+		if (!authHeader) {
+			return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+				status: 401,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+			});
+		}
+
+		const token = authHeader.replace('Bearer ', '');
+		const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+		const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+
+		const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+			global: {
+				headers: { Authorization: authHeader }
+			}
+		});
+
+		const {
+			data: { user },
+			error: authError
+		} = await supabase.auth.getUser(token);
+
+		if (authError || !user) {
+			return new Response(JSON.stringify({ error: 'Invalid or expired token' }), {
+				status: 401,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+			});
+		}
+
 		const body: RequestBody = await req.json();
 		const { url } = body;
 
@@ -116,6 +185,17 @@ serve(async (req) => {
 				status: 400,
 				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
 			});
+		}
+
+		// SSRF protection: block private IP ranges
+		if (!isPublicUrl(parsedUrl)) {
+			return new Response(
+				JSON.stringify({ error: 'Access to private/local IP addresses is not allowed' }),
+				{
+					status: 400,
+					headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+				}
+			);
 		}
 
 		// Fetch the page
