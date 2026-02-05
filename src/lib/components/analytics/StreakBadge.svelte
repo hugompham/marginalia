@@ -31,11 +31,29 @@
 	// Determine streak tier and styling
 	const tier = $derived(() => {
 		if (streak >= 30)
-			return { color: 'text-amber-500 bg-amber-500/10', icon: 'award', label: 'Master' };
+			return {
+				color: 'text-amber-500 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-400/20',
+				icon: 'award',
+				label: 'Master'
+			};
 		if (streak >= 14)
-			return { color: 'text-orange-500 bg-orange-500/10', icon: 'flame', label: 'Hot' };
-		if (streak >= 7) return { color: 'text-red-500 bg-red-500/10', icon: 'flame', label: 'Warm' };
-		if (streak >= 3) return { color: 'text-yellow-500 bg-yellow-500/10', icon: 'zap', label: '' };
+			return {
+				color: 'text-orange-500 bg-orange-500/10 dark:text-orange-400 dark:bg-orange-400/20',
+				icon: 'flame',
+				label: 'Hot'
+			};
+		if (streak >= 7)
+			return {
+				color: 'text-red-500 bg-red-500/10 dark:text-red-400 dark:bg-red-400/20',
+				icon: 'flame',
+				label: 'Warm'
+			};
+		if (streak >= 3)
+			return {
+				color: 'text-yellow-500 bg-yellow-500/10 dark:text-yellow-400 dark:bg-yellow-400/20',
+				icon: 'zap',
+				label: ''
+			};
 		return { color: 'text-tertiary bg-subtle', icon: 'zap', label: '' };
 	});
 

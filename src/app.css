@@ -151,11 +151,11 @@
 
 	/* Highlight styles for reading */
 	.highlight {
-		@apply bg-yellow-100/60 rounded px-0.5 -mx-0.5;
+		@apply bg-yellow-100/60 dark:bg-yellow-900/30 rounded px-0.5 -mx-0.5;
 	}
 
 	.highlight-selected {
-		@apply bg-accent/20 rounded px-0.5 -mx-0.5;
+		@apply bg-accent/20 dark:bg-accent/30 rounded px-0.5 -mx-0.5;
 	}
 }
 

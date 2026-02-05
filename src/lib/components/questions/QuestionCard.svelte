@@ -21,9 +21,9 @@
 	};
 
 	const typeColors: Record<QuestionType, string> = {
-		cloze: 'bg-blue-100 text-blue-700',
-		definition: 'bg-green-100 text-green-700',
-		conceptual: 'bg-purple-100 text-purple-700'
+		cloze: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+		definition: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+		conceptual: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
 	};
 
 
@@ -44,17 +44,17 @@
 	}
 
 	function getConfidenceColor(confidence: number): string {
-		if (confidence >= 0.8) return 'text-green-600';
-		if (confidence >= 0.6) return 'text-yellow-600';
-		return 'text-red-600';
+		if (confidence >= 0.8) return 'text-green-600 dark:text-green-400';
+		if (confidence >= 0.6) return 'text-yellow-600 dark:text-yellow-400';
+		return 'text-red-600 dark:text-red-400';
 	}
 </script>
 
 <div
 	class="border-canvas rounded-lg border p-4 transition-all {status === 'approved'
-		? 'border-green-300 bg-green-50/50'
+		? 'border-green-300 bg-green-50/50 dark:border-green-700 dark:bg-green-900/20'
 		: status === 'rejected'
-			? 'border-red-300 bg-red-50/50 opacity-60'
+			? 'border-red-300 bg-red-50/50 opacity-60 dark:border-red-700 dark:bg-red-900/20'
 			: 'bg-surface'}"
 >
 	<div class="mb-3 flex items-start justify-between gap-2">
@@ -71,21 +71,21 @@
 			<div class="flex items-center gap-1">
 				<button
 					onclick={onEdit}
-					class="text-tertiary hover:text-primary rounded p-1.5 transition-colors hover:bg-gray-100"
+					class="text-tertiary hover:text-primary rounded p-1.5 transition-colors hover:bg-subtle"
 					aria-label="Edit question"
 				>
 					<Edit3 size={16} />
 				</button>
 				<button
 					onclick={onReject}
-					class="rounded p-1.5 text-red-500 transition-colors hover:bg-red-50"
+					class="rounded p-1.5 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
 					aria-label="Reject question"
 				>
 					<X size={16} />
 				</button>
 				<button
 					onclick={onApprove}
-					class="rounded p-1.5 text-green-600 transition-colors hover:bg-green-50"
+					class="rounded p-1.5 text-green-600 transition-colors hover:bg-green-50 dark:hover:bg-green-900/20"
 					aria-label="Approve question"
 				>
 					<Check size={16} />
@@ -97,7 +97,7 @@
 					if (status === 'approved') onReject();
 					else onApprove();
 				}}
-				class="text-tertiary hover:text-primary rounded p-1.5 transition-colors hover:bg-gray-100"
+				class="text-tertiary hover:text-primary rounded p-1.5 transition-colors hover:bg-subtle"
 				aria-label="Undo"
 			>
 				<RotateCcw size={16} />
