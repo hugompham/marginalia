@@ -5,7 +5,7 @@ import type { AIProvider } from '$lib/types';
 import { requireAuth } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	await requireAuth({ request, locals } as any);
+	await requireAuth(locals);
 
 	const body = await request.json();
 	const { provider, key, model } = body as {

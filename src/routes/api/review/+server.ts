@@ -5,7 +5,7 @@ import type { Card, CardState, Rating } from '$lib/types';
 import { requireAuth } from '$lib/server/auth';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const user = await requireAuth({ request, locals } as any);
+	const user = await requireAuth(locals);
 
 	const body = await request.json();
 	const { cardId, rating, stabilityBefore, difficultyBefore, stateBefore, durationMs } = body as {
@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Create review record
 	const { error: reviewError } = await locals.supabase.from('reviews').insert({
 		card_id: cardId,
-		user_id: session.user.id,
+		user_id: user.id,
 		rating,
 		stability_before: stabilityBefore,
 		difficulty_before: difficultyBefore,
