@@ -4,6 +4,7 @@
 	import { Header } from '$components/layout';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
+	import { escapeHtml } from '$lib/utils/html';
 	import {
 		Highlighter,
 		Check,
@@ -141,14 +142,6 @@
 		goto('/import/url');
 	}
 
-	function escapeHtml(value: string): string {
-		return value
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#39;');
-	}
 
 	// Format content for display (convert markdown-ish to HTML)
 	function formatContent(content: string): string {

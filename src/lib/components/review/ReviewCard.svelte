@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Card } from '$components/ui';
 	import { BookOpen } from 'lucide-svelte';
+	import { escapeHtml } from '$lib/utils/html';
 	import type { Card as CardType, Rating } from '$lib/types';
 	import type { SchedulingOptions } from '$lib/services/spaced-repetition/fsrs';
 	import RatingButtons from './RatingButtons.svelte';
@@ -74,14 +75,6 @@
 		}
 	}
 
-	function escapeHtml(value: string): string {
-		return value
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#39;');
-	}
 
 	// Render cloze text with blank or answer
 	function renderCloze(text: string, showAnswer: boolean): string {

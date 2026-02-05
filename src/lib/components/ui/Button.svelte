@@ -7,12 +7,13 @@
 		size?: 'sm' | 'md' | 'lg';
 		loading?: boolean;
 		fullWidth?: boolean;
+		disabled?: boolean;
 		children: Snippet;
 		class?: string;
 	};
 
 	type ButtonProps = BaseProps & HTMLButtonAttributes & { href?: never };
-	type AnchorProps = BaseProps & HTMLAnchorAttributes & { href: string };
+	type AnchorProps = BaseProps & Omit<HTMLAnchorAttributes, 'disabled'> & { href: string };
 
 	type Props = ButtonProps | AnchorProps;
 

@@ -1,15 +1,7 @@
 <script lang="ts">
 	import { Check, X, Edit3, RotateCcw } from 'lucide-svelte';
-	import type { QuestionType } from '$lib/types';
-
-	interface GeneratedQuestion {
-		highlightId: string;
-		questionType: QuestionType;
-		question: string;
-		answer: string;
-		clozeText?: string;
-		confidence: number;
-	}
+	import { escapeHtml } from '$lib/utils/html';
+	import type { GeneratedQuestion } from '$lib/types';
 
 	interface Props {
 		question: GeneratedQuestion;
@@ -34,14 +26,6 @@
 		conceptual: 'bg-purple-100 text-purple-700'
 	};
 
-	function escapeHtml(value: string): string {
-		return value
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#39;');
-	}
 
 	function formatClozeText(text: string): string {
 		const regex = /\{\{c1::(.*?)\}\}/g;

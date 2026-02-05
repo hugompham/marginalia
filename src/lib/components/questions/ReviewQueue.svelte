@@ -3,16 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import QuestionCard from './QuestionCard.svelte';
 	import EditQuestionModal from './EditQuestionModal.svelte';
-	import type { QuestionType, Highlight } from '$lib/types';
-
-	interface GeneratedQuestion {
-		highlightId: string;
-		questionType: QuestionType;
-		question: string;
-		answer: string;
-		clozeText?: string;
-		confidence: number;
-	}
+	import type { GeneratedQuestion, Highlight } from '$lib/types';
 
 	interface Props {
 		questions: GeneratedQuestion[];

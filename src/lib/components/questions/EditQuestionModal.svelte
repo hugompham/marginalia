@@ -3,16 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Textarea from '$lib/components/ui/Textarea.svelte';
-	import type { QuestionType } from '$lib/types';
-
-	interface GeneratedQuestion {
-		highlightId: string;
-		questionType: QuestionType;
-		question: string;
-		answer: string;
-		clozeText?: string;
-		confidence: number;
-	}
+	import type { GeneratedQuestion } from '$lib/types';
 
 	interface Props {
 		open: boolean;
