@@ -1,9 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="theme-color" content="#FAF9F7" />
+		<script>
+			(function() {
+				var match = document.cookie.match(/(?:^|; )theme=(light|dark)/);
+				var theme = match ? match[1] : 'light';
+				document.documentElement.setAttribute('data-theme', theme);
+			})();
+		</script>
 		<meta name="description" content="Transform reading highlights into lasting knowledge through spaced repetition." />
 
 		<!-- PWA -->

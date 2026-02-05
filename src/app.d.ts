@@ -13,6 +13,7 @@ declare global {
 			supabase: SupabaseClient;
 			getSession: () => Promise<Session | null>;
 			getUser: () => Promise<User | null>;
+			theme: 'light' | 'dark';
 		}
 		interface PageData {
 			session: Session | null;
