@@ -1,32 +1,33 @@
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
+	darkMode: ['selector', '[data-theme="dark"]'],
 	theme: {
 		extend: {
 			colors: {
 				// Background colors
-				canvas: '#FAF9F7',
-				surface: '#FFFFFF',
-				subtle: '#F5F3F0',
+				canvas: 'var(--color-canvas)',
+				surface: 'var(--color-surface)',
+				subtle: 'var(--color-subtle)',
 
 				// Text colors
-				primary: '#1A1A1A',
-				secondary: '#6B6B6B',
-				tertiary: '#9B9B9B',
+				primary: 'var(--color-text-primary)',
+				secondary: 'var(--color-text-secondary)',
+				tertiary: 'var(--color-text-tertiary)',
 
 				// Accent colors
 				accent: {
-					DEFAULT: '#C2694F',
-					hover: '#A85640'
+					DEFAULT: 'var(--color-accent)',
+					hover: 'var(--color-accent-hover)'
 				},
-				success: '#4A7C59',
-				warning: '#C9A227',
-				error: '#B54B4B',
+				success: 'var(--color-success)',
+				warning: 'var(--color-warning)',
+				error: 'var(--color-error)',
 
 				// Border colors
 				border: {
-					DEFAULT: '#E8E6E3',
-					strong: '#D4D1CC'
+					DEFAULT: 'var(--color-border)',
+					strong: 'var(--color-border-strong)'
 				}
 			},
 			fontFamily: {
