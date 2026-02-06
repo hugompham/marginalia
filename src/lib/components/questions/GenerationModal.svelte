@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { X, Sparkles, Loader2 } from 'lucide-svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import type { Highlight, Collection, QuestionType } from '$lib/types';
+	import type { Highlight, Collection, QuestionType, Difficulty } from '$lib/types';
 
 	interface Props {
 		open: boolean;
 		highlights: Highlight[];
 		collection: Collection;
 		onClose: () => void;
-		onGenerate: (questionTypes: QuestionType[]) => void;
+		onGenerate: (questionTypes: QuestionType[], difficulty: Difficulty) => void;
 		isGenerating?: boolean;
 	}
 
 	let { open, highlights, collection, onClose, onGenerate, isGenerating = false }: Props = $props();
 
 	let selectedTypes = $state<QuestionType[]>(['cloze', 'conceptual']);
+	let difficulty = $state<Difficulty>('standard');
 
 	const questionTypeOptions: { value: QuestionType; label: string; description: string }[] = [
 		{
@@ -44,7 +45,7 @@
 
 	function handleGenerate() {
 		if (selectedTypes.length > 0) {
-			onGenerate(selectedTypes);
+			onGenerate(selectedTypes, difficulty);
 		}
 	}
 
@@ -141,6 +142,40 @@
 				{#if selectedTypes.length === 0}
 					<p class="text-accent mb-4 text-sm">Please select at least one question type.</p>
 				{/if}
+
+				<div class="mb-2" role="radiogroup" aria-labelledby="difficulty-label">
+					<span id="difficulty-label" class="text-primary mb-2 block text-sm font-medium"
+						>Difficulty</span
+					>
+					<div class="flex gap-2">
+						<button
+							role="radio"
+							aria-checked={difficulty === 'standard'}
+							onclick={() => (difficulty = 'standard')}
+							disabled={isGenerating}
+							class="flex-1 rounded-lg border p-3 text-left transition-colors disabled:opacity-50 {difficulty ===
+							'standard'
+								? 'border-accent bg-accent/5'
+								: 'border-canvas hover:border-muted'}"
+						>
+							<div class="text-primary text-sm font-medium">Standard</div>
+							<div class="text-secondary text-xs">Recall and basic understanding</div>
+						</button>
+						<button
+							role="radio"
+							aria-checked={difficulty === 'challenging'}
+							onclick={() => (difficulty = 'challenging')}
+							disabled={isGenerating}
+							class="flex-1 rounded-lg border p-3 text-left transition-colors disabled:opacity-50 {difficulty ===
+							'challenging'
+								? 'border-accent bg-accent/5'
+								: 'border-canvas hover:border-muted'}"
+						>
+							<div class="text-primary text-sm font-medium">Challenging</div>
+							<div class="text-secondary text-xs">Analysis, application, evaluation</div>
+						</button>
+					</div>
+				</div>
 			</div>
 
 			<div class="border-canvas flex justify-end gap-2 border-t p-4">

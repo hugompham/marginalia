@@ -25,6 +25,9 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Plans
+plans/
+
 # Test coverage
 coverage/
 
