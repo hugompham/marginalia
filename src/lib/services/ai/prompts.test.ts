@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { parseGeneratedQuestions, buildOpenAIMessages, buildAnthropicMessages } from './prompts';
 
 describe('AI Prompts', () => {
@@ -114,7 +114,46 @@ Hope this helps!`;
 			expect(result).toEqual([]);
 		});
 
-		it('should handle non-array JSON', () => {
+		it('should extract questions from JSON object wrapper', () => {
+			const content = JSON.stringify({
+				questions: [
+					{
+						highlightId: 'h1',
+						questionType: 'definition',
+						question: 'What is X?',
+						answer: 'Y',
+						confidence: 0.9
+					}
+				]
+			});
+
+			const result = parseGeneratedQuestions(content);
+
+			expect(result).toHaveLength(1);
+			expect(result[0].highlightId).toBe('h1');
+		});
+
+		it('should extract array from object with non-standard key', () => {
+			const content = JSON.stringify({
+				generated: [
+					{
+						highlightId: 'h1',
+						questionType: 'cloze',
+						question: 'Q',
+						answer: 'A',
+						clozeText: 'The {{c1::A}} is here',
+						confidence: 0.85
+					}
+				]
+			});
+
+			const result = parseGeneratedQuestions(content);
+
+			expect(result).toHaveLength(1);
+			expect(result[0].questionType).toBe('cloze');
+		});
+
+		it('should return empty for object without any arrays', () => {
 			const content = JSON.stringify({
 				highlightId: 'h1',
 				question: 'Q',
@@ -176,6 +215,40 @@ Hope this helps!`;
 			expect(result[0].questionType).toBe('definition');
 			expect(result[1].questionType).toBe('conceptual');
 			expect(result[2].questionType).toBe('cloze');
+		});
+
+		it('should parse object wrapper in markdown code block', () => {
+			const content = `\`\`\`json
+{
+  "questions": [
+    {
+      "highlightId": "h1",
+      "questionType": "definition",
+      "question": "What is X?",
+      "answer": "Y",
+      "confidence": 0.9
+    }
+  ]
+}
+\`\`\``;
+
+			const result = parseGeneratedQuestions(content);
+
+			expect(result).toHaveLength(1);
+			expect(result[0].highlightId).toBe('h1');
+		});
+
+		it('should warn when content exists but no valid questions parsed', () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			const content = JSON.stringify({
+				questions: [{ highlightId: 'h1', question: 'Q' }]
+			});
+			const result = parseGeneratedQuestions(content);
+
+			expect(result).toEqual([]);
+			expect(warnSpy).toHaveBeenCalled();
+			warnSpy.mockRestore();
 		});
 
 		it('should handle whitespace variations', () => {

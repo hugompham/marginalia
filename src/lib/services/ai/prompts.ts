@@ -82,17 +82,19 @@ GUIDELINES:
 - Prefer cloze deletions when possible as they're most effective for memory
 - Keep questions concise and focused
 
-OUTPUT FORMAT (JSON array):
-[
-  {
-    "highlightId": "uuid",
-    "questionType": "cloze" | "definition" | "conceptual",
-    "question": "...",
-    "answer": "...",
-    "clozeText": "... {{c1::answer}} ..." (only for cloze type),
-    "confidence": 0.85
-  }
-]
+OUTPUT FORMAT (JSON object with "questions" array):
+{
+  "questions": [
+    {
+      "highlightId": "uuid",
+      "questionType": "cloze" | "definition" | "conceptual",
+      "question": "...",
+      "answer": "...",
+      "clozeText": "... {{c1::answer}} ..." (only for cloze type),
+      "confidence": 0.85
+    }
+  ]
+}
 
 HIGHLIGHTS:
 ${highlights
@@ -108,7 +110,7 @@ ${h.contextAfter ? `Context after: "${h.contextAfter}"` : ''}
 	)
 	.join('\n')}
 
-Generate questions now. Output ONLY the JSON array, no other text:`;
+Generate questions now. Output ONLY the JSON object, no other text:`;
 }
 
 /**
@@ -147,12 +149,42 @@ export function buildAnthropicMessages(prompt: string) {
 }
 
 /**
+ * Attempts to parse a string as JSON, with fallback extraction for
+ * JSON embedded in surrounding text (e.g., Anthropic responses with prose)
+ */
+function tryParseJSON(str: string): Record<string, unknown> | unknown[] | undefined {
+	try {
+		return JSON.parse(str);
+	} catch {
+		// Fallback: try to extract JSON from surrounding text (Anthropic responses)
+		// Try array first since object regex would match inner objects within an array
+		const arrayMatch = str.match(/\[[\s\S]*\]/);
+		if (arrayMatch) {
+			try {
+				return JSON.parse(arrayMatch[0]);
+			} catch {
+				// fall through
+			}
+		}
+		const objectMatch = str.match(/\{[\s\S]*\}/);
+		if (objectMatch) {
+			try {
+				return JSON.parse(objectMatch[0]);
+			} catch {
+				// fall through
+			}
+		}
+		return undefined;
+	}
+}
+
+/**
  * Parses AI response content into structured questions
  *
  * Handles various response formats:
  * - Plain JSON array
+ * - JSON object with "questions" array (from response_format: json_object)
  * - JSON wrapped in markdown code blocks
- * - JSON with surrounding text
  *
  * @param content - Raw AI response content
  * @returns Array of valid generated questions
@@ -160,35 +192,41 @@ export function buildAnthropicMessages(prompt: string) {
 export function parseGeneratedQuestions(content: string): GeneratedQuestion[] {
 	let jsonStr = content.trim();
 
-	// Handle if wrapped in markdown code block
+	// Handle markdown code block wrapper
 	const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
 	if (jsonMatch) {
-		jsonStr = jsonMatch[1];
+		jsonStr = jsonMatch[1].trim();
 	}
 
-	// Handle if there's text before/after the JSON
-	const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-	if (arrayMatch) {
-		jsonStr = arrayMatch[0];
-	}
-
-	try {
-		const questions = JSON.parse(jsonStr);
-
-		if (!Array.isArray(questions)) {
-			throw new Error('Response is not an array');
+	const parsed = tryParseJSON(jsonStr);
+	if (parsed === undefined) {
+		if (content.length > 10) {
+			console.warn('Failed to parse AI response:', content.slice(0, 200));
 		}
-
-		// Filter to only valid questions with all required fields
-		return questions.filter(
-			(q) =>
-				q.highlightId &&
-				q.questionType &&
-				q.question &&
-				q.answer &&
-				typeof q.confidence === 'number'
-		);
-	} catch {
 		return [];
 	}
+
+	// Handle JSON object wrapper (OpenAI json_object mode returns {"questions": [...]})
+	let questions: unknown[];
+	if (Array.isArray(parsed)) {
+		questions = parsed;
+	} else if (parsed && typeof parsed === 'object') {
+		questions = Array.isArray(parsed.questions)
+			? parsed.questions
+			: ((Object.values(parsed).find((v) => Array.isArray(v)) as unknown[]) ?? []);
+	} else {
+		return [];
+	}
+
+	// Filter to only valid questions with all required fields
+	const valid = questions.filter(
+		(q: Record<string, unknown>) =>
+			q.highlightId && q.questionType && q.question && q.answer && typeof q.confidence === 'number'
+	);
+
+	if (valid.length === 0 && content.length > 10) {
+		console.warn('AI returned content but no valid questions were parsed:', content.slice(0, 200));
+	}
+
+	return valid as GeneratedQuestion[];
 }
