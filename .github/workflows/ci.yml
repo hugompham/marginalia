@@ -91,13 +91,6 @@ jobs:
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cloudflare-pages
-          path: .svelte-kit/cloudflare/
-          retention-days: 1
-
   deploy:
     name: Deploy to Cloudflare Pages
     needs: [lint-and-typecheck, test, build]
@@ -109,11 +102,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - uses: pnpm/action-setup@v4
         with:
-          name: cloudflare-pages
-          path: .svelte-kit/cloudflare/
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -121,4 +127,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           packageManager: npm
-          command: pages deploy .svelte-kit/cloudflare --project-name=marginalia
+          command: pages deploy .svelte-kit/cloudflare --project-name=marginalia --commit-dirty=true
