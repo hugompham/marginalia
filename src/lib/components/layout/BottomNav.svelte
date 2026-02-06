@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Home, BookOpen, Plus, Settings, Brain } from 'lucide-svelte';
+	import { Home, BookOpen, Network, Plus, Settings, Brain } from 'lucide-svelte';
 
 	const navItems = [
 		{ href: '/', label: 'Home', icon: 'home' },
 		{ href: '/library', label: 'Library', icon: 'library' },
-		{ href: '/import', label: 'Import', icon: 'import' },
+		{ href: '/mindmap', label: 'Mindmap', icon: 'mindmap' },
 		{ href: '/review', label: 'Review', icon: 'review' },
 		{ href: '/settings', label: 'Settings', icon: 'settings' }
 	] as const;
@@ -34,8 +34,8 @@
 						<Home size={24} />
 					{:else if item.icon === 'library'}
 						<BookOpen size={24} />
-					{:else if item.icon === 'import'}
-						<Plus size={24} />
+					{:else if item.icon === 'mindmap'}
+						<Network size={24} />
 					{:else if item.icon === 'review'}
 						<Brain size={24} />
 					{:else if item.icon === 'settings'}
