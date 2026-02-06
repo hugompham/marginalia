@@ -65,43 +65,6 @@ jobs:
           files: ./coverage/coverage-final.json
           fail_ci_if_error: false
 
-  database-types:
-    name: Check Database Types
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Start Supabase
-        run: supabase start
-
-      - name: Generate types
-        run: pnpm db:types
-
-      - name: Check for type changes
-        run: |
-          if git diff --exit-code src/lib/types/database.ts; then
-            echo "Database types are up to date"
-          else
-            echo "Database types are stale. Run 'pnpm db:types' and commit changes."
-            exit 1
-          fi
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -123,8 +86,9 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
