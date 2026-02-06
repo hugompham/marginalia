@@ -21,7 +21,9 @@
 		"db:start": "supabase start",
 		"db:stop": "supabase stop",
 		"db:reset": "supabase db reset",
-		"db:types": "supabase gen types typescript --local > src/lib/types/database.ts"
+		"db:types": "supabase gen types typescript --local > src/lib/types/database.ts",
+		"cf:preview": "pnpm build && wrangler pages dev .svelte-kit/cloudflare",
+		"cf:deploy": "pnpm build && wrangler pages deploy .svelte-kit/cloudflare --project-name=marginalia"
 	},
 	"dependencies": {
 		"@supabase/ssr": "^0.5.2",

@@ -96,9 +96,9 @@ jobs:
       - name: Check for type changes
         run: |
           if git diff --exit-code src/lib/types/database.ts; then
-            echo "✅ Database types are up to date"
+            echo "Database types are up to date"
           else
-            echo "❌ Database types are stale. Run 'pnpm db:types' and commit changes."
+            echo "Database types are stale. Run 'pnpm db:types' and commit changes."
             exit 1
           fi
 
@@ -125,3 +125,34 @@ jobs:
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-pages
+          path: .svelte-kit/cloudflare/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: [lint-and-typecheck, test, build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-pages
+          path: .svelte-kit/cloudflare/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .svelte-kit/cloudflare --project-name=marginalia
