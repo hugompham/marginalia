@@ -41,7 +41,7 @@
 
 <svelte:head>
 	<title>Marginalia</title>
-	<link rel="icon" href="/favicon.svg" />
+	<link rel="icon" href="/favicon.png" />
 </svelte:head>
 
 {#if showShell}

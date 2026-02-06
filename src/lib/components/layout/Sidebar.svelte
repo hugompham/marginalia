@@ -32,9 +32,7 @@
 	<!-- Logo -->
 	<div class="px-xl py-lg border-b border-border">
 		<a href="/" class="flex items-center gap-md">
-			<div class="w-8 h-8 rounded-button bg-accent/10 flex items-center justify-center">
-				<span class="text-accent font-heading font-semibold">M</span>
-			</div>
+			<img src="/icons/icon-192.png" alt="" class="w-8 h-8 rounded-button" />
 			<span class="font-heading text-xl text-primary">Marginalia</span>
 		</a>
 	</div>
