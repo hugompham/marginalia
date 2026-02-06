@@ -40,6 +40,7 @@
 </script>
 
 <svelte:head>
+	<title>Marginalia</title>
 	<link rel="icon" href="/favicon.svg" />
 </svelte:head>
 

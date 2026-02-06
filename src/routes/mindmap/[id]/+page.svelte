@@ -54,6 +54,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{data.collection.title} - Mindmap | Marginalia</title>
+</svelte:head>
+
 <div class="mindmap-container">
 	<!-- Floating back button -->
 	<a

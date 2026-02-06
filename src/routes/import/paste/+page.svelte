@@ -26,6 +26,10 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Paste Highlights | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl">
 	<div class="flex items-center gap-sm mb-xl">
 		<a

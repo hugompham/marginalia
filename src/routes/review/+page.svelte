@@ -68,6 +68,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Review | Marginalia</title>
+</svelte:head>
+
 {#if !data.cards.length}
 	<!-- No cards due -->
 	<div class="px-lg py-xl">

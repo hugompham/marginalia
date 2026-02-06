@@ -2,6 +2,10 @@
 	import { goto } from '$app/navigation';
 </script>
 
+<svelte:head>
+	<title>Auth Error | Marginalia</title>
+</svelte:head>
+
 <div class="card p-xl text-center">
 	<div class="w-16 h-16 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-lg">
 		<svg class="w-8 h-8 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">

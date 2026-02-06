@@ -198,6 +198,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{data.collection.title} | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl">
 	<div class="flex items-center justify-between mb-xl">
 		<div class="flex items-center gap-sm min-w-0">

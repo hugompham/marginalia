@@ -48,6 +48,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Mindmap | Marginalia</title>
+</svelte:head>
+
 <div class="mindmap-container">
 	{#if data.collections.length === 0}
 		<div class="flex items-center justify-center h-full px-lg">

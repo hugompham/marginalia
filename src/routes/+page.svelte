@@ -37,6 +37,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Dashboard | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl space-y-xl">
 	<!-- Greeting with streak -->
 	<div class="flex items-start justify-between">

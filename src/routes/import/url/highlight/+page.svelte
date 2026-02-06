@@ -163,6 +163,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{article?.title ?? 'Highlight Article'} | Marginalia</title>
+</svelte:head>
+
 {#if article}
 	<div class="flex items-center justify-between px-lg py-md border-b border-border">
 		<div class="flex items-center gap-sm">

@@ -13,6 +13,10 @@
 	let showSuccess = $state(false);
 </script>
 
+<svelte:head>
+	<title>Sign In | Marginalia</title>
+</svelte:head>
+
 <div class="card p-xl">
 	{#if showSuccess || form?.success}
 		<!-- Success state -->

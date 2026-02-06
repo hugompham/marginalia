@@ -3,6 +3,10 @@
 	import { Link, FileText, ChevronRight, BookMarked } from 'lucide-svelte';
 </script>
 
+<svelte:head>
+	<title>Import | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl">
 	<h1 class="font-heading text-xl text-primary mb-md">Import</h1>
 	<p class="text-secondary mb-xl">Choose how you want to import your highlights.</p>

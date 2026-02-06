@@ -63,6 +63,10 @@
 	];
 </script>
 
+<svelte:head>
+	<title>Import URL | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl">
 	<div class="flex items-center gap-sm mb-lg">
 		<a

@@ -53,6 +53,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Import Kindle | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl space-y-xl">
 	<div class="flex items-center gap-sm">
 		<a

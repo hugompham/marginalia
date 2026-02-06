@@ -30,6 +30,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Library | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl">
 	<div class="flex items-center justify-between mb-xl">
 		<h1 class="font-heading text-xl text-primary">Library</h1>

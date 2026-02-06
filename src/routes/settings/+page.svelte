@@ -95,6 +95,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Settings | Marginalia</title>
+</svelte:head>
+
 <div class="px-lg py-xl space-y-xl">
 	<h1 class="font-heading text-xl text-primary">Settings</h1>
 	<!-- Account Section -->
