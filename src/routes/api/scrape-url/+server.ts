@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { requireAuth } from '$lib/server/auth';
+import { decodeHtmlEntities } from '$lib/utils/html';
 
 interface RequestBody {
 	url: string;
@@ -137,7 +138,7 @@ async function scrapeDirectly(url: string) {
 
 		// Basic extraction using regex (simplified for fallback)
 		const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-		const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
+		const title = titleMatch ? decodeHtmlEntities(titleMatch[1].trim()) : 'Untitled';
 		console.log('Extracted title:', title);
 
 		// Extract meta description - try multiple formats
@@ -154,7 +155,8 @@ async function scrapeDirectly(url: string) {
 		const descMatch4 = html.match(
 			/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i
 		);
-		excerpt = descMatch1?.[1] || descMatch2?.[1] || descMatch3?.[1] || descMatch4?.[1] || null;
+		const rawExcerpt = descMatch1?.[1] || descMatch2?.[1] || descMatch3?.[1] || descMatch4?.[1] || null;
+		excerpt = rawExcerpt ? decodeHtmlEntities(rawExcerpt) : null;
 		console.log('Extracted excerpt:', excerpt ? excerpt.substring(0, 100) + '...' : 'none');
 
 		// Extract author from meta - try multiple formats
@@ -164,7 +166,8 @@ async function scrapeDirectly(url: string) {
 		const authorMatch3 = html.match(
 			/<meta[^>]+property=["']article:author["'][^>]+content=["']([^"']+)["']/i
 		);
-		author = authorMatch1?.[1] || authorMatch2?.[1] || authorMatch3?.[1] || null;
+		const rawAuthor = authorMatch1?.[1] || authorMatch2?.[1] || authorMatch3?.[1] || null;
+		author = rawAuthor ? decodeHtmlEntities(rawAuthor) : null;
 		console.log('Extracted author:', author);
 
 		// Basic content extraction - get all paragraph text
@@ -173,7 +176,7 @@ async function scrapeDirectly(url: string) {
 		let match;
 
 		while ((match = pRegex.exec(html)) !== null) {
-			const text = match[1].replace(/<[^>]+>/g, '').trim();
+			const text = decodeHtmlEntities(match[1].replace(/<[^>]+>/g, '').trim());
 			if (text.length > 50) {
 				paragraphs.push(text);
 			}
