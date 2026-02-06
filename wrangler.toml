@@ -2,6 +2,3 @@ name = "marginalia"
 compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
-
-[build]
-command = "pnpm build"
