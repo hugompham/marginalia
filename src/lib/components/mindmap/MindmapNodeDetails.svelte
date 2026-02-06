@@ -17,9 +17,7 @@
 		nodeType === 'collection' ? (node?.data.collection as Collection) : null
 	);
 	const highlight = $derived(
-		nodeType === 'highlight'
-			? (node?.data.highlight as Highlight & { tags: Tag[] })
-			: null
+		nodeType === 'highlight' ? (node?.data.highlight as Highlight & { tags: Tag[] }) : null
 	);
 	const chapter = $derived(
 		nodeType === 'chapter'
@@ -37,7 +35,9 @@
 			tablet:bottom-0 tablet:left-0 tablet:right-0 tablet:max-h-[60vh] tablet:rounded-t-xl tablet:border-t
 			bg-surface border-border shadow-card-hover overflow-y-auto"
 	>
-		<div class="flex items-center justify-between px-lg py-md border-b border-border sticky top-0 bg-surface">
+		<div
+			class="flex items-center justify-between px-lg py-md border-b border-border sticky top-0 bg-surface"
+		>
 			<h3 class="font-heading text-base text-primary">
 				{#if collection}
 					Collection
@@ -77,9 +77,7 @@
 				</div>
 
 				<div class="flex items-center gap-sm">
-					<Button size="sm" href="/mindmap/{collection.id}">
-						Explore
-					</Button>
+					<Button size="sm" href="/mindmap/{collection.id}">Explore</Button>
 					<Button size="sm" variant="secondary" href="/library/{collection.id}">
 						<ExternalLink size={14} />
 						Library

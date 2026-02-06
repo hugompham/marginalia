@@ -133,9 +133,7 @@ describe('fetchJsonWithRetry', () => {
 
 	it('should parse JSON on successful response', async () => {
 		const data = { message: 'success' };
-		mockFetch.mockResolvedValueOnce(
-			new Response(JSON.stringify(data), { status: 200 })
-		);
+		mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(data), { status: 200 }));
 
 		const result = await fetchJsonWithRetry('https://api.example.com/test');
 
@@ -144,13 +142,9 @@ describe('fetchJsonWithRetry', () => {
 
 	it('should throw error with message on non-ok response', async () => {
 		const errorData = { error: 'Not found' };
-		mockFetch.mockResolvedValueOnce(
-			new Response(JSON.stringify(errorData), { status: 404 })
-		);
+		mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(errorData), { status: 404 }));
 
-		await expect(fetchJsonWithRetry('https://api.example.com/test')).rejects.toThrow(
-			'Not found'
-		);
+		await expect(fetchJsonWithRetry('https://api.example.com/test')).rejects.toThrow('Not found');
 	});
 
 	it('should throw generic error if no error field in response', async () => {

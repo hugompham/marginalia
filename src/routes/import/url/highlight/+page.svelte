@@ -142,7 +142,6 @@
 		goto('/import/url');
 	}
 
-
 	// Format content for display (convert markdown-ish to HTML)
 	function formatContent(content: string): string {
 		return content
@@ -235,18 +234,14 @@
 							Highlights ({highlights.length})
 						</h3>
 						{#if highlights.length > 0}
-							<Button variant="ghost" size="sm" onclick={clearAllHighlights}>
-								Clear All
-							</Button>
+							<Button variant="ghost" size="sm" onclick={clearAllHighlights}>Clear All</Button>
 						{/if}
 					</div>
 
 					{#if highlights.length === 0}
 						<Card padding="md" class="text-center">
 							<Highlighter class="text-tertiary mx-auto mb-sm" size={24} />
-							<p class="text-sm text-secondary">
-								Select text in the article to create highlights
-							</p>
+							<p class="text-sm text-secondary">Select text in the article to create highlights</p>
 						</Card>
 					{:else}
 						<div class="space-y-sm max-h-[60vh] overflow-y-auto">
@@ -267,11 +262,7 @@
 						</div>
 
 						<div class="mt-lg pt-lg border-t border-canvas">
-							<Button
-								onclick={saveCollection}
-								disabled={isSaving}
-								class="w-full"
-							>
+							<Button onclick={saveCollection} disabled={isSaving} class="w-full">
 								{#if isSaving}
 									<Loader2 size={16} class="animate-spin mr-sm" />
 									Saving...
@@ -309,18 +300,14 @@
 <!-- Confirm Leave Modal -->
 <Modal bind:open={showConfirmModal} title="Discard Highlights?">
 	<p class="text-secondary">
-		You have {highlights.length} unsaved highlight{highlights.length !== 1 ? 's' : ''}.
-		Going back will discard them.
+		You have {highlights.length} unsaved highlight{highlights.length !== 1 ? 's' : ''}. Going back
+		will discard them.
 	</p>
 
 	{#snippet footer()}
 		<div class="flex justify-end gap-md">
-			<Button variant="secondary" onclick={() => (showConfirmModal = false)}>
-				Keep Editing
-			</Button>
-			<Button variant="danger" onclick={confirmBack}>
-				Discard & Go Back
-			</Button>
+			<Button variant="secondary" onclick={() => (showConfirmModal = false)}>Keep Editing</Button>
+			<Button variant="danger" onclick={confirmBack}>Discard & Go Back</Button>
 		</div>
 	{/snippet}
 </Modal>

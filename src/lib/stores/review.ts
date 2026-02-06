@@ -10,7 +10,11 @@
 
 import { writable, derived } from 'svelte/store';
 import type { Card, Rating } from '$lib/types';
-import { getSchedulingOptions, processReview, type SchedulingOptions } from '$lib/services/spaced-repetition/fsrs';
+import {
+	getSchedulingOptions,
+	processReview,
+	type SchedulingOptions
+} from '$lib/services/spaced-repetition/fsrs';
 
 /**
  * Result of a single card review
@@ -203,9 +207,7 @@ export const sessionStats = derived(reviewSession, ($session) => {
 	};
 
 	const retention =
-		results.length > 0
-			? ((ratingCounts.good + ratingCounts.easy) / results.length) * 100
-			: 0;
+		results.length > 0 ? ((ratingCounts.good + ratingCounts.easy) / results.length) * 100 : 0;
 
 	return {
 		totalCards: results.length,

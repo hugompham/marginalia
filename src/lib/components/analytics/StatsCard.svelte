@@ -37,7 +37,8 @@
 		<span class="text-2xl font-heading text-primary">{value}</span>
 		{#if trend && trendValue}
 			<span class="text-sm {trendColors[trend]}">
-				{trendIcons[trend]} {trendValue}
+				{trendIcons[trend]}
+				{trendValue}
 			</span>
 		{/if}
 	</div>

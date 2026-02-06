@@ -35,11 +35,7 @@ export async function encrypt(plaintext: string): Promise<string> {
 	const encoder = new TextEncoder();
 	const data = encoder.encode(plaintext);
 
-	const encrypted = await crypto.subtle.encrypt(
-		{ name: ALGORITHM, iv },
-		key,
-		data
-	);
+	const encrypted = await crypto.subtle.encrypt({ name: ALGORITHM, iv }, key, data);
 
 	// Combine IV + ciphertext into a single array
 	const combined = new Uint8Array(iv.length + encrypted.byteLength);
@@ -73,11 +69,7 @@ export async function decrypt(encrypted: string): Promise<string> {
 	const iv = combined.slice(0, IV_LENGTH);
 	const ciphertext = combined.slice(IV_LENGTH);
 
-	const decrypted = await crypto.subtle.decrypt(
-		{ name: ALGORITHM, iv },
-		key,
-		ciphertext
-	);
+	const decrypted = await crypto.subtle.decrypt({ name: ALGORITHM, iv }, key, ciphertext);
 
 	const decoder = new TextDecoder();
 	return decoder.decode(decrypted);
@@ -115,9 +107,7 @@ async function getKey(): Promise<CryptoKey> {
 	}
 
 	if (!keyBytes) {
-		throw new Error(
-			'ENCRYPTION_KEY must be 32 bytes (base64) or 64 hex characters'
-		);
+		throw new Error('ENCRYPTION_KEY must be 32 bytes (base64) or 64 hex characters');
 	}
 
 	return crypto.subtle.importKey(

@@ -61,7 +61,7 @@ export default {
 			boxShadow: {
 				card: '0 1px 3px rgba(0,0,0,0.04)',
 				'card-hover': '0 2px 8px rgba(0,0,0,0.08)',
-				'focus': '0 0 0 2px rgba(194, 105, 79, 0.2)'
+				focus: '0 0 0 2px rgba(194, 105, 79, 0.2)'
 			},
 			maxWidth: {
 				content: '680px',

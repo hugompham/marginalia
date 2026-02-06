@@ -81,9 +81,7 @@
 			</div>
 			<div>
 				<h2 class="font-heading text-lg text-primary">Import Web Article</h2>
-				<p class="text-sm text-secondary">
-					Paste a URL to extract and highlight content
-				</p>
+				<p class="text-sm text-secondary">Paste a URL to extract and highlight content</p>
 			</div>
 		</div>
 

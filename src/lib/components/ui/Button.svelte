@@ -34,8 +34,7 @@
 
 	const variants = {
 		primary: 'bg-accent text-white hover:bg-accent-hover active:bg-accent-hover',
-		secondary:
-			'bg-transparent border border-border text-primary hover:bg-subtle active:bg-subtle',
+		secondary: 'bg-transparent border border-border text-primary hover:bg-subtle active:bg-subtle',
 		ghost: 'bg-transparent text-secondary hover:bg-subtle hover:text-primary',
 		danger: 'bg-error text-white hover:bg-error/90 active:bg-error/90'
 	};
@@ -46,7 +45,9 @@
 		lg: 'px-6 py-4 text-lg'
 	};
 
-	const classes = $derived(`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : ''} ${className}`);
+	const classes = $derived(
+		`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : ''} ${className}`
+	);
 </script>
 
 {#if href}

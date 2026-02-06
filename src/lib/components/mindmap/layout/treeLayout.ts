@@ -78,9 +78,7 @@ export function computeTreeLayout(
 		// Fan highlights around the chapter
 		const highlightAngleSpread = Math.min(branchAngleStep * 0.8, Math.PI / 3);
 		const highlightStep =
-			chapterHighlights.length > 1
-				? highlightAngleSpread / (chapterHighlights.length - 1)
-				: 0;
+			chapterHighlights.length > 1 ? highlightAngleSpread / (chapterHighlights.length - 1) : 0;
 		const startAngle = angle - highlightAngleSpread / 2;
 
 		for (let i = 0; i < chapterHighlights.length; i++) {

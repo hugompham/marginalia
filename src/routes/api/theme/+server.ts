@@ -16,10 +16,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Invalid theme value' }, { status: 400 });
 	}
 
-	const { error } = await locals.supabase
-		.from('profiles')
-		.update({ theme })
-		.eq('id', user.id);
+	const { error } = await locals.supabase.from('profiles').update({ theme }).eq('id', user.id);
 
 	if (error) {
 		console.error('Failed to update theme:', error);

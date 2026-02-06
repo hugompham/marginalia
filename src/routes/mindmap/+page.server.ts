@@ -27,21 +27,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('user_id', userId);
 
 	// Fetch tags
-	const { data: tagsData } = await locals.supabase
-		.from('tags')
-		.select('*')
-		.eq('user_id', userId);
+	const { data: tagsData } = await locals.supabase.from('tags').select('*').eq('user_id', userId);
 
 	const highlights = highlightsData ?? [];
 
 	// Fetch highlight-tag relationships scoped to user's highlights
 	const highlightIds = highlights.map((h) => h.id);
-	const { data: highlightTagsData } = highlightIds.length > 0
-		? await locals.supabase
-				.from('highlight_tags')
-				.select('*')
-				.in('highlight_id', highlightIds)
-		: { data: [] };
+	const { data: highlightTagsData } =
+		highlightIds.length > 0
+			? await locals.supabase.from('highlight_tags').select('*').in('highlight_id', highlightIds)
+			: { data: [] };
 	const allTags = tagsData ?? [];
 	const highlightTags = highlightTagsData ?? [];
 

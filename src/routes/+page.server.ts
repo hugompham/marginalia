@@ -62,11 +62,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.gte('reviewed_at', getWeekStart().toISOString()),
 
 		// User profile for daily goal
-		locals.supabase
-			.from('profiles')
-			.select('daily_review_goal')
-			.eq('id', userId)
-			.single(),
+		locals.supabase.from('profiles').select('daily_review_goal').eq('id', userId).single(),
 
 		// Today's reviews with ratings (for retention calculation)
 		locals.supabase
@@ -83,8 +79,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		date.setDate(date.getDate() + index);
 		const dateStr = date.toISOString().split('T')[0];
 
-		const count =
-			weeklyReviews?.filter((r) => r.reviewed_at?.startsWith(dateStr)).length ?? 0;
+		const count = weeklyReviews?.filter((r) => r.reviewed_at?.startsWith(dateStr)).length ?? 0;
 
 		return { label, count, date: dateStr };
 	});

@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-	formatInterval,
-	toFSRSCard,
-	fromFSRSCard,
-	createNewCard
-} from './fsrs';
+import { formatInterval, toFSRSCard, fromFSRSCard, createNewCard } from './fsrs';
 import type { Card, CardState } from '$lib/types';
 
 describe('FSRS Service', () => {

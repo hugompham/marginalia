@@ -155,7 +155,10 @@
 							<Edit2 size={16} />
 						</button>
 						<button
-							onclick={() => { deletingTag = tag; showDeleteModal = true; }}
+							onclick={() => {
+								deletingTag = tag;
+								showDeleteModal = true;
+							}}
 							class="p-sm rounded-button hover:bg-subtle transition-colors text-secondary hover:text-danger"
 							aria-label="Delete tag"
 						>
@@ -174,100 +177,126 @@
 
 <!-- Create Modal -->
 <Modal bind:open={showCreateModal} title="Create Tag" onclose={() => (showCreateModal = false)}>
-		{#snippet children()}
-			<div class="space-y-lg">
-				<div>
-					<label for="tag-name" class="label">Name</label>
-					<Input
-						id="tag-name"
-						bind:value={formName}
-						placeholder="e.g., Important, Review Later"
-						autofocus
-					/>
-				</div>
-
-				<fieldset>
-					<legend class="label mb-sm block">Color</legend>
-					<div class="flex gap-sm flex-wrap">
-						{#each DEFAULT_COLORS as color}
-							<button
-								type="button"
-								onclick={() => (formColor = color)}
-								class="w-10 h-10 rounded-button border-2 transition-all {formColor === color
-									? 'scale-110 shadow-md'
-									: 'hover:scale-105'}"
-								style="background-color: {color}; border-color: {formColor === color
-									? color
-									: 'transparent'}"
-								aria-label="Select color {color}"
-							></button>
-						{/each}
-					</div>
-				</fieldset>
+	{#snippet children()}
+		<div class="space-y-lg">
+			<div>
+				<label for="tag-name" class="label">Name</label>
+				<Input
+					id="tag-name"
+					bind:value={formName}
+					placeholder="e.g., Important, Review Later"
+					autofocus
+				/>
 			</div>
-		{/snippet}
 
-		{#snippet footer()}
-			<Button variant="ghost" onclick={() => (showCreateModal = false)}>Cancel</Button>
-			<Button onclick={handleCreateTag}>Create Tag</Button>
-		{/snippet}
-	</Modal>
+			<fieldset>
+				<legend class="label mb-sm block">Color</legend>
+				<div class="flex gap-sm flex-wrap">
+					{#each DEFAULT_COLORS as color}
+						<button
+							type="button"
+							onclick={() => (formColor = color)}
+							class="w-10 h-10 rounded-button border-2 transition-all {formColor === color
+								? 'scale-110 shadow-md'
+								: 'hover:scale-105'}"
+							style="background-color: {color}; border-color: {formColor === color
+								? color
+								: 'transparent'}"
+							aria-label="Select color {color}"
+						></button>
+					{/each}
+				</div>
+			</fieldset>
+		</div>
+	{/snippet}
+
+	{#snippet footer()}
+		<Button variant="ghost" onclick={() => (showCreateModal = false)}>Cancel</Button>
+		<Button onclick={handleCreateTag}>Create Tag</Button>
+	{/snippet}
+</Modal>
 
 <!-- Edit Modal -->
-<Modal bind:open={showEditModal} title="Edit Tag" onclose={() => { showEditModal = false; editingTag = null; }}>
-		{#snippet children()}
-			<div class="space-y-lg">
-				<div>
-					<label for="edit-tag-name" class="label">Name</label>
-					<Input
-						id="edit-tag-name"
-						bind:value={formName}
-						placeholder="e.g., Important, Review Later"
-						autofocus
-					/>
-				</div>
-
-				<fieldset>
-					<legend class="label mb-sm block">Color</legend>
-					<div class="flex gap-sm flex-wrap">
-						{#each DEFAULT_COLORS as color}
-							<button
-								type="button"
-								onclick={() => (formColor = color)}
-								class="w-10 h-10 rounded-button border-2 transition-all {formColor === color
-									? 'scale-110 shadow-md'
-									: 'hover:scale-105'}"
-								style="background-color: {color}; border-color: {formColor === color
-									? color
-									: 'transparent'}"
-								aria-label="Select color {color}"
-							></button>
-						{/each}
-					</div>
-				</fieldset>
+<Modal
+	bind:open={showEditModal}
+	title="Edit Tag"
+	onclose={() => {
+		showEditModal = false;
+		editingTag = null;
+	}}
+>
+	{#snippet children()}
+		<div class="space-y-lg">
+			<div>
+				<label for="edit-tag-name" class="label">Name</label>
+				<Input
+					id="edit-tag-name"
+					bind:value={formName}
+					placeholder="e.g., Important, Review Later"
+					autofocus
+				/>
 			</div>
-		{/snippet}
 
-		{#snippet footer()}
-			<Button variant="ghost" onclick={() => { showEditModal = false; editingTag = null; }}>Cancel</Button>
-			<Button onclick={handleUpdateTag}>Save Changes</Button>
-		{/snippet}
-	</Modal>
+			<fieldset>
+				<legend class="label mb-sm block">Color</legend>
+				<div class="flex gap-sm flex-wrap">
+					{#each DEFAULT_COLORS as color}
+						<button
+							type="button"
+							onclick={() => (formColor = color)}
+							class="w-10 h-10 rounded-button border-2 transition-all {formColor === color
+								? 'scale-110 shadow-md'
+								: 'hover:scale-105'}"
+							style="background-color: {color}; border-color: {formColor === color
+								? color
+								: 'transparent'}"
+							aria-label="Select color {color}"
+						></button>
+					{/each}
+				</div>
+			</fieldset>
+		</div>
+	{/snippet}
+
+	{#snippet footer()}
+		<Button
+			variant="ghost"
+			onclick={() => {
+				showEditModal = false;
+				editingTag = null;
+			}}>Cancel</Button
+		>
+		<Button onclick={handleUpdateTag}>Save Changes</Button>
+	{/snippet}
+</Modal>
 
 <!-- Delete Confirmation -->
-<Modal bind:open={showDeleteModal} title="Delete Tag" onclose={() => { showDeleteModal = false; deletingTag = null; }}>
-		{#snippet children()}
-			{#if deletingTag}
-				<p class="text-secondary">
-					Are you sure you want to delete the tag "<strong class="text-primary"
-						>{deletingTag.name}</strong
-					>"? This will remove it from all highlights.
-				</p>
-			{/if}
-		{/snippet}
+<Modal
+	bind:open={showDeleteModal}
+	title="Delete Tag"
+	onclose={() => {
+		showDeleteModal = false;
+		deletingTag = null;
+	}}
+>
+	{#snippet children()}
+		{#if deletingTag}
+			<p class="text-secondary">
+				Are you sure you want to delete the tag "<strong class="text-primary"
+					>{deletingTag.name}</strong
+				>"? This will remove it from all highlights.
+			</p>
+		{/if}
+	{/snippet}
 
-		{#snippet footer()}
-			<Button variant="ghost" onclick={() => { showDeleteModal = false; deletingTag = null; }}>Cancel</Button>
-			<Button variant="danger" onclick={handleDeleteTag}>Delete Tag</Button>
-		{/snippet}
-	</Modal>
+	{#snippet footer()}
+		<Button
+			variant="ghost"
+			onclick={() => {
+				showDeleteModal = false;
+				deletingTag = null;
+			}}>Cancel</Button
+		>
+		<Button variant="danger" onclick={handleDeleteTag}>Delete Tag</Button>
+	{/snippet}
+</Modal>

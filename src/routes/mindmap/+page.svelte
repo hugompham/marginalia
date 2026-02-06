@@ -32,7 +32,9 @@
 	const nodeTypes: NodeTypes = { collection: CollectionNode };
 	const edgeTypes: EdgeTypes = { tag: TagEdge };
 
-	let nodes = $state.raw<Node[]>(untrack(() => computeRadialLayout(data.collections, data.tagConnections)));
+	let nodes = $state.raw<Node[]>(
+		untrack(() => computeRadialLayout(data.collections, data.tagConnections))
+	);
 	let edges = $state.raw<Edge[]>(untrack(() => computeTagEdges(data.tagConnections, data.tags)));
 
 	let selectedNode = $state<Node | null>(null);

@@ -74,7 +74,9 @@ export const actions: Actions = {
 			encryptedKey = await encrypt(apiKey);
 		} catch (err) {
 			console.error('Encryption error:', err);
-			return fail(500, { error: 'Failed to encrypt API key. Check ENCRYPTION_KEY environment variable.' });
+			return fail(500, {
+				error: 'Failed to encrypt API key. Check ENCRYPTION_KEY environment variable.'
+			});
 		}
 
 		// Store the last 4 characters as a hint for display

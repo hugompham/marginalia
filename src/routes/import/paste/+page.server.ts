@@ -86,10 +86,7 @@ export const actions: Actions = {
 		if (highlightsError) {
 			console.error('Failed to create highlights:', highlightsError);
 			// Cleanup: delete the collection
-			await locals.supabase
-				.from('collections')
-				.delete()
-				.eq('id', collection.id);
+			await locals.supabase.from('collections').delete().eq('id', collection.id);
 			return fail(500, { error: 'Failed to create highlights' });
 		}
 

@@ -10,32 +10,24 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { id } = params;
 
 	// Fetch collection, highlights, tags, and API keys in parallel
-	const [collectionResult, highlightsResult, tagsResult, highlightTagsResult, apiKeysResult] = await Promise.all([
-		locals.supabase
-			.from('collections')
-			.select('*')
-			.eq('id', id)
-			.eq('user_id', session.user.id)
-			.single(),
-		locals.supabase
-			.from('highlights')
-			.select('*')
-			.eq('collection_id', id)
-			.eq('user_id', session.user.id)
-			.order('created_at', { ascending: true }),
-		locals.supabase
-			.from('tags')
-			.select('*')
-			.eq('user_id', session.user.id)
-			.order('name'),
-		locals.supabase
-			.from('highlight_tags')
-			.select('highlight_id, tag_id'),
-		locals.supabase
-			.from('api_keys')
-			.select('provider, model')
-			.eq('user_id', session.user.id)
-	]);
+	const [collectionResult, highlightsResult, tagsResult, highlightTagsResult, apiKeysResult] =
+		await Promise.all([
+			locals.supabase
+				.from('collections')
+				.select('*')
+				.eq('id', id)
+				.eq('user_id', session.user.id)
+				.single(),
+			locals.supabase
+				.from('highlights')
+				.select('*')
+				.eq('collection_id', id)
+				.eq('user_id', session.user.id)
+				.order('created_at', { ascending: true }),
+			locals.supabase.from('tags').select('*').eq('user_id', session.user.id).order('name'),
+			locals.supabase.from('highlight_tags').select('highlight_id, tag_id'),
+			locals.supabase.from('api_keys').select('provider, model').eq('user_id', session.user.id)
+		]);
 
 	const { data: collection, error: collectionError } = collectionResult;
 	const { data: highlights, error: highlightsError } = highlightsResult;

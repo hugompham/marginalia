@@ -29,7 +29,9 @@
 		</div>
 
 		<div class="flex-1 min-w-0">
-			<h3 class="font-heading text-lg text-primary truncate group-hover:text-accent transition-colors">
+			<h3
+				class="font-heading text-lg text-primary truncate group-hover:text-accent transition-colors"
+			>
 				{collection.title}
 			</h3>
 			{#if collection.author}

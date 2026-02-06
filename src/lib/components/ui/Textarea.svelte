@@ -32,7 +32,9 @@
 
 	<textarea
 		id={inputId}
-		class="input min-h-[120px] resize-y {error ? 'border-error focus:border-error focus:ring-error/20' : ''} {className}"
+		class="input min-h-[120px] resize-y {error
+			? 'border-error focus:border-error focus:ring-error/20'
+			: ''} {className}"
 		aria-invalid={error ? 'true' : undefined}
 		aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
 		bind:value

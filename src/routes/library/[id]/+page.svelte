@@ -35,9 +35,7 @@
 				)
 	);
 
-	const selectedHighlights = $derived(
-		filteredHighlights.filter((h) => selectedIds.has(h.id))
-	);
+	const selectedHighlights = $derived(filteredHighlights.filter((h) => selectedIds.has(h.id)));
 
 	async function handleTagAdd(highlightId: string, tag: Tag) {
 		try {
@@ -95,9 +93,7 @@
 	const hasApiKey = $derived(data.apiKeys.openai !== null || data.apiKeys.anthropic !== null);
 
 	// Get the primary API key (prefer OpenAI)
-	const primaryApiKey = $derived(
-		data.apiKeys.openai ?? data.apiKeys.anthropic
-	);
+	const primaryApiKey = $derived(data.apiKeys.openai ?? data.apiKeys.anthropic);
 	const primaryProvider = $derived(data.apiKeys.openai ? 'openai' : 'anthropic');
 
 	function selectAll() {

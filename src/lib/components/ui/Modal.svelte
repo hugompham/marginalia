@@ -10,13 +10,7 @@
 		footer?: Snippet;
 	}
 
-	let {
-		open = $bindable(false),
-		title,
-		onclose,
-		children,
-		footer
-	}: Props = $props();
+	let { open = $bindable(false), title, onclose, children, footer }: Props = $props();
 
 	function handleClose() {
 		open = false;
@@ -54,7 +48,9 @@
 		></div>
 
 		<!-- Modal content -->
-		<div class="relative w-full max-w-lg max-h-[90vh] bg-surface rounded-card shadow-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-normal">
+		<div
+			class="relative w-full max-w-lg max-h-[90vh] bg-surface rounded-card shadow-xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-normal"
+		>
 			<!-- Header -->
 			{#if title}
 				<div class="flex items-center justify-between px-xl py-lg border-b border-border">
@@ -98,17 +94,26 @@
 
 <style>
 	@keyframes fade-in {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	@keyframes zoom-in-95 {
-		from { transform: scale(0.95); }
-		to { transform: scale(1); }
+		from {
+			transform: scale(0.95);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 
 	.animate-in {
-		animation: fade-in var(--duration-normal) var(--ease-enter),
-		           zoom-in-95 var(--duration-normal) var(--ease-enter);
+		animation:
+			fade-in var(--duration-normal) var(--ease-enter),
+			zoom-in-95 var(--duration-normal) var(--ease-enter);
 	}
 </style>

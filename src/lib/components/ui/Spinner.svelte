@@ -4,10 +4,7 @@
 		color?: 'accent' | 'white' | 'current';
 	}
 
-	let {
-		size = 'md',
-		color = 'accent'
-	}: Props = $props();
+	let { size = 'md', color = 'accent' }: Props = $props();
 
 	const sizes = {
 		sm: 'w-4 h-4 border-2',

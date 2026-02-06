@@ -98,7 +98,9 @@
 				</div>
 
 				<div class="mb-6" role="group" aria-labelledby="question-types-label">
-					<span id="question-types-label" class="text-primary mb-2 block text-sm font-medium">Question Types</span>
+					<span id="question-types-label" class="text-primary mb-2 block text-sm font-medium"
+						>Question Types</span
+					>
 					<div class="space-y-2">
 						{#each questionTypeOptions as option}
 							<button

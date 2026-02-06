@@ -25,13 +25,10 @@ serve(async (req) => {
 		const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 		if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
-			return new Response(
-				JSON.stringify({ error: 'Server configuration missing' }),
-				{
-					status: 500,
-					headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({ error: 'Server configuration missing' }), {
+				status: 500,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+			});
 		}
 
 		const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -51,9 +48,7 @@ serve(async (req) => {
 			auth: { persistSession: false }
 		});
 
-		const { error: deleteError } = await adminClient.auth.admin.deleteUser(
-			userData.user.id
-		);
+		const { error: deleteError } = await adminClient.auth.admin.deleteUser(userData.user.id);
 
 		if (deleteError) {
 			return new Response(JSON.stringify({ error: deleteError.message }), {
@@ -67,12 +62,9 @@ serve(async (req) => {
 		});
 	} catch (error) {
 		console.error('Delete account error:', error);
-		return new Response(
-			JSON.stringify({ error: error.message || 'Failed to delete account' }),
-			{
-				status: 500,
-				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-			}
-		);
+		return new Response(JSON.stringify({ error: error.message || 'Failed to delete account' }), {
+			status: 500,
+			headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+		});
 	}
 });

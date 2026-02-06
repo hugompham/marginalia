@@ -75,7 +75,6 @@
 		}
 	}
 
-
 	// Render cloze text with blank or answer
 	function renderCloze(text: string, showAnswer: boolean): string {
 		const regex = /\{\{c1::(.*?)\}\}/g;
@@ -120,7 +119,9 @@
 >
 	<!-- Card content -->
 	<div
-		class="flex-1 overflow-y-auto transition-transform duration-fast {swiping ? '' : 'ease-default'}"
+		class="flex-1 overflow-y-auto transition-transform duration-fast {swiping
+			? ''
+			: 'ease-default'}"
 		style="transform: translateX({translateX}px)"
 	>
 		<Card padding="lg" class="h-full border-2 {swipeColor} transition-colors">

@@ -88,8 +88,7 @@
 			action="?/preview"
 			enctype="multipart/form-data"
 			use:enhance={({ submitter, action }) => {
-				const formAction =
-					submitter?.getAttribute('formaction') ?? action?.toString?.() ?? '';
+				const formAction = submitter?.getAttribute('formaction') ?? action?.toString?.() ?? '';
 				loadingAction = formAction.includes('preview') ? 'preview' : 'import';
 				return async ({ result, update }) => {
 					loadingAction = null;
@@ -108,9 +107,7 @@
 			class="space-y-md"
 		>
 			<div class="space-y-sm">
-				<label class="block text-sm font-medium text-primary" for="clippings">
-					Choose file
-				</label>
+				<label class="block text-sm font-medium text-primary" for="clippings"> Choose file </label>
 				<div class="flex items-center gap-md">
 					<label
 						for="clippings"
@@ -177,11 +174,21 @@
 		<Card padding="lg">
 			<h3 class="font-heading text-lg text-primary mb-sm">Import Complete</h3>
 			<p class="text-secondary text-sm mb-md">
-				Imported {importedHighlights} new highlight{importedHighlights === 1 ? '' : 's'} across {form.summary.totalCollections} book{form.summary.totalCollections === 1 ? '' : 's'}.
+				Imported {importedHighlights} new highlight{importedHighlights === 1 ? '' : 's'} across {form
+					.summary.totalCollections} book{form.summary.totalCollections === 1 ? '' : 's'}.
 			</p>
 			{#if form.summary.createdCollections !== undefined}
 				<p class="text-xs text-tertiary mb-md">
-					Created {form.summary.createdCollections} new collection{form.summary.createdCollections === 1 ? '' : 's'}, appended to {form.summary.appendedCollections} existing collection{form.summary.appendedCollections === 1 ? '' : 's'}, and skipped {form.summary.skippedCollections} collection{form.summary.skippedCollections === 1 ? '' : 's'}.
+					Created {form.summary.createdCollections} new collection{form.summary
+						.createdCollections === 1
+						? ''
+						: 's'}, appended to {form.summary.appendedCollections} existing collection{form.summary
+						.appendedCollections === 1
+						? ''
+						: 's'}, and skipped {form.summary.skippedCollections} collection{form.summary
+						.skippedCollections === 1
+						? ''
+						: 's'}.
 				</p>
 			{/if}
 			{#if form.summary.collections?.length}
@@ -192,7 +199,11 @@
 								<span class="text-primary">{collection.title}</span>
 								{#if collection.action}
 									<span class="text-xs text-tertiary ml-sm">
-										({collection.action === 'created' ? 'new' : collection.action === 'appended' ? 'appended' : 'skipped'})
+										({collection.action === 'created'
+											? 'new'
+											: collection.action === 'appended'
+												? 'appended'
+												: 'skipped'})
 									</span>
 								{/if}
 								{#if collection.action === 'skipped' && collection.skippedReason}
@@ -215,7 +226,10 @@
 	<Modal bind:open={showPreviewModal} title="Import Preview">
 		<div class="space-y-md">
 			<p class="text-secondary text-sm">
-				Found {form.preview.totalHighlights} highlights across {form.preview.totalCollections} book{form.preview.totalCollections === 1 ? '' : 's'}.
+				Found {form.preview.totalHighlights} highlights across {form.preview.totalCollections} book{form
+					.preview.totalCollections === 1
+					? ''
+					: 's'}.
 			</p>
 			<p class="text-xs text-tertiary">
 				Minimum highlights per book: {form.preview.minHighlights}
@@ -231,7 +245,9 @@
 								{/if}
 								{#if collection.willImport}
 									<p class="text-xs {collection.exists ? 'text-warning' : 'text-success'}">
-										{collection.exists ? 'Will append to existing collection' : 'Will create new collection'}
+										{collection.exists
+											? 'Will append to existing collection'
+											: 'Will create new collection'}
 									</p>
 								{:else if collection.reason}
 									<p class="text-xs text-warning">Skipped: {collection.reason}</p>
@@ -249,9 +265,7 @@
 
 		{#snippet footer()}
 			<div class="flex justify-end gap-sm">
-				<Button variant="secondary" onclick={() => (showPreviewModal = false)}>
-					Close
-				</Button>
+				<Button variant="secondary" onclick={() => (showPreviewModal = false)}>Close</Button>
 				<Button
 					variant="primary"
 					disabled={!previewReady}

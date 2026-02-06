@@ -29,7 +29,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Map source types to database values
-		const dbSourceType = sourceType === 'web' ? 'web_article' : (sourceType || 'manual');
+		const dbSourceType = sourceType === 'web' ? 'web_article' : sourceType || 'manual';
 
 		// Create collection
 		const { data: collection, error: collectionError } = await locals.supabase

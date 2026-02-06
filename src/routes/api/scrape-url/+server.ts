@@ -159,12 +159,8 @@ async function scrapeDirectly(url: string) {
 
 		// Extract author from meta - try multiple formats
 		let author = null;
-		const authorMatch1 = html.match(
-			/<meta[^>]+name=["']author["'][^>]+content=["']([^"']+)["']/i
-		);
-		const authorMatch2 = html.match(
-			/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']author["']/i
-		);
+		const authorMatch1 = html.match(/<meta[^>]+name=["']author["'][^>]+content=["']([^"']+)["']/i);
+		const authorMatch2 = html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']author["']/i);
 		const authorMatch3 = html.match(
 			/<meta[^>]+property=["']article:author["'][^>]+content=["']([^"']+)["']/i
 		);
@@ -177,9 +173,7 @@ async function scrapeDirectly(url: string) {
 		let match;
 
 		while ((match = pRegex.exec(html)) !== null) {
-			const text = match[1]
-				.replace(/<[^>]+>/g, '')
-				.trim();
+			const text = match[1].replace(/<[^>]+>/g, '').trim();
 			if (text.length > 50) {
 				paragraphs.push(text);
 			}

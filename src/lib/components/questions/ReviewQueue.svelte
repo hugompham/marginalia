@@ -72,9 +72,7 @@
 	function handleEditSave(updated: GeneratedQuestion) {
 		if (editingQuestion !== null) {
 			const editIndex = editingQuestion.index;
-			localQuestions = localQuestions.map((q, index) =>
-				index === editIndex ? updated : q
-			);
+			localQuestions = localQuestions.map((q, index) => (index === editIndex ? updated : q));
 			approveQuestion(editIndex);
 			editingQuestion = null;
 		}

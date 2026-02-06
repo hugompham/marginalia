@@ -36,7 +36,9 @@
 	};
 	const edgeTypes: EdgeTypes = {};
 
-	const { nodes: treeNodes, edges: treeEdges } = untrack(() => computeTreeLayout(data.collection, data.highlights));
+	const { nodes: treeNodes, edges: treeEdges } = untrack(() =>
+		computeTreeLayout(data.collection, data.highlights)
+	);
 
 	let nodes = $state.raw<Node[]>(treeNodes);
 	let edges = $state.raw<Edge[]>(treeEdges);
@@ -65,9 +67,7 @@
 	{#if data.highlights.length === 0}
 		<div class="flex items-center justify-center h-full px-lg">
 			<Card padding="lg" class="text-center max-w-sm">
-				<p class="text-secondary">
-					No highlights in this collection yet.
-				</p>
+				<p class="text-secondary">No highlights in this collection yet.</p>
 			</Card>
 		</div>
 	{:else}

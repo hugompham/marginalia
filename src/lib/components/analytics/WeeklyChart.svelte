@@ -50,11 +50,7 @@
 	<div class="flex justify-between gap-2">
 		{#each data as day}
 			<div class="flex-1 text-center">
-				<span
-					class="text-xs {isToday(day.date)
-						? 'text-accent font-medium'
-						: 'text-tertiary'}"
-				>
+				<span class="text-xs {isToday(day.date) ? 'text-accent font-medium' : 'text-tertiary'}">
 					{day.dayOfWeek}
 				</span>
 			</div>

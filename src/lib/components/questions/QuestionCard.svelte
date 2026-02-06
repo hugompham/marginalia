@@ -12,7 +12,14 @@
 		status?: 'pending' | 'approved' | 'rejected';
 	}
 
-	let { question, highlightText, onApprove, onReject, onEdit, status = 'pending' }: Props = $props();
+	let {
+		question,
+		highlightText,
+		onApprove,
+		onReject,
+		onEdit,
+		status = 'pending'
+	}: Props = $props();
 
 	const typeLabels: Record<QuestionType, string> = {
 		cloze: 'Cloze',
@@ -25,7 +32,6 @@
 		definition: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
 		conceptual: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
 	};
-
 
 	function formatClozeText(text: string): string {
 		const regex = /\{\{c1::(.*?)\}\}/g;
@@ -59,7 +65,9 @@
 >
 	<div class="mb-3 flex items-start justify-between gap-2">
 		<div class="flex items-center gap-2">
-			<span class="rounded-full px-2 py-0.5 text-xs font-medium {typeColors[question.questionType]}">
+			<span
+				class="rounded-full px-2 py-0.5 text-xs font-medium {typeColors[question.questionType]}"
+			>
 				{typeLabels[question.questionType]}
 			</span>
 			<span class="text-tertiary text-xs {getConfidenceColor(question.confidence)}">

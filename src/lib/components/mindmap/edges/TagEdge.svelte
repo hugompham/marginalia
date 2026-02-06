@@ -2,16 +2,8 @@
 	import { BaseEdge, EdgeLabel, getBezierPath, type EdgeProps } from '@xyflow/svelte';
 	import { DEFAULT_TAG_COLOR } from '$components/mindmap';
 
-	let {
-		id,
-		sourceX,
-		sourceY,
-		sourcePosition,
-		targetX,
-		targetY,
-		targetPosition,
-		data
-	}: EdgeProps = $props();
+	let { id, sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, data }: EdgeProps =
+		$props();
 
 	let [path, labelX, labelY] = $derived(
 		getBezierPath({

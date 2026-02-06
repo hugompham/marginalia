@@ -269,10 +269,7 @@ function normalizeHighlightText(text: string): string {
 	return text.replace(/\s+/g, ' ').trim();
 }
 
-async function getExistingCollections(
-	supabase: { from: (table: string) => any },
-	userId: string
-) {
+async function getExistingCollections(supabase: { from: (table: string) => any }, userId: string) {
 	const { data, error } = await supabase
 		.from('collections')
 		.select('id, title, author')
@@ -311,7 +308,9 @@ async function filterExistingHighlights(
 
 	const existingTexts = await fetchExistingHighlightTexts(supabase, collectionId, texts);
 
-	return highlights.filter((highlight) => !existingTexts.has(normalizeHighlightText(highlight.text)));
+	return highlights.filter(
+		(highlight) => !existingTexts.has(normalizeHighlightText(highlight.text))
+	);
 }
 
 async function fetchExistingHighlightTexts(

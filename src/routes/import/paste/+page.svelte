@@ -113,14 +113,8 @@ Like this third highlight."
 		{/if}
 
 		<div class="flex justify-end gap-md mt-xl">
-			<Button type="button" variant="secondary" href="/import">
-				Cancel
-			</Button>
-			<Button
-				type="submit"
-				{loading}
-				disabled={!title || parsedHighlights.length === 0}
-			>
+			<Button type="button" variant="secondary" href="/import">Cancel</Button>
+			<Button type="submit" {loading} disabled={!title || parsedHighlights.length === 0}>
 				Import {parsedHighlights.length} Highlight{parsedHighlights.length === 1 ? '' : 's'}
 			</Button>
 		</div>

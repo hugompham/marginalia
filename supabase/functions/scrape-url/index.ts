@@ -201,20 +201,16 @@ serve(async (req) => {
 		// Fetch the page
 		const response = await fetch(parsedUrl.href, {
 			headers: {
-				'User-Agent':
-					'Mozilla/5.0 (compatible; Marginalia/1.0; +https://marginalia.app)',
+				'User-Agent': 'Mozilla/5.0 (compatible; Marginalia/1.0; +https://marginalia.app)',
 				Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 			}
 		});
 
 		if (!response.ok) {
-			return new Response(
-				JSON.stringify({ error: `Failed to fetch URL: ${response.status}` }),
-				{
-					status: 400,
-					headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({ error: `Failed to fetch URL: ${response.status}` }), {
+				status: 400,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+			});
 		}
 
 		const html = await response.text();
@@ -264,13 +260,10 @@ serve(async (req) => {
 		const content = extractArticleContent(doc as unknown as Document);
 
 		if (!content || content.length < 100) {
-			return new Response(
-				JSON.stringify({ error: 'Could not extract article content' }),
-				{
-					status: 400,
-					headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-				}
-			);
+			return new Response(JSON.stringify({ error: 'Could not extract article content' }), {
+				status: 400,
+				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+			});
 		}
 
 		const articleData: ArticleData = {
@@ -288,12 +281,9 @@ serve(async (req) => {
 		});
 	} catch (error) {
 		console.error('Scrape error:', error);
-		return new Response(
-			JSON.stringify({ error: error.message || 'Failed to scrape URL' }),
-			{
-				status: 500,
-				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-			}
-		);
+		return new Response(JSON.stringify({ error: error.message || 'Failed to scrape URL' }), {
+			status: 500,
+			headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+		});
 	}
 });

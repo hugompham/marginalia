@@ -64,10 +64,7 @@ export function computeRadialLayout(
  * Compute edges between collections that share at least one tag.
  * Each shared tag produces one edge.
  */
-export function computeTagEdges(
-	tagConnections: TagConnection[],
-	tags: Tag[]
-): Edge[] {
+export function computeTagEdges(tagConnections: TagConnection[], tags: Tag[]): Edge[] {
 	// Group collections by tag
 	const tagToCollections = new Map<string, string[]>();
 	for (const tc of tagConnections) {

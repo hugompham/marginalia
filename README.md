@@ -29,17 +29,20 @@ A spaced repetition app for reading highlights. Import your highlights from book
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/marginalia.git
    cd marginalia
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 3. Copy the environment file:
+
    ```bash
    cp .env.example .env
    ```

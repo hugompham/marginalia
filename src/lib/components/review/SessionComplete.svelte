@@ -57,12 +57,7 @@
 		<div class="space-y-md">
 			<!-- Rating bars -->
 			<div class="space-y-sm">
-				{#each [
-					{ label: 'Again', count: stats.ratingCounts.again, color: 'bg-error' },
-					{ label: 'Hard', count: stats.ratingCounts.hard, color: 'bg-warning' },
-					{ label: 'Good', count: stats.ratingCounts.good, color: 'bg-success' },
-					{ label: 'Easy', count: stats.ratingCounts.easy, color: 'bg-accent' }
-				] as item}
+				{#each [{ label: 'Again', count: stats.ratingCounts.again, color: 'bg-error' }, { label: 'Hard', count: stats.ratingCounts.hard, color: 'bg-warning' }, { label: 'Good', count: stats.ratingCounts.good, color: 'bg-success' }, { label: 'Easy', count: stats.ratingCounts.easy, color: 'bg-accent' }] as item}
 					<div class="flex items-center gap-md">
 						<span class="w-12 text-sm text-secondary">{item.label}</span>
 						<div class="flex-1 h-4 bg-subtle rounded-full overflow-hidden">
@@ -95,11 +90,7 @@
 
 	<!-- Actions -->
 	<div class="flex flex-col gap-md">
-		<Button href="/review" variant="secondary">
-			Review More
-		</Button>
-		<Button href="/" variant="ghost">
-			Done
-		</Button>
+		<Button href="/review" variant="secondary">Review More</Button>
+		<Button href="/" variant="ghost">Done</Button>
 	</div>
 </div>

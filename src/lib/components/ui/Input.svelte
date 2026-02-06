@@ -41,7 +41,9 @@
 		{/if}
 		<input
 			id={inputId}
-			class="input {error ? 'border-error focus:border-error focus:ring-error/20' : ''} {prefix ? 'pl-10' : ''} {className}"
+			class="input {error ? 'border-error focus:border-error focus:ring-error/20' : ''} {prefix
+				? 'pl-10'
+				: ''} {className}"
 			aria-invalid={error ? 'true' : undefined}
 			aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
 			bind:value

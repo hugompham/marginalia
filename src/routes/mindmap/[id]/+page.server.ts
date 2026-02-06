@@ -10,23 +10,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const userId = session!.user.id;
 
 	const [collectionResult, highlightsResult, tagsResult, highlightTagsResult] = await Promise.all([
-		locals.supabase
-			.from('collections')
-			.select('*')
-			.eq('id', id)
-			.eq('user_id', userId)
-			.single(),
+		locals.supabase.from('collections').select('*').eq('id', id).eq('user_id', userId).single(),
 		locals.supabase
 			.from('highlights')
 			.select('*')
 			.eq('collection_id', id)
 			.eq('user_id', userId)
 			.order('created_at', { ascending: true }),
-		locals.supabase
-			.from('tags')
-			.select('*')
-			.eq('user_id', userId)
-			.order('name'),
+		locals.supabase.from('tags').select('*').eq('user_id', userId).order('name'),
 		// highlight_tags fetched below after we have highlight IDs
 		Promise.resolve({ data: null, error: null })
 	]);
@@ -49,12 +40,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// Fetch highlight-tag relationships scoped to this collection's highlights
 	const highlightIds = (highlights ?? []).map((h) => h.id);
-	const { data: highlightTagsData } = highlightIds.length > 0
-		? await locals.supabase
-				.from('highlight_tags')
-				.select('*')
-				.in('highlight_id', highlightIds)
-		: { data: [] };
+	const { data: highlightTagsData } =
+		highlightIds.length > 0
+			? await locals.supabase.from('highlight_tags').select('*').in('highlight_id', highlightIds)
+			: { data: [] };
 
 	const tags = tagsData ? mapTags(tagsData) : [];
 

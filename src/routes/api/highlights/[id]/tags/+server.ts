@@ -28,12 +28,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	// Add tag
-	const { error } = await locals.supabase
-		.from('highlight_tags')
-		.insert({
-			highlight_id: params.id,
-			tag_id: tagId
-		});
+	const { error } = await locals.supabase.from('highlight_tags').insert({
+		highlight_id: params.id,
+		tag_id: tagId
+	});
 
 	if (error) {
 		if (error.code === '23505') {

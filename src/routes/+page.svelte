@@ -124,12 +124,20 @@
 			<div class="space-y-sm">
 				{#each data.recentCollections as collection}
 					<a href="/library/{collection.id}" class="block group">
-						<Card padding="md" class="flex items-center gap-md transition-colors hover:border-accent/30">
+						<Card
+							padding="md"
+							class="flex items-center gap-md transition-colors hover:border-accent/30"
+						>
 							<div class="p-sm rounded-button bg-subtle group-hover:bg-accent/10 transition-colors">
-								<BookOpen class="text-secondary group-hover:text-accent transition-colors" size={20} />
+								<BookOpen
+									class="text-secondary group-hover:text-accent transition-colors"
+									size={20}
+								/>
 							</div>
 							<div class="flex-1 min-w-0">
-								<p class="font-medium text-primary truncate group-hover:text-accent transition-colors">
+								<p
+									class="font-medium text-primary truncate group-hover:text-accent transition-colors"
+								>
 									{collection.title}
 								</p>
 								<p class="text-sm text-secondary">
@@ -152,9 +160,7 @@
 					<p class="text-secondary text-sm mb-lg max-w-xs mx-auto">
 						Import your reading highlights to start creating flashcards
 					</p>
-					<Button href="/import" variant="primary">
-						Import Highlights
-					</Button>
+					<Button href="/import" variant="primary">Import Highlights</Button>
 				</div>
 			</Card>
 		{/if}

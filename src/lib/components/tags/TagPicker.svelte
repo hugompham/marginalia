@@ -38,11 +38,7 @@
 	<!-- Add Tag Button -->
 	{#if unselectedTags.length > 0}
 		<div class="relative">
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={() => (showDropdown = !showDropdown)}
-			>
+			<Button variant="ghost" size="sm" onclick={() => (showDropdown = !showDropdown)}>
 				<Plus size={16} />
 				Add Tag
 			</Button>

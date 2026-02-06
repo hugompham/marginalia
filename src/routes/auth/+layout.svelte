@@ -14,9 +14,7 @@
 		<!-- Logo -->
 		<div class="text-center mb-2xl">
 			<h1 class="font-heading text-3xl text-primary mb-sm">Marginalia</h1>
-			<p class="text-secondary text-sm">
-				Transform reading highlights into lasting knowledge
-			</p>
+			<p class="text-secondary text-sm">Transform reading highlights into lasting knowledge</p>
 		</div>
 
 		<!-- Auth content -->

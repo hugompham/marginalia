@@ -6,12 +6,7 @@
 		class?: string;
 	}
 
-	let {
-		width = '100%',
-		height = '1rem',
-		rounded = 'md',
-		class: className = ''
-	}: Props = $props();
+	let { width = '100%', height = '1rem', rounded = 'md', class: className = '' }: Props = $props();
 
 	const roundedClasses = {
 		none: 'rounded-none',

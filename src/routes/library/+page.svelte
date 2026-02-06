@@ -41,10 +41,7 @@
 	<!-- Search -->
 	{#if data.collections.length > 0}
 		<div class="relative mb-xl">
-			<Search
-				class="absolute left-lg top-1/2 -translate-y-1/2 text-tertiary"
-				size={20}
-			/>
+			<Search class="absolute left-lg top-1/2 -translate-y-1/2 text-tertiary" size={20} />
 			<input
 				type="search"
 				bind:value={searchQuery}

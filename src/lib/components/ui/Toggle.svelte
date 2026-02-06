@@ -21,7 +21,7 @@
 	aria-checked={checked}
 	aria-label={label}
 	onclick={handleToggle}
-	disabled={disabled}
+	{disabled}
 	class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out
 		{checked ? 'bg-accent' : 'bg-border-strong'}
 		{disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}

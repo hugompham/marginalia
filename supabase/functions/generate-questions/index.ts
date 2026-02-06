@@ -193,7 +193,14 @@ serve(async (req) => {
 		const body: RequestBody = await req.json();
 		const { highlights, collection, questionTypes, apiKey, provider, model } = body;
 
-		if (!highlights?.length || !collection || !questionTypes?.length || !apiKey || !provider || !model) {
+		if (
+			!highlights?.length ||
+			!collection ||
+			!questionTypes?.length ||
+			!apiKey ||
+			!provider ||
+			!model
+		) {
 			return new Response(JSON.stringify({ error: 'Missing required fields' }), {
 				status: 400,
 				headers: { ...corsHeaders, 'Content-Type': 'application/json' }
