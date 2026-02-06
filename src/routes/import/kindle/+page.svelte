@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Header } from '$components/layout';
 	import { Button, Card, Modal, Input } from '$components/ui';
+	import { ChevronLeft } from 'lucide-svelte';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { BookMarked, Upload } from 'lucide-svelte';
 	import type { ActionData } from './$types';
@@ -53,9 +53,17 @@
 	});
 </script>
 
-<Header title="Import from Kindle" backHref="/import" />
-
-<div class="px-lg py-xl max-w-content mx-auto space-y-xl">
+<div class="px-lg py-xl space-y-xl">
+	<div class="flex items-center gap-sm">
+		<a
+			href="/import"
+			class="p-sm -ml-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+			aria-label="Go back"
+		>
+			<ChevronLeft size={20} />
+		</a>
+		<h1 class="font-heading text-xl text-primary">Import from Kindle</h1>
+	</div>
 	<Card padding="lg" class="space-y-lg">
 		<div class="flex items-start gap-md">
 			<div class="p-md rounded-button bg-warning/10">

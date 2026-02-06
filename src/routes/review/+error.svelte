@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Header } from '$components/layout';
 	import { Button, Card } from '$components/ui';
 	import { Brain, Home, RefreshCw } from 'lucide-svelte';
 
@@ -11,8 +10,6 @@
 <svelte:head>
 	<title>Error | Review | Marginalia</title>
 </svelte:head>
-
-<Header title="Review" />
 
 <div class="px-lg py-xl">
 	<Card padding="xl" class="text-center max-w-md mx-auto">

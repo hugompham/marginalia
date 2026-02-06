@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Header } from '$components/layout';
 	import { Button, Card } from '$components/ui';
 	import { CollectionCard } from '$components/highlights';
 	import { Plus, BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-svelte';
@@ -31,16 +30,14 @@
 	}
 </script>
 
-{#snippet headerActions()}
-	<Button href="/import" size="sm">
-		<Plus size={16} />
-		Import
-	</Button>
-{/snippet}
-
-<Header title="Library" actions={headerActions} />
-
 <div class="px-lg py-xl">
+	<div class="flex items-center justify-between mb-xl">
+		<h1 class="font-heading text-xl text-primary">Library</h1>
+		<Button href="/import" size="sm">
+			<Plus size={16} />
+			Import
+		</Button>
+	</div>
 	<!-- Search -->
 	{#if data.collections.length > 0}
 		<div class="relative mb-xl">

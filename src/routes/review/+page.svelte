@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Header } from '$components/layout';
 	import { Button, Card } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { ReviewCard, SessionProgress, SessionComplete } from '$components/review';
@@ -71,9 +70,7 @@
 
 {#if !data.cards.length}
 	<!-- No cards due -->
-	<Header title="Review" />
-
-	<div class="px-lg py-xl max-w-content mx-auto">
+	<div class="px-lg py-xl">
 		<Card padding="lg" class="text-center">
 			<div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-lg">
 				<Sparkles class="text-success" size={32} />

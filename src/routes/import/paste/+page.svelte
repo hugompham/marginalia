@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
-	import { Header } from '$components/layout';
 	import { Button, Input, Textarea, Card } from '$components/ui';
+	import { ChevronLeft } from 'lucide-svelte';
 	import { toast } from '$components/ui/Toast.svelte';
 	import type { ActionData } from './$types';
 
@@ -26,9 +26,17 @@
 	);
 </script>
 
-<Header title="Paste Highlights" backHref="/import" />
-
-<div class="px-lg py-xl max-w-content mx-auto">
+<div class="px-lg py-xl">
+	<div class="flex items-center gap-sm mb-xl">
+		<a
+			href="/import"
+			class="p-sm -ml-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+			aria-label="Go back"
+		>
+			<ChevronLeft size={20} />
+		</a>
+		<h1 class="font-heading text-xl text-primary">Paste Highlights</h1>
+	</div>
 	<form
 		method="POST"
 		use:enhance={() => {

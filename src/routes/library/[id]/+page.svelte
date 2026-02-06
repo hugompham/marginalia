@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Header } from '$components/layout';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { HighlightList } from '$components/highlights';
 	import { TagPicker } from '$components/tags';
 	import { GenerationModal, ReviewQueue } from '$components/questions';
-	import { Sparkles, BookOpen, AlertCircle, Settings, Filter } from 'lucide-svelte';
+	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { GeneratedQuestion, Highlight, Tag } from '$lib/types';
 
@@ -203,22 +202,31 @@
 	}
 </script>
 
-{#snippet headerActions()}
-	{#if selectedIds.size > 0}
-		<span class="text-sm text-secondary mr-md">{selectedIds.size} selected</span>
-		<Button size="sm" variant="ghost" onclick={clearSelection}>Clear</Button>
-		<Button size="sm" onclick={handleGenerateClick}>
-			<Sparkles size={16} />
-			Generate
-		</Button>
-	{:else if highlightsWithoutCards.length > 0}
-		<Button size="sm" variant="secondary" onclick={selectAll}>Select All</Button>
-	{/if}
-{/snippet}
-
-<Header title={data.collection.title} backHref="/library" actions={headerActions} />
-
 <div class="px-lg py-xl">
+	<div class="flex items-center justify-between mb-xl">
+		<div class="flex items-center gap-sm min-w-0">
+			<a
+				href="/library"
+				class="p-sm -ml-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors shrink-0"
+				aria-label="Go back"
+			>
+				<ChevronLeft size={20} />
+			</a>
+			<h1 class="font-heading text-xl text-primary truncate">{data.collection.title}</h1>
+		</div>
+		<div class="flex items-center gap-sm shrink-0">
+			{#if selectedIds.size > 0}
+				<span class="text-sm text-secondary mr-md">{selectedIds.size} selected</span>
+				<Button size="sm" variant="ghost" onclick={clearSelection}>Clear</Button>
+				<Button size="sm" onclick={handleGenerateClick}>
+					<Sparkles size={16} />
+					Generate
+				</Button>
+			{:else if highlightsWithoutCards.length > 0}
+				<Button size="sm" variant="secondary" onclick={selectAll}>Select All</Button>
+			{/if}
+		</div>
+	</div>
 	<!-- Collection Info -->
 	<Card padding="lg" class="mb-xl">
 		<div class="flex items-start gap-lg">

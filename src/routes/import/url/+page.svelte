@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Header } from '$components/layout';
 	import { Button, Card, Input } from '$components/ui';
+	import { ChevronLeft } from 'lucide-svelte';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { Link, Loader2, Globe, ArrowRight } from 'lucide-svelte';
 
@@ -63,9 +63,17 @@
 	];
 </script>
 
-<Header title="Import from URL" backHref="/import" />
-
-<div class="px-lg py-xl max-w-content mx-auto">
+<div class="px-lg py-xl">
+	<div class="flex items-center gap-sm mb-lg">
+		<a
+			href="/import"
+			class="p-sm -ml-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+			aria-label="Go back"
+		>
+			<ChevronLeft size={20} />
+		</a>
+		<h1 class="font-heading text-xl text-primary">Import from URL</h1>
+	</div>
 	<Card padding="lg">
 		<div class="flex items-center gap-md mb-lg">
 			<div class="p-md rounded-button bg-subtle">

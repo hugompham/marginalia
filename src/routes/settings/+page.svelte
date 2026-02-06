@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Header } from '$components/layout';
 	import { Button, Card, Input, Modal } from '$components/ui';
 	import { TagManager } from '$components/tags';
 	import { toast } from '$components/ui/Toast.svelte';
@@ -86,9 +85,8 @@
 	}
 </script>
 
-<Header title="Settings" />
-
-<div class="px-lg py-xl max-w-content mx-auto space-y-xl">
+<div class="px-lg py-xl space-y-xl">
+	<h1 class="font-heading text-xl text-primary">Settings</h1>
 	<!-- Account Section -->
 	<section>
 		<h2 class="font-heading text-lg text-primary mb-md flex items-center gap-sm">

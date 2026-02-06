@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { Header } from '$components/layout';
 	import { Card } from '$components/ui';
 	import { Link, FileText, ChevronRight, BookMarked } from 'lucide-svelte';
 </script>
 
-<Header title="Import" />
-
-<div class="px-lg py-xl max-w-content mx-auto">
+<div class="px-lg py-xl">
+	<h1 class="font-heading text-xl text-primary mb-md">Import</h1>
 	<p class="text-secondary mb-xl">
 		Choose how you want to import your highlights.
 	</p>

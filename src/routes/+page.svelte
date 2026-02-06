@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Card, Button } from '$components/ui';
-	import { Header } from '$components/layout';
 	import { WeeklyChart, StatsCard, StreakBadge } from '$components/analytics';
 	import { Brain, BookOpen, Clock, ChevronRight, Target, TrendingUp } from 'lucide-svelte';
 	import type { PageData } from './$types';
@@ -38,9 +37,7 @@
 	});
 </script>
 
-<Header title="Dashboard" />
-
-<div class="px-lg py-xl space-y-xl max-w-content mx-auto">
+<div class="px-lg py-xl space-y-xl">
 	<!-- Greeting with streak -->
 	<div class="flex items-start justify-between">
 		<div>

@@ -65,7 +65,7 @@ export default {
 			},
 			maxWidth: {
 				content: '680px',
-				app: '1280px'
+				app: '1440px'
 			},
 			transitionDuration: {
 				fast: '150ms',

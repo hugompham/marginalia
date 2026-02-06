@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Header } from '$components/layout';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { escapeHtml } from '$lib/utils/html';
@@ -12,6 +11,7 @@
 		Save,
 		Loader2,
 		ArrowLeft,
+		ChevronLeft,
 		ChevronDown,
 		ChevronUp
 	} from 'lucide-svelte';
@@ -164,20 +164,29 @@
 	}
 </script>
 
-{#snippet headerActions()}
-	<Button variant="ghost" size="sm" onclick={() => (showSidebar = !showSidebar)}>
-		{showSidebar ? 'Hide' : 'Show'} Highlights ({highlights.length})
-		{#if showSidebar}
-			<ChevronUp size={16} />
-		{:else}
-			<ChevronDown size={16} />
-		{/if}
-	</Button>
-{/snippet}
-
-<Header title="Highlight Article" backAction={handleBackClick} actions={headerActions} />
-
 {#if article}
+	<div class="flex items-center justify-between px-lg py-md border-b border-border">
+		<div class="flex items-center gap-sm">
+			<button
+				type="button"
+				onclick={handleBackClick}
+				class="p-sm -ml-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+				aria-label="Go back"
+			>
+				<ChevronLeft size={20} />
+			</button>
+			<h1 class="font-heading text-xl text-primary">Highlight Article</h1>
+		</div>
+		<Button variant="ghost" size="sm" onclick={() => (showSidebar = !showSidebar)}>
+			{showSidebar ? 'Hide' : 'Show'} Highlights ({highlights.length})
+			{#if showSidebar}
+				<ChevronUp size={16} />
+			{:else}
+				<ChevronDown size={16} />
+			{/if}
+		</Button>
+	</div>
+
 	<div class="flex flex-col lg:flex-row min-h-[calc(100vh-4rem)]">
 		<!-- Article Content - mouseup handler for text selection highlighting -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
