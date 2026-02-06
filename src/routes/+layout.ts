@@ -9,6 +9,7 @@ export const load: LayoutLoad = async ({ data, fetch, depends }) => {
 	return {
 		supabase,
 		session: data.session,
-		theme: data.theme
+		theme: data.theme,
+		sidebarCollapsed: data.sidebarCollapsed
 	};
 };

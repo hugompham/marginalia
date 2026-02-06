@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 
 	return {
 		session,
-		theme: locals.theme
+		theme: locals.theme,
+		sidebarCollapsed: locals.sidebarCollapsed
 	};
 };

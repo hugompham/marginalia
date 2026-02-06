@@ -160,6 +160,14 @@
 }
 
 @layer utilities {
+	/* Sidebar responsive margin */
+	@media (min-width: 1024px) {
+		.desktop-sidebar-margin {
+			margin-left: var(--sidebar-width, 256px);
+			transition: margin-left var(--duration-normal) var(--ease-out);
+		}
+	}
+
 	/* Text utilities */
 	.text-balance {
 		text-wrap: balance;

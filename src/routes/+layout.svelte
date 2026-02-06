@@ -7,6 +7,7 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/theme';
+	import { sidebarCollapsed } from '$lib/stores/sidebar';
 
 	interface Props {
 		data: LayoutData;
@@ -15,9 +16,13 @@
 
 	let { data, children }: Props = $props();
 
-	// Initialize theme from server data (runs during SSR and client)
+	// Initialize theme and sidebar state from server data
 	$effect(() => {
 		theme.set(data.theme);
+	});
+
+	$effect(() => {
+		sidebarCollapsed.set(data.sidebarCollapsed);
 	});
 
 	onMount(() => {

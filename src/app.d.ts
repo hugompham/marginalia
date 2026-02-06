@@ -14,6 +14,7 @@ declare global {
 			getSession: () => Promise<Session | null>;
 			getUser: () => Promise<User | null>;
 			theme: 'light' | 'dark';
+			sidebarCollapsed: boolean;
 		}
 		interface PageData {
 			session: Session | null;

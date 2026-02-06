@@ -45,6 +45,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const themeCookie = event.cookies.get('theme');
 	event.locals.theme = themeCookie === 'dark' ? 'dark' : 'light';
 
+	// Read sidebar state from cookie
+	const sidebarCookie = event.cookies.get('sidebar');
+	event.locals.sidebarCollapsed = sidebarCookie === 'collapsed';
+
 	// Check auth for protected routes and dashboard (validate JWT)
 	if (requiresAuth) {
 		const user = await event.locals.getUser();
