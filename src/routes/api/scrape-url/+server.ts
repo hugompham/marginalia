@@ -155,7 +155,8 @@ async function scrapeDirectly(url: string) {
 		const descMatch4 = html.match(
 			/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i
 		);
-		const rawExcerpt = descMatch1?.[1] || descMatch2?.[1] || descMatch3?.[1] || descMatch4?.[1] || null;
+		const rawExcerpt =
+			descMatch1?.[1] || descMatch2?.[1] || descMatch3?.[1] || descMatch4?.[1] || null;
 		excerpt = rawExcerpt ? decodeHtmlEntities(rawExcerpt) : null;
 		console.log('Extracted excerpt:', excerpt ? excerpt.substring(0, 100) + '...' : 'none');
 
