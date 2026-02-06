@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateQuestions, testApiKey } from './provider';
-import type { Highlight, Collection, AIProvider } from '$lib/types';
+import type { Highlight, Collection } from '$lib/types';
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -318,7 +318,11 @@ describe('AI Provider Service', () => {
 					})
 				});
 
-				const result = await testApiKey('anthropic', 'sk-ant-valid-key', 'claude-3-5-sonnet-20241022');
+				const result = await testApiKey(
+					'anthropic',
+					'sk-ant-valid-key',
+					'claude-3-5-sonnet-20241022'
+				);
 
 				expect(result.valid).toBe(true);
 				expect(result.error).toBeUndefined();
@@ -345,7 +349,11 @@ describe('AI Provider Service', () => {
 					})
 				});
 
-				const result = await testApiKey('anthropic', 'sk-ant-invalid', 'claude-3-5-sonnet-20241022');
+				const result = await testApiKey(
+					'anthropic',
+					'sk-ant-invalid',
+					'claude-3-5-sonnet-20241022'
+				);
 
 				expect(result.valid).toBe(false);
 				expect(result.error).toBe('Invalid x-api-key');

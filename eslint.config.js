@@ -31,6 +31,7 @@ export default [
 		},
 		rules: {
 			...ts.configs.recommended.rules,
+			'no-undef': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				'warn',
 				{
@@ -52,11 +53,21 @@ export default [
 			}
 		},
 		plugins: {
-			svelte
+			svelte,
+			'@typescript-eslint': ts
 		},
 		rules: {
 			...svelte.configs.recommended.rules,
-			'svelte/no-at-html-tags': 'warn'
+			'svelte/no-at-html-tags': 'warn',
+			'no-undef': 'off',
+			'no-unused-vars': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_'
+				}
+			]
 		}
 	},
 	prettier,
@@ -67,6 +78,8 @@ export default [
 			'dist/**',
 			'node_modules/**',
 			'src/lib/types/database.ts',
+			'src/app.d.ts',
+			'supabase/functions/**',
 			'**/*.config.js',
 			'**/*.config.ts'
 		]

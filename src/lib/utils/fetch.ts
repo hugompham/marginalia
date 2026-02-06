@@ -63,7 +63,7 @@ function isRetriableError(error: unknown, response?: Response): boolean {
  * });
  * ```
  */
-export async function fetchWithRetry<T = unknown>(
+export async function fetchWithRetry(
 	url: string,
 	init?: RequestInit,
 	options: RetryOptions = {}

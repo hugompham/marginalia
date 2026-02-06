@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import Input from '$lib/components/ui/Input.svelte';
 	import Textarea from '$lib/components/ui/Textarea.svelte';
 	import type { GeneratedQuestion } from '$lib/types';
 
@@ -89,11 +88,7 @@
 					<label for="question-type" class="text-primary mb-1 block text-sm font-medium"
 						>Question Type</label
 					>
-					<select
-						id="question-type"
-						bind:value={editedType}
-						class="input w-full"
-					>
+					<select id="question-type" bind:value={editedType} class="input w-full">
 						<option value="cloze">Cloze Deletion</option>
 						<option value="definition">Definition</option>
 						<option value="conceptual">Conceptual</option>
@@ -112,7 +107,7 @@
 							rows={3}
 						/>
 						<p class="text-secondary mt-1 text-xs">
-							Use {"{{c1::answer}}"} syntax to mark the hidden portion.
+							Use {'{{c1::answer}}'} syntax to mark the hidden portion.
 						</p>
 					</div>
 				{:else}
@@ -144,9 +139,7 @@
 
 			<div class="border-canvas flex justify-end gap-2 border-t p-4">
 				<Button variant="ghost" onclick={onClose}>Cancel</Button>
-				<Button variant="primary" onclick={handleSave} disabled={!isValid}>
-					Save Changes
-				</Button>
+				<Button variant="primary" onclick={handleSave} disabled={!isValid}>Save Changes</Button>
 			</div>
 		</div>
 	</div>

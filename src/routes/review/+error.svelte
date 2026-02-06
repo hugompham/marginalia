@@ -3,7 +3,6 @@
 	import { Button, Card } from '$components/ui';
 	import { Brain, Home, RefreshCw } from 'lucide-svelte';
 
-	const status = $derived($page.status);
 	const message = $derived($page.error?.message || 'Failed to load review session');
 </script>
 

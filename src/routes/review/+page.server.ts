@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import type { Card, CardState } from '$lib/types';
+import type { Card } from '$lib/types';
 import { mapCard } from '$lib/utils/mappers';
 import { getAuthenticatedSession } from '$lib/server/auth';
 

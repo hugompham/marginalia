@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { Home, BookOpen, Network, Plus, Settings, Brain } from 'lucide-svelte';
+	import { Home, BookOpen, Network, Settings, Brain } from 'lucide-svelte';
 
 	const navItems = [
 		{ href: '/', label: 'Home', icon: 'home' },

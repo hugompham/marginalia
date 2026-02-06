@@ -1,5 +1,4 @@
 import { json, redirect } from '@sveltejs/kit';
-import type { RequestEvent } from '@sveltejs/kit';
 
 /**
  * Verify JWT authentication for API routes
@@ -28,10 +27,7 @@ export async function requireAuth(locals: App.Locals) {
  * @param redirectTo - Optional path to redirect to if not authenticated
  * @returns Object with user and session, or throws redirect
  */
-export async function getAuthenticatedSession(
-	locals: App.Locals,
-	redirectTo = '/auth/login'
-) {
+export async function getAuthenticatedSession(locals: App.Locals, redirectTo = '/auth/login') {
 	// Verify JWT authentication
 	const {
 		data: { user },

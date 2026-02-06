@@ -10,9 +10,9 @@
 		currentSchedulingOptions,
 		sessionStats
 	} from '$stores/review';
-	import { X, Brain, Sparkles, AlertCircle, Clock } from 'lucide-svelte';
+	import { X, Brain, Sparkles, Clock } from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { Rating, Card as CardType } from '$lib/types';
+	import type { Rating } from '$lib/types';
 	import { fetchWithRetry } from '$lib/utils/fetch';
 
 	interface Props {
@@ -72,7 +72,9 @@
 	<!-- No cards due -->
 	<div class="px-lg py-xl">
 		<Card padding="lg" class="text-center">
-			<div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-lg">
+			<div
+				class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-lg"
+			>
 				<Sparkles class="text-success" size={32} />
 			</div>
 			<h2 class="font-heading text-xl text-primary mb-sm">All caught up!</h2>
