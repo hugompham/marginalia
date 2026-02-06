@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { Check, X, CheckCheck, Loader2 } from 'lucide-svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import QuestionCard from './QuestionCard.svelte';
@@ -24,15 +25,14 @@
 		localQuestions = questions.map((q) => ({ ...q }));
 	});
 
-	// Initialize all questions as pending
+	// Sync statuses when localQuestions changes (new questions arrive).
+	// Uses untrack on questionStatuses to avoid an infinite loop:
+	// without it, writing a new Map triggers this effect again.
 	$effect(() => {
+		const currentStatuses = untrack(() => questionStatuses);
 		const newStatuses = new Map<number, 'pending' | 'approved' | 'rejected'>();
 		localQuestions.forEach((_, index) => {
-			if (!questionStatuses.has(index)) {
-				newStatuses.set(index, 'pending');
-			} else {
-				newStatuses.set(index, questionStatuses.get(index)!);
-			}
+			newStatuses.set(index, currentStatuses.get(index) ?? 'pending');
 		});
 		questionStatuses = newStatuses;
 	});
