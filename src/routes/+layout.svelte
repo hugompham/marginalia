@@ -16,9 +16,6 @@
 	let { data, children }: Props = $props();
 
 	// Initialize theme from server data (runs during SSR and client)
-	theme.set(data.theme);
-
-	// Keep in sync after client-side navigation
 	$effect(() => {
 		theme.set(data.theme);
 	});
