@@ -10,7 +10,7 @@
 		currentSchedulingOptions,
 		sessionStats
 	} from '$stores/review';
-	import { X, Brain, Sparkles, Clock } from 'lucide-svelte';
+	import { X, SkipForward, Brain, Sparkles, Clock } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Rating } from '$lib/types';
 	import { fetchWithRetry } from '$lib/utils/fetch';
@@ -62,7 +62,15 @@
 		}
 	}
 
+	function handleSkip() {
+		reviewSession.skipCard();
+	}
+
 	function handleClose() {
+		reviewSession.endSession();
+	}
+
+	function handleSessionClear() {
 		reviewSession.clearSession();
 		goto('/');
 	}
@@ -102,21 +110,35 @@
 	</div>
 {:else if $reviewSession?.isComplete && $sessionStats}
 	<!-- Session complete -->
-	<SessionComplete stats={$sessionStats} streak={data.streak} />
+	<SessionComplete stats={$sessionStats} streak={data.streak} onclear={handleSessionClear} />
 {:else if $currentCard && $currentSchedulingOptions && $sessionProgress}
 	<!-- Active review session -->
 	<div class="h-screen flex flex-col">
 		<!-- Header -->
 		<header class="flex items-center justify-between px-lg py-md border-b border-border bg-surface">
-			<SessionProgress current={$sessionProgress.current} total={$sessionProgress.total} />
-			<button
-				type="button"
-				class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
-				onclick={handleClose}
-				aria-label="End session"
-			>
-				<X size={20} />
-			</button>
+			<SessionProgress
+				current={$sessionProgress.current}
+				total={$sessionProgress.total}
+				results={$reviewSession?.results ?? []}
+			/>
+			<div class="flex items-center gap-xs">
+				<button
+					type="button"
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					onclick={handleSkip}
+					aria-label="Skip card"
+				>
+					<SkipForward size={20} />
+				</button>
+				<button
+					type="button"
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					onclick={handleClose}
+					aria-label="End session"
+				>
+					<X size={20} />
+				</button>
+			</div>
 		</header>
 
 		<!-- Card -->
