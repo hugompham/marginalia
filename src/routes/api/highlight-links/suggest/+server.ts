@@ -4,6 +4,7 @@ import { requireAuth } from '$lib/server/auth';
 import { suggestHighlightLinks, type AIConfig } from '$lib/services/ai';
 import { decrypt } from '$lib/utils/crypto';
 import type { AIProvider } from '$lib/types';
+import { mapHighlightLinks } from '$lib/utils/mappers';
 
 /**
  * POST /api/highlight-links/suggest
@@ -80,8 +81,51 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const result = await suggestHighlightLinks(config, highlightsForAI);
 
+		// Filter suggestions to only reference valid highlight IDs
+		const validIds = new Set(highlights.map((h) => h.id));
+		result.suggestions = result.suggestions.filter(
+			(s) => validIds.has(s.sourceHighlightId) && validIds.has(s.targetHighlightId)
+		);
+
+		if (result.suggestions.length === 0) {
+			return json({
+				suggestions: [],
+				saved: [],
+				usage: result.usage,
+				provider: selectedKey.provider
+			});
+		}
+
+		// Batch-insert suggestions as pending links (single DB round-trip)
+		const rows = result.suggestions.map((s) => ({
+			source_highlight_id: s.sourceHighlightId,
+			target_highlight_id: s.targetHighlightId,
+			user_id: user.id,
+			link_type: 'ai_suggested' as const,
+			description: s.description,
+			ai_confidence: s.confidence,
+			status: 'pending' as const
+		}));
+
+		const { data: savedRows, error: insertError } = await locals.supabase
+			.from('highlight_links')
+			.insert(rows)
+			.select();
+
+		if (insertError) {
+			console.error('Failed to save suggestions:', insertError);
+			// Return suggestions even if save failed so UI can still show them
+			return json({
+				suggestions: result.suggestions,
+				saved: [],
+				usage: result.usage,
+				provider: selectedKey.provider
+			});
+		}
+
 		return json({
 			suggestions: result.suggestions,
+			saved: mapHighlightLinks(savedRows ?? []),
 			usage: result.usage,
 			provider: selectedKey.provider
 		});

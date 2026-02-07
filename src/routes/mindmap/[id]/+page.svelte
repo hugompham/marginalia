@@ -161,41 +161,9 @@
 
 			const result = await res.json();
 
-			// Save suggestions as pending links
-			for (const suggestion of result.suggestions) {
-				const saveRes = await fetch('/api/highlight-links', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						sourceHighlightId: suggestion.sourceHighlightId,
-						targetHighlightId: suggestion.targetHighlightId,
-						description: suggestion.description,
-						linkType: 'ai_suggested',
-						status: 'pending',
-						aiConfidence: suggestion.confidence
-					})
-				});
-
-				if (saveRes.ok) {
-					const saved = await saveRes.json();
-					pendingSuggestions = [
-						...pendingSuggestions,
-						{
-							id: saved.id,
-							sourceHighlightId: suggestion.sourceHighlightId,
-							targetHighlightId: suggestion.targetHighlightId,
-							userId: '',
-							linkType: 'ai_suggested',
-							description: suggestion.description,
-							aiConfidence: suggestion.confidence,
-							status: 'pending',
-							createdAt: new Date()
-						}
-					];
-				}
-			}
-
-			if (result.suggestions.length > 0) {
+			// Server batch-saved suggestions as pending links
+			if (result.saved?.length) {
+				pendingSuggestions = [...pendingSuggestions, ...result.saved];
 				showSuggestionPanel = true;
 			}
 		} catch (err) {
@@ -213,11 +181,16 @@
 		if (edges.some((e) => e.id === edgeId)) return;
 
 		try {
-			await fetch(`/api/highlight-links/${id}`, {
+			const res = await fetch(`/api/highlight-links/${id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ status: 'active' })
 			});
+
+			if (!res.ok) {
+				console.error('Failed to accept suggestion');
+				return;
+			}
 
 			pendingSuggestions = pendingSuggestions.filter((s) => s.id !== id);
 
@@ -253,7 +226,11 @@
 
 	async function deleteLink(linkId: string) {
 		try {
-			await fetch(`/api/highlight-links/${linkId}`, { method: 'DELETE' });
+			const res = await fetch(`/api/highlight-links/${linkId}`, { method: 'DELETE' });
+			if (!res.ok) {
+				console.error('Failed to delete link');
+				return;
+			}
 			edges = edges.filter((e) => e.id !== `e-link-${linkId}`);
 		} catch (err) {
 			console.error('Failed to delete link:', err);

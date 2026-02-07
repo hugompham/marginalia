@@ -125,16 +125,22 @@ export function parseSuggestedLinks(content: string): SuggestedLink[] {
 	}
 
 	// Validate and filter
-	const valid = connections.filter((c: unknown): c is SuggestedLink => {
-		const item = c as Record<string, unknown>;
-		return (
-			typeof item?.sourceHighlightId === 'string' &&
-			typeof item?.targetHighlightId === 'string' &&
-			typeof item?.description === 'string' &&
-			typeof item?.confidence === 'number' &&
-			item.sourceHighlightId !== item.targetHighlightId
-		);
-	});
+	const valid = connections
+		.filter((c: unknown): c is SuggestedLink => {
+			const item = c as Record<string, unknown>;
+			return (
+				typeof item?.sourceHighlightId === 'string' &&
+				typeof item?.targetHighlightId === 'string' &&
+				typeof item?.description === 'string' &&
+				item.description.length > 0 &&
+				typeof item?.confidence === 'number' &&
+				item.sourceHighlightId !== item.targetHighlightId
+			);
+		})
+		.map((item) => ({
+			...item,
+			confidence: Math.max(0, Math.min(1, item.confidence))
+		}));
 
 	if (valid.length === 0 && content.length > 10) {
 		console.warn(
