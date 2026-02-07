@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getAuthenticatedSession } from '$lib/server/auth';
-import { mapCollection, mapHighlights, mapTags } from '$lib/utils/mappers';
-import type { Tag } from '$lib/types';
+import { mapCollection, mapHighlights, mapTags, mapHighlightLinks } from '$lib/utils/mappers';
+import type { Tag, Highlight } from '$lib/types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { session } = await getAuthenticatedSession(locals);
@@ -64,8 +64,56 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		tags: highlightTagMap.get(h.id) || []
 	}));
 
+	// Fetch highlight links where source or target is in this collection
+	const localIds = highlightsWithTags.map((h) => h.id);
+	let highlightLinks = [];
+	let pendingSuggestions = [];
+	let externalHighlights: Array<Highlight & { collectionTitle: string }> = [];
+
+	if (localIds.length > 0) {
+		const { data: linksData } = await locals.supabase
+			.from('highlight_links')
+			.select('*')
+			.eq('user_id', userId)
+			.or(
+				`source_highlight_id.in.(${localIds.join(',')}),target_highlight_id.in.(${localIds.join(',')})`
+			);
+
+		const allLinks = mapHighlightLinks(linksData ?? []);
+		highlightLinks = allLinks.filter((l) => l.status === 'active');
+		pendingSuggestions = allLinks.filter((l) => l.status === 'pending');
+
+		// Collect external highlight IDs (from other collections)
+		const localIdSet = new Set(localIds);
+		const externalIds = new Set<string>();
+		for (const link of allLinks) {
+			if (!localIdSet.has(link.sourceHighlightId)) externalIds.add(link.sourceHighlightId);
+			if (!localIdSet.has(link.targetHighlightId)) externalIds.add(link.targetHighlightId);
+		}
+
+		if (externalIds.size > 0) {
+			const { data: extData } = await locals.supabase
+				.from('highlights')
+				.select('*, collections(title)')
+				.eq('user_id', userId)
+				.in('id', [...externalIds]);
+
+			externalHighlights = mapHighlights(extData ?? []).map((h) => {
+				const raw = (extData ?? []).find((r) => r.id === h.id);
+				const colTitle =
+					raw?.collections && typeof raw.collections === 'object' && 'title' in raw.collections
+						? (raw.collections as { title: string }).title
+						: 'Unknown';
+				return { ...h, collectionTitle: colTitle };
+			});
+		}
+	}
+
 	return {
 		collection: mapCollection(collection),
-		highlights: highlightsWithTags
+		highlights: highlightsWithTags,
+		highlightLinks,
+		pendingSuggestions,
+		externalHighlights
 	};
 };

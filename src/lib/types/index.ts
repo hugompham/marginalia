@@ -48,6 +48,16 @@ export type AIProvider = 'openai' | 'anthropic';
  */
 export type PendingStatus = 'pending' | 'accepted' | 'rejected' | 'edited';
 
+/**
+ * Type of connection between two highlights
+ */
+export type LinkType = 'manual' | 'ai_suggested';
+
+/**
+ * Status of a highlight link
+ */
+export type LinkStatus = 'active' | 'dismissed' | 'pending';
+
 // =============================================================================
 // User Entities
 // =============================================================================
@@ -252,6 +262,53 @@ export interface PendingQuestion {
 	/** Approval status */
 	status: PendingStatus;
 	createdAt: Date;
+}
+
+/**
+ * A connection between two highlights
+ */
+export interface HighlightLink {
+	id: string;
+	sourceHighlightId: string;
+	targetHighlightId: string;
+	userId: string;
+	linkType: LinkType;
+	description: string | null;
+	aiConfidence: number | null;
+	status: LinkStatus;
+	createdAt: Date;
+
+	// Joined data
+	sourceHighlight?: Highlight;
+	targetHighlight?: Highlight;
+}
+
+/**
+ * Aggregate link count between two collections (for mindmap overview)
+ */
+export interface CollectionLinkCount {
+	sourceCollectionId: string;
+	targetCollectionId: string;
+	linkCount: number;
+}
+
+/**
+ * Input for creating a manual highlight link
+ */
+export interface CreateHighlightLinkInput {
+	sourceHighlightId: string;
+	targetHighlightId: string;
+	description?: string;
+}
+
+/**
+ * AI-suggested connection between highlights
+ */
+export interface SuggestedLink {
+	sourceHighlightId: string;
+	targetHighlightId: string;
+	description: string;
+	confidence: number;
 }
 
 // =============================================================================

@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { X, BookOpen, ExternalLink } from 'lucide-svelte';
+	import { X, BookOpen, ExternalLink, Trash2 } from 'lucide-svelte';
 	import { TagBadge } from '$components/tags';
 	import { Button } from '$components/ui';
-	import type { Collection, Highlight, Tag } from '$lib/types';
+	import type { Collection, Highlight, HighlightLink, Tag } from '$lib/types';
 	import type { Node } from '@xyflow/svelte';
 
 	interface Props {
 		node: Node | null;
 		onclose: () => void;
+		highlightLinks?: HighlightLink[];
+		highlightsById?: Map<string, Highlight>;
+		ondeletelink?: (linkId: string) => void;
 	}
 
-	let { node, onclose }: Props = $props();
+	let { node, onclose, highlightLinks = [], highlightsById, ondeletelink }: Props = $props();
 
 	const nodeType = $derived(node?.type);
 	const collection = $derived(
@@ -24,6 +27,21 @@
 			? { name: node?.data.chapter as string, count: node?.data.highlightCount as number }
 			: null
 	);
+
+	// Find links connected to this highlight
+	const connectedLinks = $derived.by(() => {
+		if (!highlight || !highlightLinks?.length) return [];
+		return highlightLinks.filter(
+			(l) => l.sourceHighlightId === highlight.id || l.targetHighlightId === highlight.id
+		);
+	});
+
+	function getLinkedHighlight(link: HighlightLink): Highlight | undefined {
+		if (!highlight || !highlightsById) return undefined;
+		const otherId =
+			link.sourceHighlightId === highlight.id ? link.targetHighlightId : link.sourceHighlightId;
+		return highlightsById.get(otherId);
+	}
 </script>
 
 {#if node}
@@ -106,6 +124,42 @@
 
 				{#if highlight.hasCards}
 					<span class="inline-flex items-center text-xs text-success">Has cards</span>
+				{/if}
+
+				<!-- Connections section -->
+				{#if connectedLinks.length > 0}
+					<div class="border-t border-border pt-md">
+						<h4 class="text-xs font-medium text-secondary uppercase tracking-wide mb-sm">
+							Connections ({connectedLinks.length})
+						</h4>
+						<div class="space-y-sm">
+							{#each connectedLinks as link (link.id)}
+								{@const linked = getLinkedHighlight(link)}
+								{#if linked}
+									<div class="flex items-start gap-sm group">
+										<div class="flex-1 min-w-0">
+											<p class="text-xs text-primary leading-relaxed truncate">
+												{linked.text.length > 80 ? linked.text.slice(0, 80) + '...' : linked.text}
+											</p>
+											{#if link.description}
+												<p class="text-xs text-accent mt-xs">{link.description}</p>
+											{/if}
+										</div>
+										{#if ondeletelink}
+											<button
+												type="button"
+												onclick={() => ondeletelink?.(link.id)}
+												class="p-xs rounded-button text-tertiary opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-subtle transition-all shrink-0"
+												aria-label="Remove connection"
+											>
+												<Trash2 size={12} />
+											</button>
+										{/if}
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</div>
 				{/if}
 			{:else if chapter}
 				<h4 class="font-heading text-lg text-primary">{chapter.name}</h4>

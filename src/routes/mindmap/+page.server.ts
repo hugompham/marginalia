@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { getAuthenticatedSession } from '$lib/server/auth';
 import { mapCollections } from '$lib/utils/mappers';
 import type { TagConnection } from '$components/mindmap';
-import type { Tag } from '$lib/types';
+import type { Tag, CollectionLinkCount } from '$lib/types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { session } = await getAuthenticatedSession(locals);
@@ -77,9 +77,23 @@ export const load: PageServerLoad = async ({ locals }) => {
 		color: t.color
 	}));
 
+	// Fetch cross-collection link counts
+	const { data: linkCountsData } = await locals.supabase.rpc('get_collection_link_counts', {
+		p_user_id: userId
+	});
+
+	const collectionLinkCounts: CollectionLinkCount[] = (linkCountsData ?? []).map(
+		(row: { source_collection_id: string; target_collection_id: string; link_count: number }) => ({
+			sourceCollectionId: row.source_collection_id,
+			targetCollectionId: row.target_collection_id,
+			linkCount: row.link_count
+		})
+	);
+
 	return {
 		collections: mapCollections(collectionsData ?? []),
 		tagConnections,
-		tags
+		tags,
+		collectionLinkCounts
 	};
 };

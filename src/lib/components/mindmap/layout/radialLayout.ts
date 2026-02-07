@@ -1,5 +1,5 @@
 import type { Node, Edge } from '@xyflow/svelte';
-import type { Collection, Tag } from '$lib/types';
+import type { Collection, Tag, CollectionLinkCount } from '$lib/types';
 import { DEFAULT_TAG_COLOR } from '$components/mindmap';
 
 export interface TagConnection {
@@ -161,4 +161,29 @@ function sortByTagAffinity(
 	}
 
 	return sorted;
+}
+
+/**
+ * Compute edges between collections based on highlight link counts.
+ * Deduplicates bidirectional pairs and sums their counts.
+ */
+export function computeCollectionLinkEdges(linkCounts: CollectionLinkCount[]): Edge[] {
+	// Deduplicate bidirectional pairs: A->B and B->A become one edge with summed count
+	const pairMap = new Map<string, number>();
+
+	for (const lc of linkCounts) {
+		const key = [lc.sourceCollectionId, lc.targetCollectionId].sort().join('|');
+		pairMap.set(key, (pairMap.get(key) ?? 0) + lc.linkCount);
+	}
+
+	return Array.from(pairMap.entries()).map(([key, count]) => {
+		const [source, target] = key.split('|');
+		return {
+			id: `e-link-${source}-${target}`,
+			source,
+			target,
+			type: 'collectionLink',
+			data: { linkCount: count }
+		};
+	});
 }

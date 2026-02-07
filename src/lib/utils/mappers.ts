@@ -12,12 +12,15 @@ import type {
 	Profile,
 	APIKey,
 	PendingQuestion,
+	HighlightLink,
 	QuestionType,
 	CardState,
 	Rating,
 	SourceType,
 	AIProvider,
-	PendingStatus
+	PendingStatus,
+	LinkType,
+	LinkStatus
 } from '$lib/types';
 import type { Database } from '$lib/types/database';
 
@@ -220,4 +223,31 @@ export function mapTags(rows: DbTag[]): Tag[] {
  */
 export function mapPendingQuestions(rows: DbPendingQuestion[]): PendingQuestion[] {
 	return rows.map(mapPendingQuestion);
+}
+
+// highlight_links may not be in generated types yet -- use Record for the row type
+type DbHighlightLink = Record<string, unknown>;
+
+/**
+ * Map database highlight link to TypeScript HighlightLink
+ */
+export function mapHighlightLink(row: DbHighlightLink): HighlightLink {
+	return {
+		id: row.id as string,
+		sourceHighlightId: row.source_highlight_id as string,
+		targetHighlightId: row.target_highlight_id as string,
+		userId: row.user_id as string,
+		linkType: (row.link_type as LinkType) ?? 'manual',
+		description: (row.description as string) ?? null,
+		aiConfidence: (row.ai_confidence as number) ?? null,
+		status: (row.status as LinkStatus) ?? 'active',
+		createdAt: new Date(row.created_at as string)
+	};
+}
+
+/**
+ * Batch map highlight links
+ */
+export function mapHighlightLinks(rows: DbHighlightLink[]): HighlightLink[] {
+	return rows.map(mapHighlightLink);
 }
