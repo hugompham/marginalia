@@ -67,6 +67,11 @@
 	}
 
 	function handleClose() {
+		// If no cards reviewed, just go home instead of showing empty stats
+		if (!$reviewSession?.results.length) {
+			handleSessionClear();
+			return;
+		}
 		reviewSession.endSession();
 	}
 

@@ -51,7 +51,7 @@
 	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 	// Calculate stroke-dasharray offsets for each segment
-	const arcs = $derived(() => {
+	const arcs = $derived.by(() => {
 		const total = stats.totalCards || 1;
 		let offset = 0;
 		return segments
@@ -69,7 +69,13 @@
 <div class="text-center py-xl px-lg">
 	<!-- Donut chart with retention in center -->
 	<div class="relative w-40 h-40 mx-auto mb-xl">
-		<svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+		<svg
+			viewBox="0 0 100 100"
+			class="w-full h-full -rotate-90"
+			role="img"
+			aria-label="Review breakdown: {stats.ratingCounts.good} good, {stats.ratingCounts
+				.easy} easy, {stats.ratingCounts.hard} hard, {stats.ratingCounts.again} again"
+		>
 			<!-- Background circle -->
 			<circle
 				cx="50"
@@ -80,7 +86,7 @@
 				stroke-width="8"
 			/>
 			<!-- Segments -->
-			{#each arcs() as arc}
+			{#each arcs as arc}
 				<circle
 					cx="50"
 					cy="50"

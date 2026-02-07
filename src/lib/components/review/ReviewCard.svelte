@@ -23,10 +23,12 @@
 
 	const SWIPE_THRESHOLD = 100;
 
-	// Reset revealed state when card changes
+	// Reset card interaction state when the active card changes
 	$effect(() => {
-		card.id;
+		void card.id;
 		revealed = false;
+		translateX = 0;
+		swiping = false;
 	});
 
 	function handleTouchStart(e: TouchEvent) {
