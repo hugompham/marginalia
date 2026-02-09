@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -205,6 +210,64 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "collections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      highlight_links: {
+        Row: {
+          ai_confidence: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          link_type: string
+          source_highlight_id: string
+          status: string
+          target_highlight_id: string
+          user_id: string
+        }
+        Insert: {
+          ai_confidence?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          link_type?: string
+          source_highlight_id: string
+          status?: string
+          target_highlight_id: string
+          user_id: string
+        }
+        Update: {
+          ai_confidence?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          link_type?: string
+          source_highlight_id?: string
+          status?: string
+          target_highlight_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "highlight_links_source_highlight_id_fkey"
+            columns: ["source_highlight_id"]
+            isOneToOne: false
+            referencedRelation: "highlights"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "highlight_links_target_highlight_id_fkey"
+            columns: ["target_highlight_id"]
+            isOneToOne: false
+            referencedRelation: "highlights"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "highlight_links_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -477,6 +540,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_collection_link_counts: {
+        Args: { p_user_id: string }
+        Returns: {
+          link_count: number
+          source_collection_id: string
+          target_collection_id: string
+        }[]
+      }
       get_due_cards_count: { Args: { p_user_id: string }; Returns: number }
       get_today_review_count: { Args: { p_user_id: string }; Returns: number }
       get_user_streak: { Args: { p_user_id: string }; Returns: number }
@@ -615,4 +686,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
