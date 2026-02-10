@@ -12,8 +12,10 @@ import {
 	buildGenerationPrompt,
 	buildOpenAIMessages,
 	buildAnthropicMessages,
+	buildAnthropicSystem,
 	parseGeneratedQuestions,
-	type GeneratedQuestion
+	type GeneratedQuestion,
+	type PromptContext
 } from './prompts';
 import { buildLinkSuggestionPrompt, parseSuggestedLinks } from './link-prompts';
 import type { SuggestedLink } from '$lib/types';
@@ -50,25 +52,17 @@ export interface GenerationResult {
  * @param highlights - Highlights to generate questions from
  * @param collection - Parent collection for context
  * @param questionTypes - Types of questions to generate
+ * @param promptContext - Additional context: tags, card counts, difficulty
  * @returns Generated questions with usage statistics
- *
- * @example
- * ```ts
- * const result = await generateQuestions(
- *   { provider: 'openai', apiKey: 'sk-...', model: 'gpt-4o-mini' },
- *   highlights,
- *   collection,
- *   ['cloze', 'conceptual']
- * );
- * ```
  */
 export async function generateQuestions(
 	config: AIConfig,
 	highlights: Highlight[],
 	collection: Collection,
-	questionTypes: QuestionType[]
+	questionTypes: QuestionType[],
+	promptContext?: PromptContext
 ): Promise<GenerationResult> {
-	const prompt = buildGenerationPrompt(highlights, questionTypes, collection);
+	const prompt = buildGenerationPrompt(highlights, questionTypes, collection, promptContext);
 
 	if (config.provider === 'openai') {
 		return generateWithOpenAI(config, prompt);
@@ -130,6 +124,7 @@ async function generateWithAnthropic(config: AIConfig, prompt: string): Promise<
 		body: JSON.stringify({
 			model: config.model,
 			max_tokens: 4096,
+			system: buildAnthropicSystem(),
 			messages: buildAnthropicMessages(prompt)
 		})
 	});

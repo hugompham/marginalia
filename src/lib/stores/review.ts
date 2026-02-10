@@ -50,6 +50,8 @@ export interface ReviewSessionState {
 	results: ReviewResult[];
 	/** Whether the session is complete */
 	isComplete: boolean;
+	/** Number of consecutive skips (resets when a card is answered) */
+	skipCount: number;
 }
 
 function createReviewStore() {
@@ -69,7 +71,8 @@ function createReviewStore() {
 				startedAt: now,
 				cardStartedAt: now,
 				results: [],
-				isComplete: cards.length === 0
+				isComplete: cards.length === 0,
+				skipCount: 0
 			});
 		},
 
@@ -115,7 +118,8 @@ function createReviewStore() {
 					currentIndex: nextIndex,
 					cardStartedAt: now,
 					results: [...session.results, result],
-					isComplete
+					isComplete,
+					skipCount: 0
 				};
 			});
 			return reviewResult;
@@ -128,6 +132,14 @@ function createReviewStore() {
 			update((session) => {
 				if (!session || session.isComplete) return session;
 
+				const remainingCards = session.cards.length - session.currentIndex;
+				const nextSkipCount = session.skipCount + 1;
+
+				// If all remaining cards have been skipped, end the session
+				if (nextSkipCount >= remainingCards) {
+					return { ...session, isComplete: true };
+				}
+
 				// Move current card to end
 				const cards = [...session.cards];
 				const [skipped] = cards.splice(session.currentIndex, 1);
@@ -136,7 +148,8 @@ function createReviewStore() {
 				return {
 					...session,
 					cards,
-					cardStartedAt: new Date()
+					cardStartedAt: new Date(),
+					skipCount: nextSkipCount
 				};
 			});
 		},

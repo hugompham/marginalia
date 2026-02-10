@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Card } from '$components/ui';
 	import { BookOpen } from 'lucide-svelte';
+	import { fly } from 'svelte/transition';
 	import { escapeHtml } from '$lib/utils/html';
 	import type { Card as CardType, Rating } from '$lib/types';
 	import type { SchedulingOptions } from '$lib/services/spaced-repetition/fsrs';
@@ -21,6 +22,14 @@
 	let swiping = $state(false);
 
 	const SWIPE_THRESHOLD = 100;
+
+	// Reset card interaction state when the active card changes
+	$effect(() => {
+		void card.id;
+		revealed = false;
+		translateX = 0;
+		swiping = false;
+	});
 
 	function handleTouchStart(e: TouchEvent) {
 		if (!revealed) return;
@@ -86,8 +95,8 @@
 			result += escapeHtml(text.slice(lastIndex, match.index));
 			const answer = escapeHtml(match[1]);
 			result += showAnswer
-				? `<mark class="bg-accent/20 px-1 rounded">${answer}</mark>`
-				: '<span class="inline-block w-24 border-b-2 border-accent">&nbsp;</span>';
+				? `<mark class="cloze-answer">${answer}</mark>`
+				: '<span class="cloze-blank">&nbsp;</span>';
 			lastIndex = regex.lastIndex;
 		}
 
@@ -105,7 +114,7 @@
 	);
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
@@ -117,66 +126,69 @@
 	aria-label="Review card - use keyboard keys 1-4 to rate or swipe on touch"
 	tabindex="0"
 >
-	<!-- Card content -->
-	<div
-		class="flex-1 overflow-y-auto transition-transform duration-fast {swiping
-			? ''
-			: 'ease-default'}"
-		style="transform: translateX({translateX}px)"
-	>
-		<Card padding="lg" class="h-full border-2 {swipeColor} transition-colors">
-			<!-- Source info -->
-			{#if card.highlight?.collection}
-				<div class="text-sm text-secondary mb-lg">
-					<span class="font-medium">{card.highlight.collection.title}</span>
-					{#if card.highlight.chapter}
-						<span class="text-tertiary"> · {card.highlight.chapter}</span>
+	{#key card.id}
+		<!-- Card content -->
+		<div
+			class="flex-1 overflow-y-auto transition-transform duration-fast {swiping
+				? ''
+				: 'ease-default'}"
+			style="transform: translateX({translateX}px)"
+			in:fly={{ x: 300, duration: 250 }}
+			out:fly={{ x: -300, duration: 200 }}
+		>
+			<Card padding="xl" class="h-full border-2 {swipeColor} transition-colors">
+				<!-- Question content -->
+				<div class="flex-1">
+					{#if card.questionType === 'cloze' && card.clozeText}
+						<p class="text-2xl leading-relaxed text-primary">
+							{@html renderCloze(card.clozeText, revealed)}
+						</p>
+					{:else}
+						<p class="text-2xl leading-relaxed text-primary mb-xl">
+							{card.question}
+						</p>
+						{#if revealed}
+							<div class="pt-lg border-t border-border answer-reveal">
+								<p class="text-lg text-primary">{card.answer}</p>
+							</div>
+						{/if}
 					{/if}
 				</div>
-			{/if}
 
-			<!-- Question type badge -->
-			<div class="mb-lg">
-				<span class="text-xs uppercase tracking-wide text-tertiary bg-subtle px-sm py-xs rounded">
-					{card.questionType}
-				</span>
-			</div>
-
-			<!-- Question content -->
-			<div class="flex-1">
-				{#if card.questionType === 'cloze' && card.clozeText}
-					<p class="text-xl leading-relaxed text-primary">
-						{@html renderCloze(card.clozeText, revealed)}
-					</p>
-				{:else}
-					<p class="text-xl leading-relaxed text-primary mb-lg">
-						{card.question}
-					</p>
-					{#if revealed}
-						<div class="pt-lg border-t border-border">
-							<p class="text-lg text-primary">{card.answer}</p>
+				<!-- Source info + type badge (footer, subtle) -->
+				{#if revealed && card.highlight}
+					<div class="mt-xl pt-lg border-t border-border">
+						<div class="flex items-center gap-sm text-sm text-tertiary mb-sm">
+							<BookOpen size={14} />
+							<span>Original Highlight</span>
 						</div>
-					{/if}
-				{/if}
-			</div>
-
-			<!-- Original highlight (shown after reveal) -->
-			{#if revealed && card.highlight}
-				<div class="mt-xl pt-lg border-t border-border">
-					<div class="flex items-center gap-sm text-sm text-tertiary mb-sm">
-						<BookOpen size={14} />
-						<span>Original Highlight</span>
+						<blockquote class="text-secondary text-sm italic leading-relaxed">
+							"{card.highlight.text}"
+						</blockquote>
+						{#if card.highlight.pageNumber}
+							<p class="text-xs text-tertiary mt-sm">p. {card.highlight.pageNumber}</p>
+						{/if}
 					</div>
-					<blockquote class="text-secondary text-sm italic leading-relaxed">
-						"{card.highlight.text}"
-					</blockquote>
-					{#if card.highlight.pageNumber}
-						<p class="text-xs text-tertiary mt-sm">p. {card.highlight.pageNumber}</p>
+				{/if}
+
+				<!-- Source + type badge as subtle footer -->
+				<div
+					class="mt-xl pt-md border-t border-border flex items-center gap-sm text-xs text-tertiary"
+				>
+					<span class="uppercase tracking-wide bg-subtle px-sm py-xs rounded">
+						{card.questionType}
+					</span>
+					{#if card.highlight?.collection}
+						<span class="truncate">{card.highlight.collection.title}</span>
+						{#if card.highlight.chapter}
+							<span>--</span>
+							<span class="truncate">{card.highlight.chapter}</span>
+						{/if}
 					{/if}
 				</div>
-			{/if}
-		</Card>
-	</div>
+			</Card>
+		</div>
+	{/key}
 
 	<!-- Actions -->
 	<div class="mt-lg">
@@ -194,3 +206,44 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	:global(.cloze-blank) {
+		display: inline-block;
+		width: 8rem;
+		border-bottom: 2px solid var(--color-accent);
+	}
+
+	:global(.cloze-answer) {
+		background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		padding: 0 0.25rem;
+		border-radius: 0.25rem;
+		animation: cloze-fill 300ms ease-out;
+	}
+
+	@keyframes cloze-fill {
+		from {
+			opacity: 0;
+			transform: scaleX(0.9);
+		}
+		to {
+			opacity: 1;
+			transform: scaleX(1);
+		}
+	}
+
+	.answer-reveal {
+		animation: answer-fade 250ms ease-out;
+	}
+
+	@keyframes answer-fade {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
