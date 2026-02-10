@@ -3,6 +3,8 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/auth';
 import { mapHighlightLinks } from '$lib/utils/mappers';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * GET /api/highlight-links
  * List highlight links with optional filters
@@ -35,7 +37,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			return json([]);
 		}
 
-		const ids = highlightIds.map((h) => h.id);
+		const ids = highlightIds.map((h) => h.id).filter((id) => UUID_RE.test(id));
+		if (!ids.length) {
+			return json([]);
+		}
 		query = query.or(
 			`source_highlight_id.in.(${ids.join(',')}),target_highlight_id.in.(${ids.join(',')})`
 		);
@@ -73,6 +78,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (sourceHighlightId === targetHighlightId) {
 		return json({ error: 'Cannot link a highlight to itself' }, { status: 400 });
+	}
+
+	if (description && typeof description === 'string' && description.length > 500) {
+		return json({ error: 'Description too long (max 500 characters)' }, { status: 400 });
 	}
 
 	const validLinkTypes = ['manual', 'ai_suggested'];

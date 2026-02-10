@@ -150,22 +150,6 @@ async function generateWithAnthropic(config: AIConfig, prompt: string): Promise<
 }
 
 /**
- * Tests if an API key is valid by making a minimal API request
- *
- * @param provider - AI provider to test
- * @param apiKey - API key to validate
- * @param model - Model to use for Anthropic test
- * @returns Validation result with error message if invalid
- *
- * @example
- * ```ts
- * const result = await testApiKey('openai', 'sk-...', 'gpt-4o-mini');
- * if (!result.valid) {
- *   console.error(result.error);
- * }
- * ```
- */
-/**
  * Result from link suggestion
  */
 export interface LinkSuggestionResult {
@@ -250,6 +234,7 @@ async function suggestLinksWithAnthropic(
 		body: JSON.stringify({
 			model: config.model,
 			max_tokens: 4096,
+			system: buildAnthropicSystem(),
 			messages: buildAnthropicMessages(prompt)
 		})
 	});

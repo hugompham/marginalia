@@ -16,8 +16,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const { highlightIds, provider: preferredProvider } = await request.json();
 
-		if (!highlightIds?.length || highlightIds.length < 2) {
+		if (!Array.isArray(highlightIds) || highlightIds.length < 2) {
 			return json({ error: 'At least 2 highlight IDs are required' }, { status: 400 });
+		}
+
+		if (highlightIds.length > 100) {
+			return json({ error: 'Maximum 100 highlights per request' }, { status: 400 });
+		}
+
+		if (!highlightIds.every((id: unknown) => typeof id === 'string' && id.length > 0)) {
+			return json({ error: 'Invalid highlight IDs' }, { status: 400 });
 		}
 
 		// Fetch highlights with collection context

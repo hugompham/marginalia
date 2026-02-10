@@ -13,6 +13,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const updates: Record<string, unknown> = {};
 
 	if ('description' in body) {
+		if (body.description && typeof body.description === 'string' && body.description.length > 500) {
+			return json({ error: 'Description too long (max 500 characters)' }, { status: 400 });
+		}
 		updates.description = body.description || null;
 	}
 	if ('status' in body) {

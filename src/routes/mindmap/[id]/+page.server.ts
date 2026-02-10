@@ -65,7 +65,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}));
 
 	// Fetch highlight links where source or target is in this collection
-	const localIds = highlightsWithTags.map((h) => h.id);
+	const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+	const localIds = highlightsWithTags.map((h) => h.id).filter((id) => UUID_RE.test(id));
 	let highlightLinks = [];
 	let pendingSuggestions = [];
 	let externalHighlights: Array<Highlight & { collectionTitle: string }> = [];
