@@ -35,7 +35,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	// Protected routes - redirect to login if not authenticated
-	const protectedRoutes = ['/library', '/import', '/review', '/settings', '/cards'];
+	const protectedRoutes = ['/library', '/import', '/review', '/settings', '/cards', '/mindmap'];
 
 	const isProtectedRoute = protectedRoutes.some((route) => event.url.pathname.startsWith(route));
 

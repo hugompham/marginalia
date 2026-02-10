@@ -213,11 +213,15 @@
 
 	async function dismissSuggestion(id: string) {
 		try {
-			await fetch(`/api/highlight-links/${id}`, {
+			const res = await fetch(`/api/highlight-links/${id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ status: 'dismissed' })
 			});
+			if (!res.ok) {
+				console.error('Failed to dismiss suggestion');
+				return;
+			}
 			pendingSuggestions = pendingSuggestions.filter((s) => s.id !== id);
 		} catch (err) {
 			console.error('Failed to dismiss suggestion:', err);
