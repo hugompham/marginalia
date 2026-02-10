@@ -17,6 +17,8 @@ import {
 	type GeneratedQuestion,
 	type PromptContext
 } from './prompts';
+import { buildLinkSuggestionPrompt, parseSuggestedLinks } from './link-prompts';
+import type { SuggestedLink } from '$lib/types';
 
 /**
  * Configuration for AI API calls
@@ -163,6 +165,115 @@ async function generateWithAnthropic(config: AIConfig, prompt: string): Promise<
  * }
  * ```
  */
+/**
+ * Result from link suggestion
+ */
+export interface LinkSuggestionResult {
+	suggestions: SuggestedLink[];
+	usage?: {
+		promptTokens: number;
+		completionTokens: number;
+	};
+}
+
+/**
+ * Suggests semantic connections between highlights using AI
+ */
+export async function suggestHighlightLinks(
+	config: AIConfig,
+	highlights: Array<{
+		id: string;
+		text: string;
+		chapter?: string | null;
+		collections?: { title: string; author: string | null } | null;
+	}>
+): Promise<LinkSuggestionResult> {
+	const prompt = buildLinkSuggestionPrompt(highlights);
+
+	if (config.provider === 'openai') {
+		return suggestLinksWithOpenAI(config, prompt);
+	} else {
+		return suggestLinksWithAnthropic(config, prompt);
+	}
+}
+
+async function suggestLinksWithOpenAI(
+	config: AIConfig,
+	prompt: string
+): Promise<LinkSuggestionResult> {
+	const response = await fetch('https://api.openai.com/v1/chat/completions', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${config.apiKey}`
+		},
+		body: JSON.stringify({
+			model: config.model,
+			messages: buildOpenAIMessages(prompt),
+			temperature: 0.5,
+			max_tokens: 4096,
+			response_format: { type: 'json_object' }
+		})
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.error?.message || 'OpenAI API error');
+	}
+
+	const data = await response.json();
+	const content = data.choices[0]?.message?.content || '';
+	const suggestions = parseSuggestedLinks(content);
+
+	return {
+		suggestions,
+		usage: data.usage
+			? {
+					promptTokens: data.usage.prompt_tokens,
+					completionTokens: data.usage.completion_tokens
+				}
+			: undefined
+	};
+}
+
+async function suggestLinksWithAnthropic(
+	config: AIConfig,
+	prompt: string
+): Promise<LinkSuggestionResult> {
+	const response = await fetch('https://api.anthropic.com/v1/messages', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'x-api-key': config.apiKey,
+			'anthropic-version': '2023-06-01'
+		},
+		body: JSON.stringify({
+			model: config.model,
+			max_tokens: 4096,
+			messages: buildAnthropicMessages(prompt)
+		})
+	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.error?.message || 'Anthropic API error');
+	}
+
+	const data = await response.json();
+	const content = data.content[0]?.text || '';
+	const suggestions = parseSuggestedLinks(content);
+
+	return {
+		suggestions,
+		usage: data.usage
+			? {
+					promptTokens: data.usage.input_tokens,
+					completionTokens: data.usage.output_tokens
+				}
+			: undefined
+	};
+}
+
 export async function testApiKey(
 	provider: AIProvider,
 	apiKey: string,

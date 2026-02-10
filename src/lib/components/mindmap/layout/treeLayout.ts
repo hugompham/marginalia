@@ -1,5 +1,5 @@
 import type { Node, Edge } from '@xyflow/svelte';
-import type { Collection, Highlight, Tag } from '$lib/types';
+import type { Collection, Highlight, HighlightLink, Tag } from '$lib/types';
 
 type HighlightWithTags = Highlight & { tags: Tag[] };
 
@@ -137,6 +137,81 @@ export function computeTreeLayout(
 	}
 
 	return { nodes, edges };
+}
+
+/**
+ * Compute link edges and ghost nodes for cross-collection highlights.
+ * Ghost nodes are placed in an outer ring beyond the highlight radius.
+ */
+export function computeLinkEdges(
+	highlightLinks: HighlightLink[],
+	localIds: Set<string>,
+	externalHighlights: Array<Highlight & { collectionTitle: string }>,
+	existingNodes: Node[]
+): { ghostNodes: Node[]; linkEdges: Edge[] } {
+	const ghostNodes: Node[] = [];
+	const linkEdges: Edge[] = [];
+
+	if (highlightLinks.length === 0) return { ghostNodes, linkEdges };
+
+	const ghostRadius = 800;
+	const existingNodeIds = new Set(existingNodes.map((n) => n.id));
+	const extById = new Map(externalHighlights.map((h) => [h.id, h]));
+
+	// Place ghost nodes for external highlights
+	const externalIds = new Set<string>();
+	for (const link of highlightLinks) {
+		if (!localIds.has(link.sourceHighlightId)) externalIds.add(link.sourceHighlightId);
+		if (!localIds.has(link.targetHighlightId)) externalIds.add(link.targetHighlightId);
+	}
+
+	const extArray = [...externalIds];
+	const angleStep = extArray.length > 0 ? (2 * Math.PI) / extArray.length : 0;
+
+	for (let i = 0; i < extArray.length; i++) {
+		const extId = extArray[i];
+		if (existingNodeIds.has(extId)) continue;
+
+		const ext = extById.get(extId);
+		if (!ext) continue;
+
+		const angle = i * angleStep - Math.PI / 2;
+		ghostNodes.push({
+			id: extId,
+			type: 'ghostHighlight',
+			position: {
+				x: Math.cos(angle) * ghostRadius,
+				y: Math.sin(angle) * ghostRadius
+			},
+			data: {
+				highlight: ext,
+				collectionTitle: ext.collectionTitle
+			}
+		});
+	}
+
+	// Create link edges
+	for (const link of highlightLinks) {
+		const sourceExists =
+			existingNodeIds.has(link.sourceHighlightId) || extById.has(link.sourceHighlightId);
+		const targetExists =
+			existingNodeIds.has(link.targetHighlightId) || extById.has(link.targetHighlightId);
+		if (!sourceExists || !targetExists) continue;
+
+		linkEdges.push({
+			id: `e-link-${link.id}`,
+			source: link.sourceHighlightId,
+			target: link.targetHighlightId,
+			type: 'link',
+			data: {
+				description: link.description,
+				confidence: link.aiConfidence,
+				linkType: link.linkType
+			}
+		});
+	}
+
+	return { ghostNodes, linkEdges };
 }
 
 function encodeChapterId(chapter: string, seen: Set<string>): string {

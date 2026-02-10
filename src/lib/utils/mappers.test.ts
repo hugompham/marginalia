@@ -10,7 +10,9 @@ import {
 	mapTag,
 	mapProfile,
 	mapAPIKey,
-	mapPendingQuestion
+	mapPendingQuestion,
+	mapHighlightLink,
+	mapHighlightLinks
 } from './mappers';
 import type { Database } from '$lib/types/database';
 
@@ -396,6 +398,88 @@ describe('mappers', () => {
 				status: 'pending',
 				createdAt: new Date('2024-01-01T00:00:00Z')
 			});
+		});
+	});
+
+	describe('mapHighlightLink', () => {
+		it('should map a manual highlight link', () => {
+			const dbRow = {
+				id: '123',
+				source_highlight_id: 'hl1',
+				target_highlight_id: 'hl2',
+				user_id: 'user123',
+				link_type: 'manual',
+				description: 'Related concept',
+				ai_confidence: null,
+				status: 'active',
+				created_at: '2024-01-01T00:00:00Z'
+			};
+
+			const result = mapHighlightLink(dbRow);
+
+			expect(result).toEqual({
+				id: '123',
+				sourceHighlightId: 'hl1',
+				targetHighlightId: 'hl2',
+				userId: 'user123',
+				linkType: 'manual',
+				description: 'Related concept',
+				aiConfidence: null,
+				status: 'active',
+				createdAt: new Date('2024-01-01T00:00:00Z')
+			});
+		});
+
+		it('should map an AI-suggested link', () => {
+			const dbRow = {
+				id: '456',
+				source_highlight_id: 'hl3',
+				target_highlight_id: 'hl4',
+				user_id: 'user123',
+				link_type: 'ai_suggested',
+				description: 'Both discuss emergence',
+				ai_confidence: 0.87,
+				status: 'pending',
+				created_at: '2024-01-01T00:00:00Z'
+			};
+
+			const result = mapHighlightLink(dbRow);
+
+			expect(result.linkType).toBe('ai_suggested');
+			expect(result.aiConfidence).toBe(0.87);
+			expect(result.status).toBe('pending');
+		});
+
+		it('should batch map highlight links', () => {
+			const rows = [
+				{
+					id: '1',
+					source_highlight_id: 'a',
+					target_highlight_id: 'b',
+					user_id: 'u1',
+					link_type: 'manual',
+					description: null,
+					ai_confidence: null,
+					status: 'active',
+					created_at: '2024-01-01T00:00:00Z'
+				},
+				{
+					id: '2',
+					source_highlight_id: 'c',
+					target_highlight_id: 'd',
+					user_id: 'u1',
+					link_type: 'ai_suggested',
+					description: 'Test',
+					ai_confidence: 0.9,
+					status: 'pending',
+					created_at: '2024-01-02T00:00:00Z'
+				}
+			];
+
+			const result = mapHighlightLinks(rows);
+			expect(result).toHaveLength(2);
+			expect(result[0].id).toBe('1');
+			expect(result[1].linkType).toBe('ai_suggested');
 		});
 	});
 });
