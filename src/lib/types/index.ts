@@ -44,6 +44,13 @@ export type SourceType = 'web_article' | 'manual' | 'kindle' | 'epub' | 'pdf';
 export type AIProvider = 'openai' | 'anthropic';
 
 /**
+ * Difficulty level for AI-generated questions
+ * - standard: recall + basic understanding (Bloom's levels 1-2)
+ * - challenging: application, analysis, evaluation (Bloom's levels 3-5)
+ */
+export type Difficulty = 'standard' | 'challenging';
+
+/**
  * Status of a pending question awaiting user review
  */
 export type PendingStatus = 'pending' | 'accepted' | 'rejected' | 'edited';
@@ -351,6 +358,8 @@ export interface GenerationRequest {
 	provider: AIProvider;
 	/** Model identifier */
 	model: string;
+	/** Difficulty level for generated questions */
+	difficulty?: Difficulty;
 }
 
 /**

@@ -7,7 +7,7 @@
 	import { GenerationModal, ReviewQueue } from '$components/questions';
 	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { GeneratedQuestion, Highlight, Tag } from '$lib/types';
+	import type { Difficulty, GeneratedQuestion, Highlight, Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
@@ -112,7 +112,10 @@
 		showGenerateModal = true;
 	}
 
-	async function handleGenerate(questionTypes: QuestionType[]) {
+	async function handleGenerate(
+		questionTypes: QuestionType[],
+		difficulty: Difficulty = 'standard'
+	) {
 		isGenerating = true;
 
 		try {
@@ -123,7 +126,8 @@
 					highlights: selectedHighlights,
 					collection: data.collection,
 					questionTypes,
-					provider: primaryProvider // Server will fetch the actual key
+					provider: primaryProvider,
+					difficulty
 				})
 			});
 
