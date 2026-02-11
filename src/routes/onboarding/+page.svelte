@@ -100,12 +100,17 @@
 								type="button"
 								onclick={() => selectTheme('light')}
 								class="flex flex-col items-center gap-sm p-lg rounded-card border-2 transition-all
-									{selectedTheme === 'light'
-									? 'border-accent bg-accent/5'
-									: 'border-border hover:border-accent/30'}"
+									{selectedTheme === 'light' ? 'border-accent bg-accent/5' : 'border-border hover:border-accent/30'}"
 							>
-								<Sun size={24} class={selectedTheme === 'light' ? 'text-accent' : 'text-secondary'} />
-								<span class="text-sm font-medium {selectedTheme === 'light' ? 'text-accent' : 'text-secondary'}">
+								<Sun
+									size={24}
+									class={selectedTheme === 'light' ? 'text-accent' : 'text-secondary'}
+								/>
+								<span
+									class="text-sm font-medium {selectedTheme === 'light'
+										? 'text-accent'
+										: 'text-secondary'}"
+								>
 									Light
 								</span>
 							</button>
@@ -113,12 +118,17 @@
 								type="button"
 								onclick={() => selectTheme('dark')}
 								class="flex flex-col items-center gap-sm p-lg rounded-card border-2 transition-all
-									{selectedTheme === 'dark'
-									? 'border-accent bg-accent/5'
-									: 'border-border hover:border-accent/30'}"
+									{selectedTheme === 'dark' ? 'border-accent bg-accent/5' : 'border-border hover:border-accent/30'}"
 							>
-								<Moon size={24} class={selectedTheme === 'dark' ? 'text-accent' : 'text-secondary'} />
-								<span class="text-sm font-medium {selectedTheme === 'dark' ? 'text-accent' : 'text-secondary'}">
+								<Moon
+									size={24}
+									class={selectedTheme === 'dark' ? 'text-accent' : 'text-secondary'}
+								/>
+								<span
+									class="text-sm font-medium {selectedTheme === 'dark'
+										? 'text-accent'
+										: 'text-secondary'}"
+								>
 									Dark
 								</span>
 							</button>

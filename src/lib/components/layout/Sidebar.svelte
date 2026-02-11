@@ -1,14 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {
-		Home,
-		BookOpen,
-		Network,
-		Plus,
-		Settings,
-		Brain,
-		PanelLeftClose
-	} from 'lucide-svelte';
+	import { Home, BookOpen, Network, Plus, Settings, Brain, PanelLeftClose } from 'lucide-svelte';
 	import {
 		sidebarCollapsed,
 		toggleSidebar,
@@ -121,12 +113,6 @@
 
 	<!-- Profile dropdown -->
 	<div class="border-t border-border py-md {collapsed ? 'px-sm' : 'px-md'}">
-		<ProfileDropdown
-			{profile}
-			{userEmail}
-			{collapsed}
-			{onviewprofile}
-			{onaccountsettings}
-		/>
+		<ProfileDropdown {profile} {userEmail} {collapsed} {onviewprofile} {onaccountsettings} />
 	</div>
 </aside>

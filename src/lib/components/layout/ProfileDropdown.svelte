@@ -89,11 +89,7 @@
 	title={collapsed ? displayName : undefined}
 >
 	{#if profile?.avatarUrl}
-		<img
-			src={profile.avatarUrl}
-			alt=""
-			class="w-8 h-8 rounded-full object-cover shrink-0"
-		/>
+		<img src={profile.avatarUrl} alt="" class="w-8 h-8 rounded-full object-cover shrink-0" />
 	{:else}
 		<div class="w-8 h-8 rounded-full bg-subtle flex items-center justify-center shrink-0">
 			<span class="text-xs font-medium">{initial}</span>

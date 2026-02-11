@@ -311,15 +311,14 @@ describe('mappers', () => {
 
 			const result = mapProfile(dbRow);
 
-			expect(result).toEqual({
-				id: 'user123',
-				displayName: 'Test User',
-				dailyReviewGoal: 30,
-				preferredQuestionTypes: ['definition', 'cloze'],
-				theme: 'dark',
-				createdAt: new Date('2024-01-01T00:00:00Z'),
-				updatedAt: new Date('2024-01-01T00:00:00Z')
-			});
+			expect(result.id).toBe('user123');
+			expect(result.displayName).toBe('Test User');
+			expect(result.dailyReviewGoal).toBe(30);
+			expect(result.preferredQuestionTypes).toEqual(['definition', 'cloze']);
+			expect(result.theme).toBe('dark');
+			expect(result.onboardingCompleted).toBe(false);
+			expect(result.createdAt).toEqual(new Date('2024-01-01T00:00:00Z'));
+			expect(result.updatedAt).toEqual(new Date('2024-01-01T00:00:00Z'));
 		});
 
 		it('should handle null values with defaults', () => {
@@ -338,6 +337,10 @@ describe('mappers', () => {
 			expect(result.dailyReviewGoal).toBe(20);
 			expect(result.preferredQuestionTypes).toEqual(['definition', 'conceptual']);
 			expect(result.theme).toBe('light');
+			expect(result.onboardingCompleted).toBe(false);
+			expect(result.firstName).toBeFalsy();
+			expect(result.lastName).toBeFalsy();
+			expect(result.avatarUrl).toBeFalsy();
 		});
 	});
 

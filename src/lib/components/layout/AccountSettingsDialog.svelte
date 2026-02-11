@@ -248,8 +248,8 @@
 
 		<div class="space-y-lg">
 			<p class="text-secondary text-sm">
-				Add your {apiKeyProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key. Your key is
-				encrypted and never stored in plain text.
+				Add your {apiKeyProvider === 'openai' ? 'OpenAI' : 'Anthropic'} API key. Your key is encrypted
+				and never stored in plain text.
 			</p>
 
 			<Input
@@ -306,9 +306,7 @@
 	{#snippet footer()}
 		<div class="flex justify-end gap-md">
 			<Button variant="secondary" onclick={() => (showDeleteConfirm = false)}>Cancel</Button>
-			<Button type="submit" form="dialogDeleteForm" variant="danger">
-				Yes, Delete My Account
-			</Button>
+			<Button type="submit" form="dialogDeleteForm" variant="danger">Yes, Delete My Account</Button>
 		</div>
 	{/snippet}
 </Modal>

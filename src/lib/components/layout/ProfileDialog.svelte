@@ -28,9 +28,7 @@
 		}
 	});
 
-	const initial = $derived(
-		firstName?.[0]?.toUpperCase() || userEmail[0]?.toUpperCase() || 'U'
-	);
+	const initial = $derived(firstName?.[0]?.toUpperCase() || userEmail[0]?.toUpperCase() || 'U');
 
 	async function handleSave() {
 		if (!profile) return;
@@ -66,11 +64,7 @@
 		<!-- Avatar -->
 		<div class="flex justify-center">
 			{#if profile?.avatarUrl}
-				<img
-					src={profile.avatarUrl}
-					alt=""
-					class="w-20 h-20 rounded-full object-cover"
-				/>
+				<img src={profile.avatarUrl} alt="" class="w-20 h-20 rounded-full object-cover" />
 			{:else}
 				<div class="w-20 h-20 rounded-full bg-subtle flex items-center justify-center">
 					<span class="text-2xl font-medium text-secondary">{initial}</span>
@@ -80,18 +74,8 @@
 
 		<!-- Form fields -->
 		<div class="grid grid-cols-2 gap-md">
-			<Input
-				label="First name"
-				name="firstName"
-				bind:value={firstName}
-				placeholder="First name"
-			/>
-			<Input
-				label="Last name"
-				name="lastName"
-				bind:value={lastName}
-				placeholder="Last name"
-			/>
+			<Input label="First name" name="firstName" bind:value={firstName} placeholder="First name" />
+			<Input label="Last name" name="lastName" bind:value={lastName} placeholder="Last name" />
 		</div>
 
 		<Input

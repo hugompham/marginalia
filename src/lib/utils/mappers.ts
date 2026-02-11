@@ -143,7 +143,8 @@ export function mapProfile(row: DbProfile): Profile {
 		lastName: (row as Record<string, unknown>).last_name as string | null,
 		displayName: row.display_name,
 		avatarUrl: (row as Record<string, unknown>).avatar_url as string | null,
-		onboardingCompleted: ((row as Record<string, unknown>).onboarding_completed as boolean) ?? false,
+		onboardingCompleted:
+			((row as Record<string, unknown>).onboarding_completed as boolean) ?? false,
 		dailyReviewGoal: row.daily_review_goal ?? 20,
 		preferredQuestionTypes: (row.preferred_question_types as QuestionType[]) ?? [
 			'definition',
