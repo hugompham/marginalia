@@ -60,7 +60,9 @@
 				type="search"
 				bind:value={searchQuery}
 				bind:this={searchInput}
-				placeholder="Search collections... ({navigator?.platform?.includes('Mac') ? '⌘' : 'Ctrl+'}K)"
+				placeholder="Search collections... ({navigator?.platform?.includes('Mac')
+					? '⌘'
+					: 'Ctrl+'}K)"
 				class="input pl-12"
 			/>
 		</div>

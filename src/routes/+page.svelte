@@ -54,9 +54,16 @@
 	</div>
 
 	<!-- Review CTA Card -->
-	<Card padding="lg" class="bg-gradient-to-br from-accent/10 to-accent/20 border-accent/20 border-l-4 border-l-accent">
+	<Card
+		padding="lg"
+		class="bg-gradient-to-br from-accent/10 to-accent/20 border-accent/20 border-l-4 border-l-accent"
+	>
 		<div class="flex items-start gap-lg">
-			<div class="p-md rounded-full bg-accent/10 {data.stats.dueToday > 0 ? 'animate-[pulse_3s_ease-in-out_infinite]' : ''}">
+			<div
+				class="p-md rounded-full bg-accent/10 {data.stats.dueToday > 0
+					? 'animate-[pulse_3s_ease-in-out_infinite]'
+					: ''}"
+			>
 				<Brain class="text-accent" size={28} />
 			</div>
 			<div class="flex-1">

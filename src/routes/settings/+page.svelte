@@ -99,7 +99,9 @@
 	<title>Settings | Marginalia</title>
 </svelte:head>
 
-<div class="px-lg py-xl space-y-2xl divide-y divide-border [&>section]:pt-2xl [&>section:first-of-type]:pt-0">
+<div
+	class="px-lg py-xl space-y-2xl divide-y divide-border [&>section]:pt-2xl [&>section:first-of-type]:pt-0"
+>
 	<h1 class="font-heading text-xl text-primary">Settings</h1>
 	<!-- Account Section -->
 	<section>

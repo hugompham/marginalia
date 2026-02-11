@@ -72,7 +72,15 @@
 		{#if stats.retention >= 80}
 			<div class="celebration" aria-hidden="true">
 				{#each Array(8) as _, i}
-					<span class="particle" style="--i: {i}; --color: {['var(--color-accent)', 'var(--color-success)', 'var(--color-warning)', 'var(--color-accent)'][i % 4]}"></span>
+					<span
+						class="particle"
+						style="--i: {i}; --color: {[
+							'var(--color-accent)',
+							'var(--color-success)',
+							'var(--color-warning)',
+							'var(--color-accent)'
+						][i % 4]}"
+					></span>
 				{/each}
 			</div>
 		{/if}
@@ -172,21 +180,133 @@
 	}
 
 	/* 8 particles at 45deg increments -- using nth-child for direction */
-	.particle:nth-child(1) { animation-name: burst-n; }
-	.particle:nth-child(2) { animation-name: burst-ne; }
-	.particle:nth-child(3) { animation-name: burst-e; }
-	.particle:nth-child(4) { animation-name: burst-se; }
-	.particle:nth-child(5) { animation-name: burst-s; }
-	.particle:nth-child(6) { animation-name: burst-sw; }
-	.particle:nth-child(7) { animation-name: burst-w; }
-	.particle:nth-child(8) { animation-name: burst-nw; }
+	.particle:nth-child(1) {
+		animation-name: burst-n;
+	}
+	.particle:nth-child(2) {
+		animation-name: burst-ne;
+	}
+	.particle:nth-child(3) {
+		animation-name: burst-e;
+	}
+	.particle:nth-child(4) {
+		animation-name: burst-se;
+	}
+	.particle:nth-child(5) {
+		animation-name: burst-s;
+	}
+	.particle:nth-child(6) {
+		animation-name: burst-sw;
+	}
+	.particle:nth-child(7) {
+		animation-name: burst-w;
+	}
+	.particle:nth-child(8) {
+		animation-name: burst-nw;
+	}
 
-	@keyframes burst-n  { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(0,-60px) scale(1.2); } }
-	@keyframes burst-ne { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(42px,-42px) scale(1.2); } }
-	@keyframes burst-e  { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(60px,0) scale(1.2); } }
-	@keyframes burst-se { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(42px,42px) scale(1.2); } }
-	@keyframes burst-s  { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(0,60px) scale(1.2); } }
-	@keyframes burst-sw { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(-42px,42px) scale(1.2); } }
-	@keyframes burst-w  { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(-60px,0) scale(1.2); } }
-	@keyframes burst-nw { 0% { opacity:1; transform:scale(0); } 50% { opacity:1; } 100% { opacity:0; transform:translate(-42px,-42px) scale(1.2); } }
+	@keyframes burst-n {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(0, -60px) scale(1.2);
+		}
+	}
+	@keyframes burst-ne {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(42px, -42px) scale(1.2);
+		}
+	}
+	@keyframes burst-e {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(60px, 0) scale(1.2);
+		}
+	}
+	@keyframes burst-se {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(42px, 42px) scale(1.2);
+		}
+	}
+	@keyframes burst-s {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(0, 60px) scale(1.2);
+		}
+	}
+	@keyframes burst-sw {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-42px, 42px) scale(1.2);
+		}
+	}
+	@keyframes burst-w {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-60px, 0) scale(1.2);
+		}
+	}
+	@keyframes burst-nw {
+		0% {
+			opacity: 1;
+			transform: scale(0);
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-42px, -42px) scale(1.2);
+		}
+	}
 </style>

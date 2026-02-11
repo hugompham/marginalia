@@ -225,7 +225,10 @@
 				<span class="text-lg font-medium text-primary">Reveal Answer</span>
 				<span class="flex items-center justify-center gap-xs mt-xs text-sm text-tertiary">
 					<span class="hidden desktop:inline">press</span>
-					<kbd class="hidden desktop:inline-block px-xs py-px bg-canvas border border-border rounded text-xs font-mono">Space</kbd>
+					<kbd
+						class="hidden desktop:inline-block px-xs py-px bg-canvas border border-border rounded text-xs font-mono"
+						>Space</kbd
+					>
 					<span class="desktop:hidden">Tap to reveal</span>
 				</span>
 			</button>
@@ -287,18 +290,33 @@
 	}
 
 	@keyframes swipe-hint-fade {
-		0%, 70% { opacity: 1; }
-		100% { opacity: 0; }
+		0%,
+		70% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
 
 	@keyframes nudge-left {
-		0%, 100% { transform: translateX(0); }
-		50% { transform: translateX(-6px); }
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		50% {
+			transform: translateX(-6px);
+		}
 	}
 
 	@keyframes nudge-right {
-		0%, 100% { transform: translateX(0); }
-		50% { transform: translateX(6px); }
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		50% {
+			transform: translateX(6px);
+		}
 	}
 
 	/* Reveal button subtle pulse on idle */
@@ -306,12 +324,18 @@
 		animation: reveal-pulse 3s ease-in-out infinite;
 	}
 
-	.reveal-btn:hover, .reveal-btn:active {
+	.reveal-btn:hover,
+	.reveal-btn:active {
 		animation: none;
 	}
 
 	@keyframes reveal-pulse {
-		0%, 100% { box-shadow: 0 0 0 0 transparent; }
-		50% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent); }
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 transparent;
+		}
+		50% {
+			box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent);
+		}
 	}
 </style>

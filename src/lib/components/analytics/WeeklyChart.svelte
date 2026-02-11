@@ -33,13 +33,19 @@
 			<div class="group flex flex-col items-center flex-1 h-full relative">
 				<!-- Hover tooltip -->
 				{#if day.count > 0}
-					<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-						<span class="text-xs font-medium text-primary bg-surface border border-border rounded px-xs py-px shadow-sm whitespace-nowrap">{day.count}</span>
+					<div
+						class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+					>
+						<span
+							class="text-xs font-medium text-primary bg-surface border border-border rounded px-xs py-px shadow-sm whitespace-nowrap"
+							>{day.count}</span
+						>
 					</div>
 				{/if}
 				<div class="flex-1 w-full flex items-end justify-center">
 					<div
-						class="chart-bar w-full max-w-8 rounded-t-md transition-all duration-300 {day.count >= goal
+						class="chart-bar w-full max-w-8 rounded-t-md transition-all duration-300 {day.count >=
+						goal
 							? 'bg-success'
 							: isToday(day.date)
 								? 'bg-accent'

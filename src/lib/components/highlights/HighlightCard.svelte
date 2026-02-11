@@ -27,7 +27,9 @@
 
 <Card
 	padding="lg"
-	class="relative {selectable ? 'cursor-pointer' : ''} {selected ? 'ring-2 ring-accent' : ''} {highlight.hasCards ? 'border-l-[3px] border-l-accent' : ''}"
+	class="relative {selectable ? 'cursor-pointer' : ''} {selected
+		? 'ring-2 ring-accent'
+		: ''} {highlight.hasCards ? 'border-l-[3px] border-l-accent' : ''}"
 	onclick={selectable ? onselect : undefined}
 >
 	{#if selectable}
