@@ -7,7 +7,7 @@
 	import { GenerationModal, ReviewQueue } from '$components/questions';
 	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { Difficulty, GeneratedQuestion, Highlight, Tag } from '$lib/types';
+	import type { Difficulty, GeneratedQuestion, Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
@@ -93,7 +93,7 @@
 	const hasApiKey = $derived(data.apiKeys.openai !== null || data.apiKeys.anthropic !== null);
 
 	// Get the primary API key (prefer OpenAI)
-	const primaryApiKey = $derived(data.apiKeys.openai ?? data.apiKeys.anthropic);
+	const _primaryApiKey = $derived(data.apiKeys.openai ?? data.apiKeys.anthropic);
 	const primaryProvider = $derived(data.apiKeys.openai ? 'openai' : 'anthropic');
 
 	function selectAll() {

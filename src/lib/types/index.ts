@@ -75,8 +75,16 @@ export type LinkStatus = 'active' | 'dismissed' | 'pending';
 export interface Profile {
 	/** Unique user identifier (matches auth.users.id) */
 	id: string;
+	/** User's first name */
+	firstName: string | null;
+	/** User's last name */
+	lastName: string | null;
 	/** User's display name */
 	displayName: string | null;
+	/** Avatar image URL */
+	avatarUrl: string | null;
+	/** Whether onboarding has been completed */
+	onboardingCompleted: boolean;
 	/** Daily review card goal */
 	dailyReviewGoal: number;
 	/** Preferred question types for AI generation */

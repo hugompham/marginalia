@@ -75,6 +75,7 @@ export default [
 		ignores: [
 			'.svelte-kit/**',
 			'build/**',
+			'coverage/**',
 			'dist/**',
 			'node_modules/**',
 			'src/lib/types/database.ts',

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, Card, Input, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { Plus, Edit2, Trash2, X } from 'lucide-svelte';
+	import { Plus, Edit2, Trash2 } from 'lucide-svelte';
 	import type { Tag } from '$lib/types';
 
 	interface Props {

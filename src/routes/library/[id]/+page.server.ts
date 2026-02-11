@@ -1,5 +1,5 @@
 import { getAuthenticatedSession } from '$lib/server/auth';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { AIProvider, Tag, Highlight } from '$lib/types';
 import { mapCollection, mapHighlights, mapTags } from '$lib/utils/mappers';

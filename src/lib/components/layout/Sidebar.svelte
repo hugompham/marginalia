@@ -1,27 +1,28 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {
-		Home,
-		BookOpen,
-		Network,
-		Plus,
-		Settings,
-		Brain,
-		PanelLeftClose,
-		PanelLeftOpen
-	} from 'lucide-svelte';
+	import { Home, BookOpen, Network, Plus, Settings, Brain, PanelLeftClose } from 'lucide-svelte';
 	import {
 		sidebarCollapsed,
 		toggleSidebar,
 		SIDEBAR_EXPANDED,
 		SIDEBAR_COLLAPSED
 	} from '$lib/stores/sidebar';
+	import ProfileDropdown from './ProfileDropdown.svelte';
+	import type { Profile } from '$lib/types';
 
 	interface Props {
 		userEmail?: string;
+		profile?: Profile | null;
+		onviewprofile?: () => void;
+		onaccountsettings?: () => void;
 	}
 
-	let { userEmail = 'User' }: Props = $props();
+	let {
+		userEmail = 'User',
+		profile = null,
+		onviewprofile = () => {},
+		onaccountsettings = () => {}
+	}: Props = $props();
 
 	const collapsed = $derived($sidebarCollapsed);
 	const sidebarWidth = $derived(collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED);
@@ -39,26 +40,37 @@
 		if (href === '/') return pathname === '/';
 		return pathname.startsWith(href);
 	}
-
-	const initial = $derived(userEmail[0]?.toUpperCase() || 'U');
 </script>
 
 <aside
 	class="hidden desktop:flex flex-col h-screen bg-surface border-r border-border fixed left-0 top-0 transition-[width] duration-normal ease-ease-default overflow-hidden"
 	style="width: {sidebarWidth}px"
 >
-	<!-- Logo -->
+	<!-- Logo + Collapse toggle -->
 	<div class="py-lg border-b border-border {collapsed ? 'px-0' : 'px-xl'}">
-		<a
-			href="/"
-			class="flex items-center {collapsed ? 'justify-center' : 'gap-md'}"
-			title={collapsed ? 'Marginalia' : undefined}
-		>
-			<img src="/icons/icon-192.png" alt="" class="w-8 h-8 rounded-button shrink-0" />
+		<div class="flex items-center {collapsed ? 'justify-center' : 'justify-between'}">
+			<a
+				href="/"
+				class="flex items-center {collapsed ? 'justify-center' : 'gap-md'}"
+				title={collapsed ? 'Marginalia' : undefined}
+			>
+				<img src="/icons/icon-192.png" alt="" class="w-8 h-8 rounded-button shrink-0" />
+				{#if !collapsed}
+					<span class="font-heading text-xl text-primary whitespace-nowrap">Marginalia</span>
+				{/if}
+			</a>
 			{#if !collapsed}
-				<span class="font-heading text-xl text-primary whitespace-nowrap">Marginalia</span>
+				<button
+					type="button"
+					onclick={toggleSidebar}
+					class="p-xs rounded-button text-tertiary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Collapse sidebar"
+					title="Collapse sidebar"
+				>
+					<PanelLeftClose size={18} />
+				</button>
 			{/if}
-		</a>
+		</div>
 	</div>
 
 	<!-- Navigation -->
@@ -99,42 +111,8 @@
 		</ul>
 	</nav>
 
-	<!-- Toggle button -->
-	<div class="border-t border-border py-sm {collapsed ? 'px-sm' : 'px-md'}">
-		<button
-			type="button"
-			onclick={toggleSidebar}
-			class="flex items-center rounded-button transition-colors text-secondary hover:text-primary hover:bg-subtle
-				{collapsed ? 'justify-center p-sm w-full' : 'gap-md px-md py-sm w-full'}"
-			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-			title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-		>
-			<span class="shrink-0">
-				{#if collapsed}
-					<PanelLeftOpen size={20} />
-				{:else}
-					<PanelLeftClose size={20} />
-				{/if}
-			</span>
-			{#if !collapsed}
-				<span class="font-medium whitespace-nowrap">Collapse</span>
-			{/if}
-		</button>
-	</div>
-
-	<!-- User section -->
-	<div class="border-t border-border py-lg {collapsed ? 'px-sm' : 'px-md'}">
-		<div
-			class="flex items-center py-sm text-sm text-secondary
-				{collapsed ? 'justify-center' : 'gap-md px-md'}"
-			title={collapsed ? userEmail : undefined}
-		>
-			<div class="w-8 h-8 rounded-full bg-subtle flex items-center justify-center shrink-0">
-				<span class="text-xs font-medium">{initial}</span>
-			</div>
-			{#if !collapsed}
-				<span class="truncate" title={userEmail}>{userEmail}</span>
-			{/if}
-		</div>
+	<!-- Profile dropdown -->
+	<div class="border-t border-border py-md {collapsed ? 'px-sm' : 'px-md'}">
+		<ProfileDropdown {profile} {userEmail} {collapsed} {onviewprofile} {onaccountsettings} />
 	</div>
 </aside>

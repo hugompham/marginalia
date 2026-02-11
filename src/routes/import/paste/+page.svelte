@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { Button, Input, Textarea, Card } from '$components/ui';
 	import { ChevronLeft } from 'lucide-svelte';
 	import { toast } from '$components/ui/Toast.svelte';

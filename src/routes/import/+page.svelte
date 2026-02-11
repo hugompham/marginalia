@@ -11,7 +11,7 @@
 	<h1 class="font-heading text-xl text-primary mb-md">Import</h1>
 	<p class="text-secondary mb-xl">Choose how you want to import your highlights.</p>
 
-	<div class="space-y-md max-w-2xl mx-auto">
+	<div class="space-y-md">
 		<!-- Web Article -->
 		<a href="/import/url" class="block group">
 			<Card padding="lg" class="flex items-center gap-lg">

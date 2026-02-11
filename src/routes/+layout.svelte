@@ -3,7 +3,9 @@
 	import type { Snippet } from 'svelte';
 	import type { LayoutData } from './$types';
 	import { Shell } from '$components/layout';
+	import { ProfileDialog, AccountSettingsDialog } from '$components/layout';
 	import { Toast } from '$components/ui';
+	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/theme';
@@ -15,6 +17,10 @@
 	}
 
 	let { data, children }: Props = $props();
+
+	// Dialog state
+	let showProfileDialog = $state(false);
+	let showAccountSettingsDialog = $state(false);
 
 	// Initialize theme and sidebar state from server data
 	$effect(() => {
@@ -31,17 +37,34 @@
 			data: { subscription }
 		} = data.supabase.auth.onAuthStateChange((event, session) => {
 			if (session?.access_token !== data.session?.access_token) {
-				// Token changed, invalidate data
 				invalidate('supabase:auth');
 			}
 		});
 
-		return () => subscription.unsubscribe();
+		// Listen for custom events from settings page
+		function handleOpenProfile() {
+			showProfileDialog = true;
+		}
+		function handleOpenAccountSettings() {
+			showAccountSettingsDialog = true;
+		}
+
+		window.addEventListener('open-profile-dialog', handleOpenProfile);
+		window.addEventListener('open-account-settings', handleOpenAccountSettings);
+
+		return () => {
+			subscription.unsubscribe();
+			window.removeEventListener('open-profile-dialog', handleOpenProfile);
+			window.removeEventListener('open-account-settings', handleOpenAccountSettings);
+		};
 	});
 
-	// Show shell only for authenticated routes
-	const showShell = $derived(data.session !== null);
-	const userEmail = $derived(data.session?.user?.email);
+	// Hide shell on auth-related pages: login, signup, verify, onboarding, errors
+	const isShellExcluded = $derived(
+		$page.url.pathname.startsWith('/auth') || $page.url.pathname.startsWith('/onboarding')
+	);
+	const showShell = $derived(data.session !== null && !isShellExcluded);
+	const userEmail = $derived(data.session?.user?.email ?? '');
 </script>
 
 <svelte:head>
@@ -50,9 +73,29 @@
 </svelte:head>
 
 {#if showShell}
-	<Shell {userEmail}>
+	<Shell
+		{userEmail}
+		profile={data.profile}
+		onviewprofile={() => (showProfileDialog = true)}
+		onaccountsettings={() => (showAccountSettingsDialog = true)}
+	>
 		{@render children()}
 	</Shell>
+
+	<!-- Profile Dialog -->
+	<ProfileDialog
+		bind:open={showProfileDialog}
+		profile={data.profile}
+		{userEmail}
+		supabase={data.supabase}
+	/>
+
+	<!-- Account Settings Dialog -->
+	<AccountSettingsDialog
+		bind:open={showAccountSettingsDialog}
+		profile={data.profile}
+		apiKeys={data.apiKeys}
+	/>
 {:else}
 	{@render children()}
 {/if}

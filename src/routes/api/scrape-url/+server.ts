@@ -87,7 +87,7 @@ function isPublicUrl(url: URL): boolean {
 	// Block private IPv4 ranges
 	const ipv4Match = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
 	if (ipv4Match) {
-		const [, a, b, c, d] = ipv4Match.map(Number);
+		const [, a, b, _c, _d] = ipv4Match.map(Number);
 		// 10.0.0.0/8
 		if (a === 10) return false;
 		// 172.16.0.0/12
