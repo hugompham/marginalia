@@ -99,7 +99,7 @@
 	<title>Settings | Marginalia</title>
 </svelte:head>
 
-<div class="px-lg py-xl space-y-xl">
+<div class="px-lg py-xl space-y-2xl divide-y divide-border [&>section]:pt-2xl [&>section:first-of-type]:pt-0">
 	<h1 class="font-heading text-xl text-primary">Settings</h1>
 	<!-- Account Section -->
 	<section>
@@ -134,14 +134,14 @@
 		<Card padding="lg">
 			<div class="flex justify-between items-center">
 				<p class="font-medium text-primary mb-sm">Theme</p>
-				<div class="flex gap-sm">
+				<div class="inline-flex rounded-button border border-border overflow-hidden">
 					<button
 						type="button"
 						onclick={() => selectTheme('light')}
-						class="flex items-center gap-sm px-lg py-sm rounded-button border text-sm font-medium transition-all duration-fast ease-out
+						class="flex items-center gap-sm px-lg py-sm text-sm font-medium transition-all duration-fast ease-out
 							{$theme === 'light'
-							? 'border-accent bg-accent/10 text-accent'
-							: 'border-border bg-transparent text-secondary hover:bg-subtle hover:text-primary'}"
+							? 'bg-accent/10 text-accent border-r border-accent/30'
+							: 'text-secondary hover:bg-subtle hover:text-primary border-r border-border'}"
 						aria-pressed={$theme === 'light'}
 					>
 						<Sun size={16} />
@@ -150,10 +150,10 @@
 					<button
 						type="button"
 						onclick={() => selectTheme('dark')}
-						class="flex items-center gap-sm px-lg py-sm rounded-button border text-sm font-medium transition-all duration-fast ease-out
+						class="flex items-center gap-sm px-lg py-sm text-sm font-medium transition-all duration-fast ease-out
 							{$theme === 'dark'
-							? 'border-accent bg-accent/10 text-accent'
-							: 'border-border bg-transparent text-secondary hover:bg-subtle hover:text-primary'}"
+							? 'bg-accent/10 text-accent'
+							: 'text-secondary hover:bg-subtle hover:text-primary'}"
 						aria-pressed={$theme === 'dark'}
 					>
 						<Moon size={16} />

@@ -126,8 +126,8 @@
 	}
 
 	.btn-primary {
-		@apply btn bg-accent text-white;
-		@apply hover:bg-accent-hover active:bg-accent-hover;
+		@apply btn bg-accent text-white shadow-sm;
+		@apply hover:bg-accent-hover active:bg-accent-hover hover:shadow-md;
 	}
 
 	.btn-secondary {
@@ -199,5 +199,17 @@
 
 	.touch-pan-x {
 		touch-action: pan-x;
+	}
+}
+
+/* Reduced motion: disable all animations/transitions for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
 	}
 }
