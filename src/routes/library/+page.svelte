@@ -12,6 +12,14 @@
 	let { data }: Props = $props();
 
 	let searchQuery = $state('');
+	let searchInput = $state<HTMLInputElement | null>(null);
+
+	function handleGlobalKeydown(e: KeyboardEvent) {
+		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+			e.preventDefault();
+			searchInput?.focus();
+		}
+	}
 
 	const filteredCollections = $derived(
 		data.collections.filter(
@@ -34,6 +42,8 @@
 	<title>Library | Marginalia</title>
 </svelte:head>
 
+<svelte:window onkeydown={handleGlobalKeydown} />
+
 <div class="px-lg py-xl">
 	<div class="flex items-center justify-between mb-xl">
 		<h1 class="font-heading text-xl text-primary">Library</h1>
@@ -49,7 +59,8 @@
 			<input
 				type="search"
 				bind:value={searchQuery}
-				placeholder="Search collections..."
+				bind:this={searchInput}
+				placeholder="Search collections... ({navigator?.platform?.includes('Mac') ? '⌘' : 'Ctrl+'}K)"
 				class="input pl-12"
 			/>
 		</div>

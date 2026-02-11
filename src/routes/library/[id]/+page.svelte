@@ -250,22 +250,17 @@
 		</div>
 	</Card>
 
-	<!-- Tag Filter -->
+	<!-- Tag Filter (inline) -->
 	{#if data.availableTags.length > 0}
-		<Card padding="md" class="mb-md">
-			<div class="flex items-center gap-md">
-				<Filter size={16} class="text-secondary" />
-				<span class="text-sm text-secondary">Filter by tags:</span>
-				<div class="flex-1">
-					<TagPicker
-						availableTags={data.availableTags}
-						selectedTags={filterTags}
-						ontagadd={(tag) => (filterTags = [...filterTags, tag])}
-						ontagremove={(tag) => (filterTags = filterTags.filter((t) => t.id !== tag.id))}
-					/>
-				</div>
-			</div>
-		</Card>
+		<div class="flex items-center gap-sm py-sm mb-md">
+			<Filter size={14} class="text-tertiary shrink-0" />
+			<TagPicker
+				availableTags={data.availableTags}
+				selectedTags={filterTags}
+				ontagadd={(tag) => (filterTags = [...filterTags, tag])}
+				ontagremove={(tag) => (filterTags = filterTags.filter((t) => t.id !== tag.id))}
+			/>
+		</div>
 	{/if}
 
 	<!-- API Key Warning -->
