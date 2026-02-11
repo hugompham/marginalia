@@ -52,7 +52,8 @@
 			toast.success('Profile updated');
 			await invalidate('app:profile');
 			open = false;
-		} catch {
+		} catch (err) {
+			console.error('Profile update failed:', err);
 			toast.error('Failed to update profile');
 		} finally {
 			saving = false;

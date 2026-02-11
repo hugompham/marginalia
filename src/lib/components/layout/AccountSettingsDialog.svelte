@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidate } from '$app/navigation';
 	import { Modal, Button, Input } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { Key, Brain, Trash2 } from 'lucide-svelte';
@@ -237,6 +238,7 @@
 				if (result.type === 'success') {
 					showApiKeyModal = false;
 					apiKey = '';
+					await invalidate('app:profile');
 					toast.success('API key saved!');
 				}
 			};

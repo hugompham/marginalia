@@ -49,7 +49,9 @@ export const load: LayoutServerLoad = async ({ locals, depends, url }) => {
 			pathname.startsWith('/onboarding') ||
 			pathname.startsWith('/api');
 
-		if (profile && !profile.onboardingCompleted && !isExemptRoute) {
+		// Only redirect if onboarding_completed is explicitly false (not undefined/null)
+		// to avoid redirect loops if migration hasn't been applied yet
+		if (profile && profile.onboardingCompleted === false && !isExemptRoute) {
 			throw redirect(303, '/onboarding');
 		}
 	}

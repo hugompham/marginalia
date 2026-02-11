@@ -2,6 +2,7 @@
 	import { Toggle } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { theme, setTheme } from '$lib/stores/theme';
+	import { beforeNavigate } from '$app/navigation';
 	import { User, Settings, Moon, LogOut } from 'lucide-svelte';
 	import type { Profile } from '$lib/types';
 
@@ -18,6 +19,11 @@
 	let showDropdown = $state(false);
 	let triggerEl = $state<HTMLButtonElement | null>(null);
 	let menuStyle = $state('');
+
+	// Close dropdown on route change
+	beforeNavigate(() => {
+		showDropdown = false;
+	});
 
 	const displayName = $derived(
 		profile?.firstName

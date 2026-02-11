@@ -29,8 +29,11 @@ export const actions: Actions = {
 		const displayName = (formData.get('displayName') as string)?.trim();
 		const themeChoice = formData.get('theme') as 'light' | 'dark';
 
-		if (!firstName) {
-			return fail(400, { error: 'First name is required' });
+		if (!firstName || firstName.length > 100) {
+			return fail(400, { error: 'First name is required (max 100 characters)' });
+		}
+		if (lastName && lastName.length > 100) {
+			return fail(400, { error: 'Last name is too long (max 100 characters)' });
 		}
 
 		// Cast needed: generated types lag behind migration (new columns)
