@@ -11,6 +11,7 @@ export const load: LayoutLoad = async ({ data, fetch, depends }) => {
 		supabase,
 		session: data.session,
 		profile: data.profile,
+		apiKeys: data.apiKeys,
 		theme: data.theme,
 		sidebarCollapsed: data.sidebarCollapsed
 	};

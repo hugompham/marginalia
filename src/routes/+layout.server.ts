@@ -15,18 +15,32 @@ export const load: LayoutServerLoad = async ({ locals, depends, url }) => {
 		data: { session }
 	} = await locals.supabase.auth.getSession();
 
-	// Fetch profile for authenticated users
+	// Fetch profile and API keys for authenticated users
 	let profile = null;
-	if (user) {
-		const { data: profileData } = await locals.supabase
-			.from('profiles')
-			.select('*')
-			.eq('id', user.id)
-			.single();
+	let apiKeys: Record<string, { model: string; keyHint: string } | null> = {
+		openai: null,
+		anthropic: null
+	};
 
-		if (profileData) {
-			profile = mapProfile(profileData);
+	if (user) {
+		const [profileResult, apiKeysResult] = await Promise.all([
+			locals.supabase.from('profiles').select('*').eq('id', user.id).single(),
+			locals.supabase
+				.from('api_keys')
+				.select('provider, model, is_active, key_hint')
+				.eq('user_id', user.id)
+		]);
+
+		if (profileResult.data) {
+			profile = mapProfile(profileResult.data);
 		}
+
+		apiKeysResult.data?.forEach((key) => {
+			apiKeys[key.provider] = {
+				model: key.model,
+				keyHint: key.key_hint ?? '****'
+			};
+		});
 
 		// Onboarding guard: redirect to /onboarding if not completed
 		const pathname = url.pathname;
@@ -43,6 +57,7 @@ export const load: LayoutServerLoad = async ({ locals, depends, url }) => {
 	return {
 		session,
 		profile,
+		apiKeys,
 		theme: locals.theme,
 		sidebarCollapsed: locals.sidebarCollapsed
 	};

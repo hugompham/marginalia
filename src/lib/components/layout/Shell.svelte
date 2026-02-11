@@ -15,16 +15,24 @@
 		children: Snippet;
 		userEmail?: string;
 		profile?: Profile | null;
+		onviewprofile?: () => void;
+		onaccountsettings?: () => void;
 	}
 
-	let { children, userEmail, profile = null }: Props = $props();
+	let {
+		children,
+		userEmail,
+		profile = null,
+		onviewprofile = () => {},
+		onaccountsettings = () => {}
+	}: Props = $props();
 
 	const sidebarWidth = $derived($sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED);
 </script>
 
 <div class="min-h-screen bg-canvas">
 	<!-- Desktop sidebar -->
-	<Sidebar {userEmail} {profile} />
+	<Sidebar {userEmail} {profile} {onviewprofile} {onaccountsettings} />
 
 	<!-- Floating expand button (visible only when sidebar is collapsed) -->
 	{#if $sidebarCollapsed}
