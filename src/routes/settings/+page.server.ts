@@ -8,31 +8,6 @@ import { getAuthenticatedSession } from '$lib/server/auth';
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await getAuthenticatedSession(locals);
 
-	// Fetch profile
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('*')
-		.eq('id', user.id)
-		.single();
-
-	// Fetch API keys (only hints, not actual keys)
-	const { data: apiKeys } = await locals.supabase
-		.from('api_keys')
-		.select('provider, model, is_active, key_hint')
-		.eq('user_id', user.id);
-
-	const apiKeyMap: Record<string, { model: string; keyHint: string } | null> = {
-		openai: null,
-		anthropic: null
-	};
-
-	apiKeys?.forEach((key) => {
-		apiKeyMap[key.provider] = {
-			model: key.model,
-			keyHint: key.key_hint ?? '****'
-		};
-	});
-
 	// Fetch tags
 	const { data: tagsData } = await locals.supabase
 		.from('tags')
@@ -41,15 +16,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	return {
-		user,
-		profile: profile
-			? {
-					dailyReviewGoal: profile.daily_review_goal,
-					preferredQuestionTypes: profile.preferred_question_types,
-					theme: profile.theme
-				}
-			: null,
-		apiKeys: apiKeyMap,
 		tags: tagsData ? mapTags(tagsData) : []
 	};
 };
@@ -68,7 +34,6 @@ export const actions: Actions = {
 			return fail(400, { error: 'Missing required fields' });
 		}
 
-		// Encrypt the API key before storing
 		let encryptedKey: string;
 		try {
 			encryptedKey = await encrypt(apiKey);
@@ -79,7 +44,6 @@ export const actions: Actions = {
 			});
 		}
 
-		// Store the last 4 characters as a hint for display
 		const keyHint = apiKey.slice(-4);
 
 		const { error } = await locals.supabase.from('api_keys').upsert(
@@ -173,9 +137,7 @@ export const actions: Actions = {
 			return fail(500, { error: data.error || 'Failed to delete account' });
 		}
 
-		// Sign out (clears auth cookies)
 		await locals.supabase.auth.signOut();
-
 		throw redirect(303, '/auth/login');
 	}
 };
