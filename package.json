@@ -3,6 +3,10 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"engines": {
+		"node": ">=22.0.0",
+		"pnpm": ">=10.0.0"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -22,6 +26,8 @@
 		"db:stop": "supabase stop",
 		"db:reset": "supabase db reset",
 		"db:types": "supabase gen types typescript --local > src/lib/types/database.ts",
+		"dev:docker": "make dev",
+		"setup": "make setup",
 		"cf:preview": "pnpm build && wrangler pages dev .svelte-kit/cloudflare",
 		"cf:deploy": "pnpm build && wrangler pages deploy .svelte-kit/cloudflare --project-name=marginalia"
 	},
