@@ -101,7 +101,7 @@
 		/>
 
 		<div>
-			<label class="block text-sm font-medium text-primary mb-sm">Email</label>
+			<span class="block text-sm font-medium text-primary mb-sm">Email</span>
 			<p class="text-sm text-secondary px-md py-sm bg-subtle rounded-button">{userEmail}</p>
 		</div>
 	</div>

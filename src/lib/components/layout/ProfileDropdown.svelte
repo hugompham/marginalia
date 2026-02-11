@@ -102,6 +102,7 @@
 		<div
 			class="absolute bottom-full left-0 mb-sm z-50 w-64 bg-surface border border-border rounded-card shadow-xl overflow-hidden animate-in"
 			role="menu"
+			tabindex="-1"
 			onkeydown={handleKeydown}
 		>
 			<!-- User info header -->
