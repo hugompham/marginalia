@@ -22,37 +22,31 @@ A spaced repetition app for reading highlights. Import your highlights from book
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm
-- Supabase account (for database)
+- Node.js 22+ (see `.nvmrc`)
+- pnpm 10+
+- [Supabase CLI](https://supabase.com/docs/guides/cli)
+- Docker (optional, for containerized dev)
 
-### Installation
+### Quick Start
 
-1. Clone the repository:
+```bash
+git clone https://github.com/your-username/marginalia.git
+cd marginalia
+cp .env.example .env
+# Edit .env with your keys
+make setup    # installs deps, starts Supabase, generates types
+make dev      # starts everything (Docker + Supabase)
+```
 
-   ```bash
-   git clone https://github.com/your-username/marginalia.git
-   cd marginalia
-   ```
+Open [http://localhost:5173](http://localhost:5173). Supabase Studio is at [http://localhost:54323](http://localhost:54323).
 
-2. Install dependencies:
+### Native Mode (no Docker)
 
-   ```bash
-   pnpm install
-   ```
+If you prefer running SvelteKit directly on your machine:
 
-3. Copy the environment file:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Configure environment variables (see below)
-
-5. Start the development server:
-   ```bash
-   pnpm dev
-   ```
+```bash
+make dev-native
+```
 
 ## Environment Variables
 
@@ -101,19 +95,36 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 ## Development
 
+### Make Targets
+
+| Command           | Description                                                       |
+| ----------------- | ----------------------------------------------------------------- |
+| `make dev`        | Start full stack: Supabase + edge functions + SvelteKit in Docker |
+| `make dev-native` | Start full stack: Supabase + edge functions + SvelteKit natively  |
+| `make stop`       | Stop all services                                                 |
+| `make clean`      | Stop + remove Docker volumes + reset Supabase (no backup)         |
+| `make setup`      | Fresh install: `pnpm install` + `supabase start` + generate types |
+| `make logs`       | Tail Docker container logs                                        |
+
+### Other Commands
+
 ```bash
-# Start development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Preview production build
-pnpm preview
-
-# Type checking
-pnpm check
+pnpm build          # Build for production (Cloudflare Pages)
+pnpm preview        # Preview production build
+pnpm check          # Type checking
+pnpm test:run       # Run tests
+pnpm test:coverage  # Run tests with coverage
 ```
+
+### Docker Architecture
+
+The local dev setup uses a hybrid approach:
+
+- **SvelteKit** runs in a Docker container (`Dockerfile.dev`) with HMR via bind-mounted `src/` and config files
+- **Supabase** runs its own ~15 containers via `supabase start` (managed by the Supabase CLI)
+- The SvelteKit container reaches Supabase at `host.docker.internal:54321`
+
+Production deployment is on Cloudflare Pages -- no containers involved.
 
 ## Project Structure
 
