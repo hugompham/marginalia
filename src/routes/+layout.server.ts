@@ -5,7 +5,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 
 	// Validate JWT and get session
 	const {
-		data: { user }
+		data: { user: _user }
 	} = await locals.supabase.auth.getUser();
 
 	const {

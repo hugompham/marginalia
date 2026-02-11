@@ -10,7 +10,6 @@
 		Trash2,
 		Save,
 		Loader2,
-		ArrowLeft,
 		ChevronLeft,
 		ChevronDown,
 		ChevronUp

@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const { id } = params;
 	const userId = session!.user.id;
 
-	const [collectionResult, highlightsResult, tagsResult, highlightTagsResult] = await Promise.all([
+	const [collectionResult, highlightsResult, tagsResult, _highlightTagsResult] = await Promise.all([
 		locals.supabase.from('collections').select('*').eq('id', id).eq('user_id', userId).single(),
 		locals.supabase
 			.from('highlights')

@@ -8,7 +8,7 @@
 		data: PageData;
 	}
 
-	let { data }: Props = $props();
+	let { data: _data }: Props = $props();
 
 	const status = $derived($page.status);
 	const message = $derived($page.error?.message || 'An unexpected error occurred');
