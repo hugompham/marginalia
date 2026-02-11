@@ -59,9 +59,11 @@
 		};
 	});
 
-	// Show shell for authenticated routes, but not onboarding
-	const isOnboarding = $derived($page.url.pathname.startsWith('/onboarding'));
-	const showShell = $derived(data.session !== null && !isOnboarding);
+	// Hide shell on auth-related pages: login, signup, verify, onboarding, errors
+	const isShellExcluded = $derived(
+		$page.url.pathname.startsWith('/auth') || $page.url.pathname.startsWith('/onboarding')
+	);
+	const showShell = $derived(data.session !== null && !isShellExcluded);
 	const userEmail = $derived(data.session?.user?.email ?? '');
 </script>
 
