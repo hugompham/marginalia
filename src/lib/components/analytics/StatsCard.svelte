@@ -26,15 +26,17 @@
 </script>
 
 <div class="bg-surface border border-canvas rounded-card p-lg">
-	<div class="flex items-start justify-between mb-sm">
+	<div class="flex items-start justify-between mb-md">
 		<span class="text-sm text-secondary">{title}</span>
 		{#if Icon}
-			<Icon size={16} class="text-tertiary" />
+			<div class="p-xs rounded-full bg-accent/8">
+				<Icon size={16} class="text-accent" />
+			</div>
 		{/if}
 	</div>
 
 	<div class="flex items-baseline gap-sm">
-		<span class="text-2xl font-heading text-primary">{value}</span>
+		<span class="text-3xl font-heading text-primary">{value}</span>
 		{#if trend && trendValue}
 			<span class="text-sm {trendColors[trend]}">
 				{trendIcons[trend]}
@@ -44,6 +46,6 @@
 	</div>
 
 	{#if subtitle}
-		<p class="text-xs text-tertiary mt-xs">{subtitle}</p>
+		<p class="text-xs text-tertiary mt-sm">{subtitle}</p>
 	{/if}
 </div>
