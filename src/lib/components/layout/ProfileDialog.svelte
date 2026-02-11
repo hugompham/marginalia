@@ -37,13 +37,14 @@
 		saving = true;
 
 		try {
+			// Cast needed: generated types lag behind migration (new columns)
 			const { error } = await supabase
 				.from('profiles')
 				.update({
 					first_name: firstName || null,
 					last_name: lastName || null,
 					display_name: displayName || null
-				})
+				} as Record<string, unknown>)
 				.eq('id', profile.id);
 
 			if (error) throw error;

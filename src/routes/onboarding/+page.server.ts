@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// If already completed onboarding, redirect to home
 	const { data: profile } = await locals.supabase
 		.from('profiles')
-		.select('onboarding_completed')
+		.select('*')
 		.eq('id', user.id)
 		.single();
 
@@ -33,6 +33,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'First name is required' });
 		}
 
+		// Cast needed: generated types lag behind migration (new columns)
 		const { error } = await locals.supabase
 			.from('profiles')
 			.update({
@@ -41,7 +42,7 @@ export const actions: Actions = {
 				display_name: displayName || `${firstName}${lastName ? ` ${lastName}` : ''}`,
 				theme: themeChoice || 'light',
 				onboarding_completed: true
-			})
+			} as Record<string, unknown>)
 			.eq('id', user.id);
 
 		if (error) {

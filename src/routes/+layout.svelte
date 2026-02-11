@@ -5,6 +5,7 @@
 	import { Shell } from '$components/layout';
 	import { ProfileDialog, AccountSettingsDialog } from '$components/layout';
 	import { Toast } from '$components/ui';
+	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/theme';
@@ -58,8 +59,9 @@
 		};
 	});
 
-	// Show shell only for authenticated routes
-	const showShell = $derived(data.session !== null);
+	// Show shell for authenticated routes, but not onboarding
+	const isOnboarding = $derived($page.url.pathname.startsWith('/onboarding'));
+	const showShell = $derived(data.session !== null && !isOnboarding);
 	const userEmail = $derived(data.session?.user?.email ?? '');
 </script>
 
