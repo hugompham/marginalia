@@ -15,14 +15,22 @@
 		SIDEBAR_EXPANDED,
 		SIDEBAR_COLLAPSED
 	} from '$lib/stores/sidebar';
+	import ProfileDropdown from './ProfileDropdown.svelte';
 	import type { Profile } from '$lib/types';
 
 	interface Props {
 		userEmail?: string;
 		profile?: Profile | null;
+		onviewprofile?: () => void;
+		onaccountsettings?: () => void;
 	}
 
-	let { userEmail = 'User', profile = null }: Props = $props();
+	let {
+		userEmail = 'User',
+		profile = null,
+		onviewprofile = () => {},
+		onaccountsettings = () => {}
+	}: Props = $props();
 
 	const collapsed = $derived($sidebarCollapsed);
 	const sidebarWidth = $derived(collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED);
@@ -40,15 +48,6 @@
 		if (href === '/') return pathname === '/';
 		return pathname.startsWith(href);
 	}
-
-	const displayName = $derived(
-		profile?.firstName
-			? `${profile.firstName}${profile.lastName ? ` ${profile.lastName}` : ''}`
-			: profile?.displayName || userEmail
-	);
-	const initial = $derived(
-		profile?.firstName?.[0]?.toUpperCase() || userEmail[0]?.toUpperCase() || 'U'
-	);
 </script>
 
 <aside
@@ -120,19 +119,14 @@
 		</ul>
 	</nav>
 
-	<!-- User section (placeholder for ProfileDropdown) -->
-	<div class="border-t border-border py-lg {collapsed ? 'px-sm' : 'px-md'}">
-		<div
-			class="flex items-center py-sm text-sm text-secondary
-				{collapsed ? 'justify-center' : 'gap-md px-md'}"
-			title={collapsed ? displayName : undefined}
-		>
-			<div class="w-8 h-8 rounded-full bg-subtle flex items-center justify-center shrink-0">
-				<span class="text-xs font-medium">{initial}</span>
-			</div>
-			{#if !collapsed}
-				<span class="truncate" title={displayName}>{displayName}</span>
-			{/if}
-		</div>
+	<!-- Profile dropdown -->
+	<div class="border-t border-border py-md {collapsed ? 'px-sm' : 'px-md'}">
+		<ProfileDropdown
+			{profile}
+			{userEmail}
+			{collapsed}
+			{onviewprofile}
+			{onaccountsettings}
+		/>
 	</div>
 </aside>
