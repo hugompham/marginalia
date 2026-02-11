@@ -3,7 +3,7 @@
 	import { toast } from '$components/ui/Toast.svelte';
 	import { theme, setTheme } from '$lib/stores/theme';
 	import { beforeNavigate } from '$app/navigation';
-	import { User, Settings, Moon, LogOut } from 'lucide-svelte';
+	import { User, Settings, Moon, LogOut, ChevronsUpDown } from 'lucide-svelte';
 	import type { Profile } from '$lib/types';
 
 	interface Props {
@@ -37,9 +37,9 @@
 
 	function handleToggleDropdown() {
 		if (!showDropdown && triggerEl) {
-			// Position menu using fixed coordinates to escape overflow:hidden
 			const rect = triggerEl.getBoundingClientRect();
-			const menuWidth = 256; // w-64 = 16rem = 256px
+			// Match dropdown width to trigger, with a minimum for collapsed state
+			const menuWidth = Math.max(rect.width, 220);
 			menuStyle = `position:fixed; left:${rect.left}px; bottom:${window.innerHeight - rect.top + 4}px; width:${menuWidth}px; z-index:50;`;
 		}
 		showDropdown = !showDropdown;
@@ -97,6 +97,7 @@
 	{/if}
 	{#if !collapsed}
 		<span class="truncate text-left flex-1">{displayName}</span>
+		<ChevronsUpDown size={14} class="shrink-0 text-tertiary" />
 	{/if}
 </button>
 
