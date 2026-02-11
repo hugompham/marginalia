@@ -25,6 +25,15 @@
 	$effect(() => {
 		if (data.cards.length > 0 && !$reviewSession) {
 			reviewSession.startSession(data.cards);
+
+			// Show keyboard hint once on desktop
+			if (typeof window !== 'undefined' && matchMedia('(pointer: fine)').matches) {
+				const hintKey = 'marginalia:kbHintShown';
+				if (!localStorage.getItem(hintKey)) {
+					localStorage.setItem(hintKey, '1');
+					toast.info('Keyboard shortcuts: Space to reveal, 1-4 to rate');
+				}
+			}
 		}
 	});
 

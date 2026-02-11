@@ -46,12 +46,12 @@
 	{#each ratings as { key, label, color, border, shortcut }}
 		<button
 			type="button"
-			class="flex flex-col items-center py-md px-sm rounded-button border transition-colors active:scale-95 {color} {border}"
+			class="flex flex-col items-center py-lg px-sm rounded-button border transition-all duration-fast active:scale-95 {color} {border}"
 			onclick={() => onrate(key)}
 		>
 			<span class="text-xs opacity-70">{schedulingOptions[key].interval}</span>
-			<span class="font-medium mt-xs">{label}</span>
-			<span class="text-xs opacity-50 mt-xs desktop:block hidden">[{shortcut}]</span>
+			<span class="font-heading font-semibold mt-xs">{label}</span>
+			<kbd class="text-xs opacity-50 mt-xs desktop:block hidden font-mono">{shortcut}</kbd>
 		</button>
 	{/each}
 </div>
