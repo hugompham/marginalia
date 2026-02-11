@@ -207,7 +207,7 @@
 </svelte:head>
 
 <div class="px-lg py-xl">
-	<div class="flex items-center justify-between mb-xl">
+	<div class="flex flex-col gap-sm sm:flex-row sm:items-center sm:justify-between mb-xl">
 		<div class="flex items-center gap-sm min-w-0">
 			<a
 				href="/library"

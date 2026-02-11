@@ -25,7 +25,7 @@
 	};
 </script>
 
-<div class="bg-surface border border-canvas rounded-card p-lg">
+<div class="bg-surface border border-border rounded-card p-lg">
 	<div class="flex items-start justify-between mb-md">
 		<span class="text-sm text-secondary">{title}</span>
 		{#if Icon}

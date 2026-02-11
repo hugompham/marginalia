@@ -11,7 +11,7 @@
 	<h1 class="font-heading text-xl text-primary mb-md">Import</h1>
 	<p class="text-secondary mb-xl">Choose how you want to import your highlights.</p>
 
-	<div class="space-y-md">
+	<div class="space-y-md max-w-2xl mx-auto">
 		<!-- Web Article -->
 		<a href="/import/url" class="block group">
 			<Card padding="lg" class="flex items-center gap-lg">
@@ -51,12 +51,12 @@
 					<BookMarked class="text-warning" size={24} />
 				</div>
 				<div class="flex-1">
-					<h3 class="font-heading text-lg text-primary group-hover:text-warning transition-colors">
+					<h3 class="font-heading text-lg text-primary group-hover:text-accent transition-colors">
 						Kindle Import
 					</h3>
 					<p class="text-sm text-secondary">Upload your My Clippings.txt file</p>
 				</div>
-				<ChevronRight class="text-tertiary group-hover:text-warning transition-colors" size={20} />
+				<ChevronRight class="text-tertiary group-hover:text-accent transition-colors" size={20} />
 			</Card>
 		</a>
 	</div>
