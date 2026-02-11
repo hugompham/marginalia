@@ -29,16 +29,28 @@
 <div class="flex flex-col h-full">
 	<!-- Chart -->
 	<div class="flex items-end justify-between gap-2 h-32 mb-2">
-		{#each data as day}
-			<div class="flex flex-col items-center flex-1 h-full">
+		{#each data as day, i}
+			<div class="group flex flex-col items-center flex-1 h-full relative">
+				<!-- Hover tooltip -->
+				{#if day.count > 0}
+					<div
+						class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+					>
+						<span
+							class="text-xs font-medium text-primary bg-surface border border-border rounded px-xs py-px shadow-sm whitespace-nowrap"
+							>{day.count}</span
+						>
+					</div>
+				{/if}
 				<div class="flex-1 w-full flex items-end justify-center">
 					<div
-						class="w-full max-w-8 rounded-t transition-all duration-300 {day.count >= goal
+						class="chart-bar w-full max-w-8 rounded-t-md transition-all duration-300 {day.count >=
+						goal
 							? 'bg-success'
 							: isToday(day.date)
 								? 'bg-accent'
 								: 'bg-accent/40'}"
-						style="height: {getBarHeight(day.count)}"
+						style="height: {getBarHeight(day.count)}; animation-delay: {i * 50}ms"
 						title="{day.count} reviews on {day.date}"
 					></div>
 				</div>
@@ -65,3 +77,20 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.chart-bar {
+		animation: bar-grow 400ms ease-out both;
+	}
+
+	@keyframes bar-grow {
+		from {
+			transform: scaleY(0);
+			transform-origin: bottom;
+		}
+		to {
+			transform: scaleY(1);
+			transform-origin: bottom;
+		}
+	}
+</style>

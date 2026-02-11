@@ -25,6 +25,15 @@
 	$effect(() => {
 		if (data.cards.length > 0 && !$reviewSession) {
 			reviewSession.startSession(data.cards);
+
+			// Show keyboard hint once on desktop
+			if (typeof window !== 'undefined' && matchMedia('(pointer: fine)').matches) {
+				const hintKey = 'marginalia:kbHintShown';
+				if (!localStorage.getItem(hintKey)) {
+					localStorage.setItem(hintKey, '1');
+					toast.info('Keyboard shortcuts: Space to reveal, 1-4 to rate');
+				}
+			}
 		}
 	});
 
@@ -87,7 +96,7 @@
 
 {#if !data.cards.length}
 	<!-- No cards due -->
-	<div class="px-lg py-xl">
+	<div class="px-lg py-xl min-h-[70vh] flex flex-col justify-center">
 		<Card padding="lg" class="text-center">
 			<div
 				class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-lg"
@@ -98,7 +107,7 @@
 			<p class="text-secondary mb-lg">
 				You have no cards due for review right now. Check back later or add more highlights.
 			</p>
-			<div class="flex flex-col gap-md">
+			<div class="flex flex-col gap-md max-w-xs mx-auto w-full">
 				<Button href="/library">Browse Library</Button>
 				<Button href="/import" variant="secondary">Import Highlights</Button>
 			</div>

@@ -52,7 +52,9 @@
 	};
 </script>
 
-<div class="fixed bottom-lg right-lg z-50 flex flex-col gap-sm max-w-sm w-full pointer-events-none">
+<div
+	class="fixed bottom-20 sm:bottom-lg right-lg z-50 flex flex-col gap-sm max-w-sm w-full pointer-events-none"
+>
 	{#each $toast as message (message.id)}
 		<div
 			class="pointer-events-auto flex items-start gap-md p-lg rounded-card border bg-surface shadow-lg animate-slide-in"

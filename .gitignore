@@ -28,6 +28,12 @@ Thumbs.db
 # Plans
 plans/
 
+# Screenshots (Playwright visual testing)
+screenshots/
+
+# Playwright MCP
+.playwright-mcp/
+
 # Test coverage
 coverage/
 
