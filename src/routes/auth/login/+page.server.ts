@@ -48,7 +48,10 @@ export const actions: Actions = {
 		}
 
 		if (data.url) {
-			throw redirect(303, data.url);
+			// In Docker, Supabase URL uses host.docker.internal which the browser can't resolve.
+			// Rewrite to localhost so the browser can reach the local Supabase auth endpoint.
+			const browserUrl = data.url.replace('host.docker.internal', 'localhost');
+			throw redirect(303, browserUrl);
 		}
 
 		return fail(500, { error: 'Could not initiate Google sign in' });

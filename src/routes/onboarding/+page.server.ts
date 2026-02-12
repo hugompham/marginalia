@@ -16,7 +16,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/');
 	}
 
-	return { user };
+	// Pre-fill from OAuth provider metadata (e.g. Google)
+	// Google OAuth stores full_name, not given_name/family_name separately
+	const meta = user.user_metadata ?? {};
+	const fullName = (meta.full_name as string) ?? (meta.name as string) ?? '';
+	const [first = '', ...rest] = fullName.split(' ');
+
+	return {
+		user,
+		prefill: {
+			firstName: first,
+			lastName: rest.join(' '),
+			avatarUrl: (meta.avatar_url as string) ?? (meta.picture as string) ?? ''
+		}
+	};
 };
 
 export const actions: Actions = {
