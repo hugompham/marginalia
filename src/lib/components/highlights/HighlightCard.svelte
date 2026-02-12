@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Component } from 'svelte';
 	import { Card, DropdownMenu } from '$components/ui';
 	import { TagPicker } from '$components/tags';
 	import { Sparkles, Pencil, Trash2 } from 'lucide-svelte';
@@ -33,7 +34,7 @@
 	const menuItems = $derived.by(() => {
 		const items: Array<{
 			label: string;
-			icon?: typeof Pencil;
+			icon?: Component<{ size?: number }>;
 			variant?: 'default' | 'danger';
 			onclick: () => void;
 		}> = [];
@@ -110,7 +111,7 @@
 					Cards
 				</span>
 			{/if}
-			{#if !selectable && menuItems.length > 0}
+			{#if menuItems.length > 0}
 				<DropdownMenu bind:open={menuOpen} items={menuItems}>
 					{#snippet trigger()}
 						<button

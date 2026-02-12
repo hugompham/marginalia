@@ -30,6 +30,18 @@
 
 	let { data }: Props = $props();
 
+	// Local reactive copies for optimistic updates.
+	// $props() data isn't deeply reactive -- mutations won't trigger re-renders.
+	let collection = $state(data.collection);
+	let highlights = $state(data.highlights);
+
+	$effect(() => {
+		collection = data.collection;
+	});
+	$effect(() => {
+		highlights = data.highlights;
+	});
+
 	let selectedIds = $state(new Set<string>());
 	let showGenerateModal = $state(false);
 	let showReviewQueue = $state(false);
@@ -44,7 +56,7 @@
 	let showDeleteCollection = $state(false);
 
 	function handleCollectionUpdated(updated: Collection) {
-		data.collection = updated;
+		collection = { ...collection, title: updated.title, author: updated.author };
 	}
 
 	function handleCollectionDeleted() {
@@ -56,36 +68,38 @@
 	let deletingHighlight = $state<(Highlight & { tags?: Tag[] }) | null>(null);
 
 	function handleEditHighlight(id: string) {
-		const h = data.highlights.find((h) => h.id === id);
+		const h = highlights.find((h) => h.id === id);
 		if (h) editingHighlight = h;
 	}
 
 	function handleDeleteHighlight(id: string) {
-		const h = data.highlights.find((h) => h.id === id);
+		const h = highlights.find((h) => h.id === id);
 		if (h) deletingHighlight = h;
 	}
 
 	function handleHighlightUpdated(updated: Highlight) {
-		const index = data.highlights.findIndex((h) => h.id === updated.id);
-		if (index !== -1) {
-			data.highlights[index] = { ...data.highlights[index], ...updated };
-		}
+		highlights = highlights.map((h) =>
+			h.id === updated.id ? { ...h, text: updated.text, note: updated.note } : h
+		);
 	}
 
 	function handleHighlightDeleted() {
 		if (!deletingHighlight) return;
-		data.highlights = data.highlights.filter((h) => h.id !== deletingHighlight!.id);
-		data.collection.highlightCount = Math.max(0, data.collection.highlightCount - 1);
+		highlights = highlights.filter((h) => h.id !== deletingHighlight!.id);
+		collection = {
+			...collection,
+			highlightCount: Math.max(0, collection.highlightCount - 1)
+		};
 		deletingHighlight = null;
 	}
 
-	const highlightsWithoutCards = $derived(data.highlights.filter((h) => !h.hasCards));
+	const highlightsWithoutCards = $derived(highlights.filter((h) => !h.hasCards));
 
 	// Filter highlights by selected tags
 	const filteredHighlights = $derived(
 		filterTags.length === 0
-			? data.highlights
-			: data.highlights.filter((h) =>
+			? highlights
+			: highlights.filter((h) =>
 					filterTags.every((filterTag) => h.tags.some((tag) => tag.id === filterTag.id))
 				)
 	);
@@ -101,15 +115,13 @@
 			});
 
 			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || 'Failed to add tag');
+				const errBody = await response.json();
+				throw new Error(errBody.error || 'Failed to add tag');
 			}
 
-			// Update local state
-			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
-			if (highlightIndex !== -1) {
-				data.highlights[highlightIndex].tags = [...data.highlights[highlightIndex].tags, tag];
-			}
+			highlights = highlights.map((h) =>
+				h.id === highlightId ? { ...h, tags: [...h.tags, tag] } : h
+			);
 
 			toast.success('Tag added');
 		} catch (error) {
@@ -126,17 +138,13 @@
 			});
 
 			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || 'Failed to remove tag');
+				const errBody = await response.json();
+				throw new Error(errBody.error || 'Failed to remove tag');
 			}
 
-			// Update local state
-			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
-			if (highlightIndex !== -1) {
-				data.highlights[highlightIndex].tags = data.highlights[highlightIndex].tags.filter(
-					(t) => t.id !== tag.id
-				);
-			}
+			highlights = highlights.map((h) =>
+				h.id === highlightId ? { ...h, tags: h.tags.filter((t) => t.id !== tag.id) } : h
+			);
 
 			toast.success('Tag removed');
 		} catch (error) {
@@ -179,7 +187,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					highlights: selectedHighlights,
-					collection: data.collection,
+					collection,
 					questionTypes,
 					provider: primaryProvider,
 					difficulty
@@ -226,7 +234,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					questions: approved,
-					collectionId: data.collection.id
+					collectionId: collection.id
 				})
 			});
 
@@ -242,7 +250,7 @@
 			clearSelection();
 
 			// Refresh the page to show updated card counts
-			goto(`/library/${data.collection.id}`, { invalidateAll: true });
+			goto(`/library/${collection.id}`, { invalidateAll: true });
 		} catch (error) {
 			console.error('Save error:', error);
 			toast.error(error instanceof Error ? error.message : 'Failed to save cards');
@@ -258,7 +266,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.collection.title} | Marginalia</title>
+	<title>{collection.title} | Marginalia</title>
 </svelte:head>
 
 <div class="px-lg py-xl">
@@ -271,7 +279,7 @@
 			>
 				<ChevronLeft size={20} />
 			</a>
-			<h1 class="font-heading text-xl text-primary truncate">{data.collection.title}</h1>
+			<h1 class="font-heading text-xl text-primary truncate">{collection.title}</h1>
 		</div>
 		<div class="flex items-center gap-sm shrink-0">
 			{#if selectedIds.size > 0}
@@ -293,13 +301,13 @@
 				<BookOpen class="text-secondary" size={24} />
 			</div>
 			<div class="flex-1">
-				<h2 class="font-heading text-xl text-primary">{data.collection.title}</h2>
-				{#if data.collection.author}
-					<p class="text-secondary">{data.collection.author}</p>
+				<h2 class="font-heading text-xl text-primary">{collection.title}</h2>
+				{#if collection.author}
+					<p class="text-secondary">{collection.author}</p>
 				{/if}
 				<div class="flex items-center gap-lg mt-md text-sm text-tertiary">
-					<span>{data.collection.highlightCount} highlights</span>
-					<span>{data.collection.cardCount} cards</span>
+					<span>{collection.highlightCount} highlights</span>
+					<span>{collection.cardCount} cards</span>
 				</div>
 			</div>
 			<div class="flex items-center gap-xs shrink-0">
@@ -384,7 +392,7 @@
 <GenerationModal
 	open={showGenerateModal}
 	highlights={selectedHighlights}
-	collection={data.collection}
+	{collection}
 	onClose={() => (showGenerateModal = false)}
 	onGenerate={handleGenerate}
 	{isGenerating}
@@ -424,16 +432,12 @@
 {/if}
 
 <!-- Edit Collection Modal -->
-<EditCollectionModal
-	bind:open={showEditCollection}
-	collection={data.collection}
-	onSave={handleCollectionUpdated}
-/>
+<EditCollectionModal bind:open={showEditCollection} {collection} onSave={handleCollectionUpdated} />
 
 <!-- Delete Collection Modal -->
 <DeleteCollectionModal
 	bind:open={showDeleteCollection}
-	collection={data.collection}
+	{collection}
 	onConfirm={handleCollectionDeleted}
 />
 
