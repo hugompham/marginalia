@@ -2,12 +2,27 @@
 	import { goto } from '$app/navigation';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { HighlightList } from '$components/highlights';
+	import {
+		HighlightList,
+		EditCollectionModal,
+		DeleteCollectionModal,
+		EditHighlightModal,
+		DeleteHighlightModal
+	} from '$components/highlights';
 	import { TagPicker } from '$components/tags';
 	import { GenerationModal, ReviewQueue } from '$components/questions';
-	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
+	import {
+		Sparkles,
+		BookOpen,
+		AlertCircle,
+		Settings,
+		Filter,
+		ChevronLeft,
+		Pencil,
+		Trash2
+	} from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { Difficulty, GeneratedQuestion, Tag } from '$lib/types';
+	import type { Difficulty, GeneratedQuestion, Collection, Highlight, Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
@@ -23,6 +38,46 @@
 	let isSaving = $state(false);
 	let generatedQuestions = $state<GeneratedQuestion[]>([]);
 	let filterTags = $state<Tag[]>([]);
+
+	// Collection CRUD state
+	let showEditCollection = $state(false);
+	let showDeleteCollection = $state(false);
+
+	function handleCollectionUpdated(updated: Collection) {
+		data.collection = updated;
+	}
+
+	function handleCollectionDeleted() {
+		goto('/library', { invalidateAll: true });
+	}
+
+	// Highlight CRUD state
+	let editingHighlight = $state<(Highlight & { tags?: Tag[] }) | null>(null);
+	let deletingHighlight = $state<(Highlight & { tags?: Tag[] }) | null>(null);
+
+	function handleEditHighlight(id: string) {
+		const h = data.highlights.find((h) => h.id === id);
+		if (h) editingHighlight = h;
+	}
+
+	function handleDeleteHighlight(id: string) {
+		const h = data.highlights.find((h) => h.id === id);
+		if (h) deletingHighlight = h;
+	}
+
+	function handleHighlightUpdated(updated: Highlight) {
+		const index = data.highlights.findIndex((h) => h.id === updated.id);
+		if (index !== -1) {
+			data.highlights[index] = { ...data.highlights[index], ...updated };
+		}
+	}
+
+	function handleHighlightDeleted() {
+		if (!deletingHighlight) return;
+		data.highlights = data.highlights.filter((h) => h.id !== deletingHighlight!.id);
+		data.collection.highlightCount = Math.max(0, data.collection.highlightCount - 1);
+		deletingHighlight = null;
+	}
 
 	const highlightsWithoutCards = $derived(data.highlights.filter((h) => !h.hasCards));
 
@@ -247,6 +302,24 @@
 					<span>{data.collection.cardCount} cards</span>
 				</div>
 			</div>
+			<div class="flex items-center gap-xs shrink-0">
+				<button
+					type="button"
+					onclick={() => (showEditCollection = true)}
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Edit collection"
+				>
+					<Pencil size={16} />
+				</button>
+				<button
+					type="button"
+					onclick={() => (showDeleteCollection = true)}
+					class="p-sm rounded-button text-secondary hover:text-danger hover:bg-subtle transition-colors"
+					aria-label="Delete collection"
+				>
+					<Trash2 size={16} />
+				</button>
+			</div>
 		</div>
 	</Card>
 
@@ -295,6 +368,8 @@
 			availableTags={data.availableTags}
 			selectable={highlightsWithoutCards.length > 0}
 			bind:selectedIds
+			onedit={handleEditHighlight}
+			ondelete={handleDeleteHighlight}
 			ontagadd={handleTagAdd}
 			ontagremove={handleTagRemove}
 		/>
@@ -327,6 +402,40 @@
 		/>
 	</div>
 {/if}
+
+<!-- Edit Highlight Modal -->
+{#if editingHighlight}
+	<EditHighlightModal
+		open={editingHighlight !== null}
+		highlight={editingHighlight}
+		onSave={handleHighlightUpdated}
+		onClose={() => (editingHighlight = null)}
+	/>
+{/if}
+
+<!-- Delete Highlight Modal -->
+{#if deletingHighlight}
+	<DeleteHighlightModal
+		open={deletingHighlight !== null}
+		highlight={deletingHighlight}
+		onConfirm={handleHighlightDeleted}
+		onClose={() => (deletingHighlight = null)}
+	/>
+{/if}
+
+<!-- Edit Collection Modal -->
+<EditCollectionModal
+	bind:open={showEditCollection}
+	collection={data.collection}
+	onSave={handleCollectionUpdated}
+/>
+
+<!-- Delete Collection Modal -->
+<DeleteCollectionModal
+	bind:open={showDeleteCollection}
+	collection={data.collection}
+	onConfirm={handleCollectionDeleted}
+/>
 
 <!-- No API Key Modal -->
 <Modal bind:open={showNoApiKeyModal} title="API Key Required">

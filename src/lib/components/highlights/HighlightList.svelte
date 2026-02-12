@@ -8,6 +8,8 @@
 		selectable?: boolean;
 		selectedIds?: Set<string>;
 		onselectionchange?: (ids: Set<string>) => void;
+		onedit?: (id: string) => void;
+		ondelete?: (id: string) => void;
 		ontagadd?: (highlightId: string, tag: Tag) => void;
 		ontagremove?: (highlightId: string, tag: Tag) => void;
 	}
@@ -18,6 +20,8 @@
 		selectable = false,
 		selectedIds = $bindable(new Set<string>()),
 		onselectionchange,
+		onedit,
+		ondelete,
 		ontagadd,
 		ontagremove
 	}: Props = $props();
@@ -42,6 +46,8 @@
 			{selectable}
 			selected={selectedIds.has(highlight.id)}
 			onselect={() => toggleSelection(highlight.id)}
+			onedit={onedit ? () => onedit(highlight.id) : undefined}
+			ondelete={ondelete ? () => ondelete(highlight.id) : undefined}
 			ontagadd={(tag) => ontagadd?.(highlight.id, tag)}
 			ontagremove={(tag) => ontagremove?.(highlight.id, tag)}
 		/>

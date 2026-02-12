@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Card } from '$components/ui';
+	import { Card, DropdownMenu } from '$components/ui';
 	import { TagPicker } from '$components/tags';
-	import { Sparkles, MoreHorizontal } from 'lucide-svelte';
+	import { Sparkles, Pencil, Trash2 } from 'lucide-svelte';
 	import type { Highlight, Tag } from '$lib/types';
 
 	interface Props {
@@ -10,6 +10,8 @@
 		selectable?: boolean;
 		selected?: boolean;
 		onselect?: () => void;
+		onedit?: () => void;
+		ondelete?: () => void;
 		ontagadd?: (tag: Tag) => void;
 		ontagremove?: (tag: Tag) => void;
 	}
@@ -20,9 +22,26 @@
 		selectable = false,
 		selected = false,
 		onselect,
+		onedit,
+		ondelete,
 		ontagadd,
 		ontagremove
 	}: Props = $props();
+
+	let menuOpen = $state(false);
+
+	const menuItems = $derived.by(() => {
+		const items: Array<{
+			label: string;
+			icon?: typeof Pencil;
+			variant?: 'default' | 'danger';
+			onclick: () => void;
+		}> = [];
+		if (onedit) items.push({ label: 'Edit', icon: Pencil, onclick: () => onedit() });
+		if (ondelete)
+			items.push({ label: 'Delete', icon: Trash2, variant: 'danger', onclick: () => ondelete() });
+		return items;
+	});
 </script>
 
 <Card
@@ -91,14 +110,37 @@
 					Cards
 				</span>
 			{/if}
-			{#if !selectable}
-				<button
-					type="button"
-					class="p-sm rounded-button text-tertiary hover:text-primary hover:bg-subtle transition-colors"
-					aria-label="More options"
-				>
-					<MoreHorizontal size={16} />
-				</button>
+			{#if !selectable && menuItems.length > 0}
+				<DropdownMenu bind:open={menuOpen} items={menuItems}>
+					{#snippet trigger()}
+						<button
+							type="button"
+							class="p-sm rounded-button text-tertiary hover:text-primary hover:bg-subtle transition-colors"
+							aria-label="More options"
+							onclick={(e) => {
+								e.stopPropagation();
+								menuOpen = !menuOpen;
+							}}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle
+									cx="5"
+									cy="12"
+									r="1"
+								/></svg
+							>
+						</button>
+					{/snippet}
+				</DropdownMenu>
 			{/if}
 		</div>
 	</div>

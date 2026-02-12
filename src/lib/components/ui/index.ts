@@ -8,3 +8,5 @@ export { default as Spinner } from './Spinner.svelte';
 export { default as Skeleton } from './Skeleton.svelte';
 export { default as CardSkeleton } from './CardSkeleton.svelte';
 export { default as Toggle } from './Toggle.svelte';
+export { default as DropdownMenu } from './DropdownMenu.svelte';
+export { default as SearchModal } from './SearchModal.svelte';
