@@ -17,14 +17,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Pre-fill from OAuth provider metadata (e.g. Google)
+	// Google OAuth stores full_name, not given_name/family_name separately
 	const meta = user.user_metadata ?? {};
+	const fullName = (meta.full_name as string) ?? (meta.name as string) ?? '';
+	const [first = '', ...rest] = fullName.split(' ');
 
 	return {
 		user,
 		prefill: {
-			firstName: (meta.given_name as string) ?? '',
-			lastName: (meta.family_name as string) ?? '',
-			avatarUrl: (meta.avatar_url as string) ?? ''
+			firstName: first,
+			lastName: rest.join(' '),
+			avatarUrl: (meta.avatar_url as string) ?? (meta.picture as string) ?? ''
 		}
 	};
 };
