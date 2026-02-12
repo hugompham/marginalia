@@ -18,7 +18,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			$lib: path.resolve(__dirname, './src/lib'),
-			$app: path.resolve(__dirname, './node_modules/@sveltejs/kit/src/runtime/app')
+			$app: path.resolve(__dirname, './node_modules/@sveltejs/kit/src/runtime/app'),
+			'$env/static/private': path.resolve(__dirname, './src/lib/__mocks__/env-private.ts')
 		}
 	}
 });

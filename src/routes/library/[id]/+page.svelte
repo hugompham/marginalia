@@ -2,18 +2,45 @@
 	import { goto } from '$app/navigation';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { HighlightList } from '$components/highlights';
+	import {
+		HighlightList,
+		EditCollectionModal,
+		DeleteCollectionModal,
+		EditHighlightModal,
+		DeleteHighlightModal
+	} from '$components/highlights';
 	import { TagPicker } from '$components/tags';
 	import { GenerationModal, ReviewQueue } from '$components/questions';
-	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
+	import {
+		Sparkles,
+		BookOpen,
+		AlertCircle,
+		Settings,
+		Filter,
+		ChevronLeft,
+		Pencil,
+		Trash2
+	} from 'lucide-svelte';
 	import type { PageData } from './$types';
-	import type { Difficulty, GeneratedQuestion, Tag } from '$lib/types';
+	import type { Difficulty, GeneratedQuestion, Collection, Highlight, Tag } from '$lib/types';
 
 	interface Props {
 		data: PageData;
 	}
 
 	let { data }: Props = $props();
+
+	// Local reactive copies for optimistic updates.
+	// $props() data isn't deeply reactive -- mutations won't trigger re-renders.
+	let collection = $state(data.collection);
+	let highlights = $state(data.highlights);
+
+	$effect(() => {
+		collection = data.collection;
+	});
+	$effect(() => {
+		highlights = data.highlights;
+	});
 
 	let selectedIds = $state(new Set<string>());
 	let showGenerateModal = $state(false);
@@ -24,13 +51,55 @@
 	let generatedQuestions = $state<GeneratedQuestion[]>([]);
 	let filterTags = $state<Tag[]>([]);
 
-	const highlightsWithoutCards = $derived(data.highlights.filter((h) => !h.hasCards));
+	// Collection CRUD state
+	let showEditCollection = $state(false);
+	let showDeleteCollection = $state(false);
+
+	function handleCollectionUpdated(updated: Collection) {
+		collection = { ...collection, title: updated.title, author: updated.author };
+	}
+
+	function handleCollectionDeleted() {
+		goto('/library', { invalidateAll: true });
+	}
+
+	// Highlight CRUD state
+	let editingHighlight = $state<(Highlight & { tags?: Tag[] }) | null>(null);
+	let deletingHighlight = $state<(Highlight & { tags?: Tag[] }) | null>(null);
+
+	function handleEditHighlight(id: string) {
+		const h = highlights.find((h) => h.id === id);
+		if (h) editingHighlight = h;
+	}
+
+	function handleDeleteHighlight(id: string) {
+		const h = highlights.find((h) => h.id === id);
+		if (h) deletingHighlight = h;
+	}
+
+	function handleHighlightUpdated(updated: Highlight) {
+		highlights = highlights.map((h) =>
+			h.id === updated.id ? { ...h, text: updated.text, note: updated.note } : h
+		);
+	}
+
+	function handleHighlightDeleted() {
+		if (!deletingHighlight) return;
+		highlights = highlights.filter((h) => h.id !== deletingHighlight!.id);
+		collection = {
+			...collection,
+			highlightCount: Math.max(0, collection.highlightCount - 1)
+		};
+		deletingHighlight = null;
+	}
+
+	const highlightsWithoutCards = $derived(highlights.filter((h) => !h.hasCards));
 
 	// Filter highlights by selected tags
 	const filteredHighlights = $derived(
 		filterTags.length === 0
-			? data.highlights
-			: data.highlights.filter((h) =>
+			? highlights
+			: highlights.filter((h) =>
 					filterTags.every((filterTag) => h.tags.some((tag) => tag.id === filterTag.id))
 				)
 	);
@@ -46,15 +115,13 @@
 			});
 
 			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || 'Failed to add tag');
+				const errBody = await response.json();
+				throw new Error(errBody.error || 'Failed to add tag');
 			}
 
-			// Update local state
-			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
-			if (highlightIndex !== -1) {
-				data.highlights[highlightIndex].tags = [...data.highlights[highlightIndex].tags, tag];
-			}
+			highlights = highlights.map((h) =>
+				h.id === highlightId ? { ...h, tags: [...h.tags, tag] } : h
+			);
 
 			toast.success('Tag added');
 		} catch (error) {
@@ -71,17 +138,13 @@
 			});
 
 			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || 'Failed to remove tag');
+				const errBody = await response.json();
+				throw new Error(errBody.error || 'Failed to remove tag');
 			}
 
-			// Update local state
-			const highlightIndex = data.highlights.findIndex((h) => h.id === highlightId);
-			if (highlightIndex !== -1) {
-				data.highlights[highlightIndex].tags = data.highlights[highlightIndex].tags.filter(
-					(t) => t.id !== tag.id
-				);
-			}
+			highlights = highlights.map((h) =>
+				h.id === highlightId ? { ...h, tags: h.tags.filter((t) => t.id !== tag.id) } : h
+			);
 
 			toast.success('Tag removed');
 		} catch (error) {
@@ -124,7 +187,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					highlights: selectedHighlights,
-					collection: data.collection,
+					collection,
 					questionTypes,
 					provider: primaryProvider,
 					difficulty
@@ -171,7 +234,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					questions: approved,
-					collectionId: data.collection.id
+					collectionId: collection.id
 				})
 			});
 
@@ -187,7 +250,7 @@
 			clearSelection();
 
 			// Refresh the page to show updated card counts
-			goto(`/library/${data.collection.id}`, { invalidateAll: true });
+			goto(`/library/${collection.id}`, { invalidateAll: true });
 		} catch (error) {
 			console.error('Save error:', error);
 			toast.error(error instanceof Error ? error.message : 'Failed to save cards');
@@ -203,7 +266,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.collection.title} | Marginalia</title>
+	<title>{collection.title} | Marginalia</title>
 </svelte:head>
 
 <div class="px-lg py-xl">
@@ -216,7 +279,7 @@
 			>
 				<ChevronLeft size={20} />
 			</a>
-			<h1 class="font-heading text-xl text-primary truncate">{data.collection.title}</h1>
+			<h1 class="font-heading text-xl text-primary truncate">{collection.title}</h1>
 		</div>
 		<div class="flex items-center gap-sm shrink-0">
 			{#if selectedIds.size > 0}
@@ -238,14 +301,32 @@
 				<BookOpen class="text-secondary" size={24} />
 			</div>
 			<div class="flex-1">
-				<h2 class="font-heading text-xl text-primary">{data.collection.title}</h2>
-				{#if data.collection.author}
-					<p class="text-secondary">{data.collection.author}</p>
+				<h2 class="font-heading text-xl text-primary">{collection.title}</h2>
+				{#if collection.author}
+					<p class="text-secondary">{collection.author}</p>
 				{/if}
 				<div class="flex items-center gap-lg mt-md text-sm text-tertiary">
-					<span>{data.collection.highlightCount} highlights</span>
-					<span>{data.collection.cardCount} cards</span>
+					<span>{collection.highlightCount} highlights</span>
+					<span>{collection.cardCount} cards</span>
 				</div>
+			</div>
+			<div class="flex items-center gap-xs shrink-0">
+				<button
+					type="button"
+					onclick={() => (showEditCollection = true)}
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Edit collection"
+				>
+					<Pencil size={16} />
+				</button>
+				<button
+					type="button"
+					onclick={() => (showDeleteCollection = true)}
+					class="p-sm rounded-button text-secondary hover:text-danger hover:bg-subtle transition-colors"
+					aria-label="Delete collection"
+				>
+					<Trash2 size={16} />
+				</button>
 			</div>
 		</div>
 	</Card>
@@ -295,6 +376,8 @@
 			availableTags={data.availableTags}
 			selectable={highlightsWithoutCards.length > 0}
 			bind:selectedIds
+			onedit={handleEditHighlight}
+			ondelete={handleDeleteHighlight}
 			ontagadd={handleTagAdd}
 			ontagremove={handleTagRemove}
 		/>
@@ -309,7 +392,7 @@
 <GenerationModal
 	open={showGenerateModal}
 	highlights={selectedHighlights}
-	collection={data.collection}
+	{collection}
 	onClose={() => (showGenerateModal = false)}
 	onGenerate={handleGenerate}
 	{isGenerating}
@@ -327,6 +410,36 @@
 		/>
 	</div>
 {/if}
+
+<!-- Edit Highlight Modal -->
+{#if editingHighlight}
+	<EditHighlightModal
+		open={editingHighlight !== null}
+		highlight={editingHighlight}
+		onSave={handleHighlightUpdated}
+		onClose={() => (editingHighlight = null)}
+	/>
+{/if}
+
+<!-- Delete Highlight Modal -->
+{#if deletingHighlight}
+	<DeleteHighlightModal
+		open={deletingHighlight !== null}
+		highlight={deletingHighlight}
+		onConfirm={handleHighlightDeleted}
+		onClose={() => (deletingHighlight = null)}
+	/>
+{/if}
+
+<!-- Edit Collection Modal -->
+<EditCollectionModal bind:open={showEditCollection} {collection} onSave={handleCollectionUpdated} />
+
+<!-- Delete Collection Modal -->
+<DeleteCollectionModal
+	bind:open={showDeleteCollection}
+	{collection}
+	onConfirm={handleCollectionDeleted}
+/>
 
 <!-- No API Key Modal -->
 <Modal bind:open={showNoApiKeyModal} title="API Key Required">

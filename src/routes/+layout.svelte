@@ -4,7 +4,7 @@
 	import type { LayoutData } from './$types';
 	import { Shell } from '$components/layout';
 	import { ProfileDialog, AccountSettingsDialog } from '$components/layout';
-	import { Toast } from '$components/ui';
+	import { Toast, SearchModal } from '$components/ui';
 	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -21,6 +21,7 @@
 	// Dialog state
 	let showProfileDialog = $state(false);
 	let showAccountSettingsDialog = $state(false);
+	let showSearch = $state(false);
 
 	// Initialize theme and sidebar state from server data
 	$effect(() => {
@@ -67,6 +68,15 @@
 	const userEmail = $derived(data.session?.user?.email ?? '');
 </script>
 
+<svelte:window
+	onkeydown={(e) => {
+		if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+			e.preventDefault();
+			showSearch = true;
+		}
+	}}
+/>
+
 <svelte:head>
 	<title>Marginalia</title>
 	<link rel="icon" href="/icons/icon-192.png" />
@@ -98,6 +108,11 @@
 	/>
 {:else}
 	{@render children()}
+{/if}
+
+<!-- Global Search -->
+{#if showShell}
+	<SearchModal bind:open={showSearch} />
 {/if}
 
 <!-- Global Toast container -->
