@@ -2,16 +2,17 @@
 	import { enhance } from '$app/forms';
 	import { Sun, Moon } from 'lucide-svelte';
 	import { theme, setTheme } from '$lib/stores/theme';
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
 	interface Props {
 		form: ActionData;
+		data: PageData;
 	}
 
-	let { form }: Props = $props();
+	let { form, data }: Props = $props();
 
-	let firstName = $state('');
-	let lastName = $state('');
+	let firstName = $state(data.prefill?.firstName ?? '');
+	let lastName = $state(data.prefill?.lastName ?? '');
 	let submitting = $state(false);
 	let selectedTheme = $state<'light' | 'dark'>($theme);
 

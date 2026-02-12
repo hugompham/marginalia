@@ -16,7 +16,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/');
 	}
 
-	return { user };
+	// Pre-fill from OAuth provider metadata (e.g. Google)
+	const meta = user.user_metadata ?? {};
+
+	return {
+		user,
+		prefill: {
+			firstName: (meta.given_name as string) ?? '',
+			lastName: (meta.family_name as string) ?? '',
+			avatarUrl: (meta.avatar_url as string) ?? ''
+		}
+	};
 };
 
 export const actions: Actions = {
