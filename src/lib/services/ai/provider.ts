@@ -7,7 +7,7 @@
  * @module services/ai/provider
  */
 
-import type { AIProvider, QuestionType, Highlight, Collection } from '$lib/types';
+import type { AIProvider, QuestionType, Highlight, Collection, QuizQuestion } from '$lib/types';
 import {
 	buildGenerationPrompt,
 	buildAnthropicSystem,
@@ -16,6 +16,12 @@ import {
 	type PromptContext
 } from './prompts';
 import { buildLinkSuggestionPrompt, parseSuggestedLinks } from './link-prompts';
+import {
+	buildSummaryPrompt,
+	parseSummaryResponse,
+	SUMMARY_SYSTEM_MESSAGE
+} from './summary-prompts';
+import { buildQuizPrompt, parseQuizQuestions, QUIZ_SYSTEM_MESSAGE } from './quiz-prompts';
 import type { SuggestedLink } from '$lib/types';
 
 /**
@@ -70,6 +76,16 @@ export interface GenerationResult {
  */
 export interface LinkSuggestionResult {
 	suggestions: SuggestedLink[];
+	usage?: TokenUsage;
+}
+
+/**
+ * Result from summary generation
+ */
+export interface SummaryResult {
+	summary: string;
+	themes: string[];
+	highlightCount: number;
 	usage?: TokenUsage;
 }
 
@@ -236,6 +252,41 @@ export async function suggestHighlightLinks(
 	};
 }
 
+/**
+ * Generates a structured summary from highlights using AI
+ *
+ * @param config - AI provider configuration
+ * @param highlights - Highlights to summarize
+ * @param collection - Parent collection for context
+ * @returns Summary text, themes, and usage statistics
+ */
+export async function generateSummary(
+	config: AIConfig,
+	highlights: Array<{
+		text: string;
+		note?: string | null;
+		chapter?: string | null;
+		pageNumber?: number | null;
+	}>,
+	collection: { title: string; author?: string | null }
+): Promise<SummaryResult> {
+	const prompt = buildSummaryPrompt(highlights, collection);
+
+	const callFn = config.provider === 'openai' ? callOpenAI : callAnthropic;
+	const result = await callFn(config.apiKey, config.model, prompt, SUMMARY_SYSTEM_MESSAGE, {
+		temperature: 0.7
+	});
+
+	const parsed = parseSummaryResponse(result.content);
+
+	return {
+		summary: parsed.summary,
+		themes: parsed.themes,
+		highlightCount: highlights.length,
+		usage: result.usage
+	};
+}
+
 export async function testApiKey(
 	provider: AIProvider,
 	apiKey: string,
@@ -281,4 +332,50 @@ export async function testApiKey(
 	} catch {
 		return { valid: false, error: 'Failed to connect to API' };
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Quiz Generation
+// ---------------------------------------------------------------------------
+
+/**
+ * Result from quiz generation
+ */
+export interface QuizResult {
+	questions: QuizQuestion[];
+	usage?: TokenUsage;
+}
+
+/**
+ * Generates quiz questions from highlights using AI
+ *
+ * @param config - AI provider configuration
+ * @param highlights - Highlights to generate quiz questions from (need id for highlightId matching)
+ * @param collection - Parent collection for context
+ * @param questionCount - Number of questions to generate (default 10)
+ * @returns Quiz questions with usage statistics
+ */
+export async function generateQuiz(
+	config: AIConfig,
+	highlights: Array<{
+		id: string;
+		text: string;
+		note?: string | null;
+		chapter?: string | null;
+		pageNumber?: number | null;
+	}>,
+	collection: { title: string; author?: string | null },
+	questionCount: number = 10
+): Promise<QuizResult> {
+	const prompt = buildQuizPrompt(highlights, collection, questionCount);
+
+	const callFn = config.provider === 'openai' ? callOpenAI : callAnthropic;
+	const result = await callFn(config.apiKey, config.model, prompt, QUIZ_SYSTEM_MESSAGE, {
+		temperature: 0.7
+	});
+
+	return {
+		questions: parseQuizQuestions(result.content),
+		usage: result.usage
+	};
 }
