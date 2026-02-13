@@ -13,6 +13,7 @@ import type {
 	APIKey,
 	PendingQuestion,
 	HighlightLink,
+	CollectionSummary,
 	QuestionType,
 	CardState,
 	Rating,
@@ -255,4 +256,67 @@ export function mapHighlightLink(row: DbHighlightLink): HighlightLink {
  */
 export function mapHighlightLinks(rows: DbHighlightLink[]): HighlightLink[] {
 	return rows.map(mapHighlightLink);
+}
+
+// collection_summaries / quiz_sessions may not be in generated types yet -- use Record
+type DbCollectionSummary = Record<string, unknown>;
+type DbQuizSession = Record<string, unknown>;
+
+/**
+ * Map database collection summary to TypeScript CollectionSummary
+ */
+export function mapCollectionSummary(row: DbCollectionSummary): CollectionSummary {
+	return {
+		id: row.id as string,
+		collectionId: row.collection_id as string,
+		summary: row.summary as string,
+		themes: (row.themes as string[]) || [],
+		highlightCount: row.highlight_count as number,
+		provider: row.provider as string,
+		createdAt: new Date(row.created_at as string),
+		updatedAt: new Date(row.updated_at as string)
+	};
+}
+
+/**
+ * Map database quiz session to persisted quiz session fields
+ */
+export function mapQuizSession(row: DbQuizSession): {
+	id: string;
+	collectionId: string;
+	questions: unknown;
+	answers: unknown;
+	totalQuestions: number;
+	correctCount: number;
+	scorePercent: number;
+	durationMs: number;
+	provider: string;
+	createdAt: Date;
+} {
+	return {
+		id: row.id as string,
+		collectionId: row.collection_id as string,
+		questions: row.questions,
+		answers: row.answers,
+		totalQuestions: row.total_questions as number,
+		correctCount: row.correct_count as number,
+		scorePercent: row.score_percent as number,
+		durationMs: row.duration_ms as number,
+		provider: row.provider as string,
+		createdAt: new Date(row.created_at as string)
+	};
+}
+
+/**
+ * Batch map collection summaries
+ */
+export function mapCollectionSummaries(rows: DbCollectionSummary[]): CollectionSummary[] {
+	return rows.map(mapCollectionSummary);
+}
+
+/**
+ * Batch map quiz sessions
+ */
+export function mapQuizSessions(rows: DbQuizSession[]) {
+	return rows.map(mapQuizSession);
 }

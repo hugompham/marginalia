@@ -496,3 +496,87 @@ export interface ScrapedArticle {
 	/** Publication timestamp */
 	publishedTime: string | null;
 }
+
+// =============================================================================
+// Summary Types
+// =============================================================================
+
+/**
+ * AI-generated summary for a collection
+ * One per collection per user (upsert semantics)
+ */
+export interface CollectionSummary {
+	id: string;
+	collectionId: string;
+	summary: string;
+	themes: string[];
+	highlightCount: number;
+	provider: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+// =============================================================================
+// Quiz Types
+// =============================================================================
+
+/**
+ * Type of quiz question
+ * - multiple_choice: Pick from options
+ * - true_false: Evaluate a statement
+ * - short_answer: Free-form text response
+ */
+export type QuizQuestionType = 'multiple_choice' | 'true_false' | 'short_answer';
+
+/**
+ * A single quiz question generated from a highlight
+ */
+export interface QuizQuestion {
+	highlightId: string;
+	type: QuizQuestionType;
+	question: string;
+	correctAnswer: string;
+	explanation: string;
+	/** Answer options (multiple_choice only) */
+	options?: string[];
+	/** Statement to evaluate (true_false only) */
+	statement?: string;
+	/** AI confidence score (0-1) */
+	confidence: number;
+}
+
+/**
+ * User's answer to a single quiz question
+ */
+export interface QuizAnswer {
+	questionIndex: number;
+	userAnswer: string;
+	isCorrect: boolean;
+	timeMs: number;
+}
+
+/**
+ * Active quiz session state (client-side)
+ */
+export interface QuizSession {
+	id?: string;
+	collectionId: string;
+	collectionTitle: string;
+	questions: QuizQuestion[];
+	currentIndex: number;
+	answers: QuizAnswer[];
+	startedAt: Date;
+	questionStartedAt: Date;
+	isComplete: boolean;
+}
+
+/**
+ * Computed results from a completed quiz
+ */
+export interface QuizResults {
+	totalQuestions: number;
+	correctCount: number;
+	scorePercent: number;
+	totalTimeMs: number;
+	answers: QuizAnswer[];
+}
