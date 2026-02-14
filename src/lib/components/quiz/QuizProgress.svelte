@@ -12,9 +12,7 @@
 	function getSegmentColor(index: number): string {
 		const answer = answers[index];
 		if (!answer) return 'bg-subtle';
-		return answer.isCorrect
-			? 'bg-green-500'
-			: 'bg-red-500';
+		return answer.isCorrect ? 'bg-green-500' : 'bg-red-500';
 	}
 </script>
 

@@ -10,7 +10,7 @@
 		hasApiKey: boolean;
 	}
 
-	let { open = $bindable(), collection, hasApiKey }: Props = $props();
+	let { open = $bindable(), collection, hasApiKey: _hasApiKey }: Props = $props();
 
 	let summary = $state<CollectionSummary | null>(null);
 	let isLoading = $state(false);

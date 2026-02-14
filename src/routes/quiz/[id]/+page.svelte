@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Button, Card } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
 	import { QuizSetupModal, QuizQuestion, QuizProgress, QuizComplete } from '$components/quiz';
 	import { quizSession, currentQuizQuestion, quizProgress, quizResults } from '$stores/quiz';
@@ -15,7 +14,7 @@
 
 	let showSetup = $state(true);
 	let isGenerating = $state(false);
-	let isSaving = $state(false);
+	let __isSaving = $state(false);
 
 	// Reactive store access
 	const session = $derived($quizSession);
@@ -67,7 +66,7 @@
 		const currentSession = $quizSession;
 		if (!currentResults || !currentSession) return;
 
-		isSaving = true;
+		_isSaving = true;
 		try {
 			await fetch('/api/quiz/save', {
 				method: 'POST',
@@ -86,7 +85,7 @@
 		} catch {
 			// Silent fail on save -- quiz results still shown locally
 		} finally {
-			isSaving = false;
+			_isSaving = false;
 		}
 	}
 

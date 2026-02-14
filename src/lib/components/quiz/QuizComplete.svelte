@@ -38,7 +38,7 @@
 
 	const incorrectAnswers = $derived(
 		results.answers
-			.map((answer, index) => ({ answer, question: questions[answer.questionIndex] }))
+			.map((answer) => ({ answer, question: questions[answer.questionIndex] }))
 			.filter(({ answer }) => !answer.isCorrect)
 	);
 
@@ -92,7 +92,9 @@
 	<!-- Stats -->
 	<div class="flex gap-xl justify-center mb-xl">
 		<div>
-			<p class="text-2xl font-heading text-primary">{results.correctCount}/{results.totalQuestions}</p>
+			<p class="text-2xl font-heading text-primary">
+				{results.correctCount}/{results.totalQuestions}
+			</p>
 			<p class="text-sm text-tertiary">correct</p>
 		</div>
 		<div>

@@ -45,10 +45,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		if (!highlights || highlights.length < 3) {
-			return json(
-				{ error: 'Need at least 3 highlights to generate a quiz' },
-				{ status: 400 }
-			);
+			return json({ error: 'Need at least 3 highlights to generate a quiz' }, { status: 400 });
 		}
 
 		// Fetch user's API keys
@@ -66,8 +63,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Select API key: prefer OpenAI, fall back to any available
-		const selectedKey =
-			apiKeys.find((k) => k.provider === 'openai') ?? apiKeys[0];
+		const selectedKey = apiKeys.find((k) => k.provider === 'openai') ?? apiKeys[0];
 
 		let decryptedKey: string;
 		try {

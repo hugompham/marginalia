@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { buildQuizPrompt, parseQuizQuestions } from './quiz-prompts';
-import type { QuizQuestion } from '$lib/types';
 
 const mockCollection = {
 	title: 'Thinking, Fast and Slow',

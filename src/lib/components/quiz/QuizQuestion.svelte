@@ -155,7 +155,12 @@
 
 	<!-- Feedback after answering -->
 	{#if hasAnswered}
-		<Card padding="lg" class="border-2 {isCorrect ? 'border-green-600 dark:border-green-400' : 'border-red-600 dark:border-red-400'}">
+		<Card
+			padding="lg"
+			class="border-2 {isCorrect
+				? 'border-green-600 dark:border-green-400'
+				: 'border-red-600 dark:border-red-400'}"
+		>
 			<div class="flex gap-sm items-start">
 				{#if isCorrect}
 					<CheckCircle size={20} class="text-green-600 dark:text-green-400 flex-shrink-0 mt-xs" />
@@ -168,9 +173,7 @@
 					</p>
 					{#if !isCorrect || question.type === 'short_answer'}
 						<p class="text-sm text-secondary mb-sm">
-							Correct answer: <span class="font-medium text-primary"
-								>{question.correctAnswer}</span
-							>
+							Correct answer: <span class="font-medium text-primary">{question.correctAnswer}</span>
 						</p>
 					{/if}
 					<p class="text-sm text-secondary">

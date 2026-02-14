@@ -69,7 +69,9 @@ describe('summary-prompts', () => {
 		});
 
 		it('should handle highlights without chapter or page', () => {
-			const barebones = [{ text: 'Some important passage', note: null, chapter: null, pageNumber: null }];
+			const barebones = [
+				{ text: 'Some important passage', note: null, chapter: null, pageNumber: null }
+			];
 			const prompt = buildSummaryPrompt(barebones, mockCollection);
 
 			expect(prompt).toContain('Some important passage');
