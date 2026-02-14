@@ -12,7 +12,8 @@
 		Settings,
 		Filter,
 		ChevronLeft,
-		FileText
+		FileText,
+		GraduationCap
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Difficulty, GeneratedQuestion, Tag } from '$lib/types';
@@ -270,6 +271,24 @@
 					aria-label="Summarize highlights"
 				>
 					<FileText size={16} />
+				</button>
+				<button
+					type="button"
+					onclick={() => {
+						if (!hasApiKey) {
+							showNoApiKeyModal = true;
+							return;
+						}
+						if (data.highlights.length < 3) {
+							toast.warning('Need at least 3 highlights for a quiz');
+							return;
+						}
+						goto(`/quiz/${data.collection.id}`);
+					}}
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Take quiz"
+				>
+					<GraduationCap size={16} />
 				</button>
 			</div>
 		</div>
