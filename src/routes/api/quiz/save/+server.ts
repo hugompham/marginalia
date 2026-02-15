@@ -51,6 +51,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Missing provider' }, { status: 400 });
 		}
 
+		// Verify collection ownership (RLS enforces user_id match)
+		const { data: collection, error: collError } = await locals.supabase
+			.from('collections')
+			.select('id')
+			.eq('id', collectionId)
+			.single();
+
+		if (collError || !collection) {
+			return json({ error: 'Collection not found' }, { status: 404 });
+		}
+
 		// Insert quiz session
 		const { data: row, error: insertError } = await locals.supabase
 			.from('quiz_sessions')

@@ -27,6 +27,8 @@
 			const userLower = answer.toLowerCase().trim();
 			const correctLower = question.correctAnswer.toLowerCase().trim();
 			isCorrect = userLower.includes(correctLower) || correctLower.includes(userLower);
+		} else if (question.type === 'true_false') {
+			isCorrect = answer.toLowerCase() === question.correctAnswer.toLowerCase();
 		} else {
 			isCorrect = answer === question.correctAnswer;
 		}
@@ -112,7 +114,7 @@
 		<div class="flex gap-sm">
 			{#each ['True', 'False'] as option}
 				{@const isSelected = selectedAnswer === option}
-				{@const isCorrectOption = option === question.correctAnswer}
+				{@const isCorrectOption = option.toLowerCase() === question.correctAnswer.toLowerCase()}
 				<button
 					type="button"
 					class="flex-1 px-lg py-md rounded-button text-center font-medium transition-all duration-fast border-2 {!hasAnswered

@@ -241,16 +241,13 @@ describe('quiz-prompts', () => {
 			expect(result).toHaveLength(0);
 		});
 
-		it('should warn when content exists but no valid questions parsed', () => {
-			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		it('should return empty array when all questions fail validation', () => {
 			const bad = { ...validMC(), confidence: 0.1 };
 			const content = JSON.stringify({ questions: [bad] });
 
 			const result = parseQuizQuestions(content);
 
 			expect(result).toEqual([]);
-			expect(warnSpy).toHaveBeenCalled();
-			warnSpy.mockRestore();
 		});
 	});
 });

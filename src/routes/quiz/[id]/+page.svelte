@@ -14,7 +14,8 @@
 
 	let showSetup = $state(true);
 	let isGenerating = $state(false);
-	let __isSaving = $state(false);
+	let _isSaving = $state(false);
+	let quizProvider = $state('openai');
 
 	// Reactive store access
 	const session = $derived($quizSession);
@@ -38,7 +39,8 @@
 				const errData = await res.json();
 				throw new Error(errData.error || 'Failed to generate quiz');
 			}
-			const { questions } = await res.json();
+			const { questions, provider } = await res.json();
+			if (provider) quizProvider = provider;
 			if (questions.length === 0) {
 				toast.warning('No questions could be generated');
 				return;
@@ -79,7 +81,7 @@
 					correctCount: currentResults.correctCount,
 					scorePercent: currentResults.scorePercent,
 					durationMs: currentResults.totalTimeMs,
-					provider: 'openai'
+					provider: quizProvider
 				})
 			});
 		} catch {

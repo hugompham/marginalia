@@ -232,9 +232,6 @@ export function parseQuizQuestions(content: string): QuizQuestion[] {
 
 	const parsed = tryParseJSON(jsonStr);
 	if (parsed === undefined) {
-		if (content.length > 10) {
-			console.warn('Failed to parse quiz response:', content.slice(0, 200));
-		}
 		return [];
 	}
 
@@ -276,10 +273,6 @@ export function parseQuizQuestions(content: string): QuizQuestion[] {
 		}
 
 		valid.push(base);
-	}
-
-	if (valid.length === 0 && content.length > 10) {
-		console.warn('Quiz response had content but no valid questions:', content.slice(0, 200));
 	}
 
 	return valid;

@@ -119,13 +119,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const mapped = mapCollectionSummary(upserted as Record<string, unknown>);
 
-		return json({
-			id: mapped.id,
-			summary: mapped.summary,
-			themes: mapped.themes,
-			highlightCount: mapped.highlightCount,
-			provider: mapped.provider
-		});
+		return json(mapped);
 	} catch (error) {
 		console.error('Summary generation error:', error);
 		return json(
