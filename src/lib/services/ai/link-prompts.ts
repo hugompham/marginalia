@@ -5,6 +5,7 @@
  */
 
 import type { SuggestedLink } from '$lib/types';
+import { tryParseJSON } from './parse-utils';
 
 /**
  * Highlight shape as returned from Supabase with joined collection data
@@ -63,33 +64,6 @@ Text: "${h.text}"
 	.join('\n')}
 
 Analyze these highlights and suggest meaningful connections. Output ONLY the JSON object, no other text:`;
-}
-
-/**
- * Attempts to parse a string as JSON with fallback extraction
- */
-function tryParseJSON(str: string): Record<string, unknown> | unknown[] | undefined {
-	try {
-		return JSON.parse(str);
-	} catch {
-		const arrayMatch = str.match(/\[[\s\S]*\]/);
-		if (arrayMatch) {
-			try {
-				return JSON.parse(arrayMatch[0]);
-			} catch {
-				// fall through
-			}
-		}
-		const objectMatch = str.match(/\{[\s\S]*\}/);
-		if (objectMatch) {
-			try {
-				return JSON.parse(objectMatch[0]);
-			} catch {
-				// fall through
-			}
-		}
-		return undefined;
-	}
 }
 
 /**

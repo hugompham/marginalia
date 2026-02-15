@@ -2,10 +2,19 @@
 	import { goto } from '$app/navigation';
 	import { Button, Card, Modal } from '$components/ui';
 	import { toast } from '$components/ui/Toast.svelte';
-	import { HighlightList } from '$components/highlights';
+	import { HighlightList, SummaryModal } from '$components/highlights';
 	import { TagPicker } from '$components/tags';
 	import { GenerationModal, ReviewQueue } from '$components/questions';
-	import { Sparkles, BookOpen, AlertCircle, Settings, Filter, ChevronLeft } from 'lucide-svelte';
+	import {
+		Sparkles,
+		BookOpen,
+		AlertCircle,
+		Settings,
+		Filter,
+		ChevronLeft,
+		FileText,
+		GraduationCap
+	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { Difficulty, GeneratedQuestion, Tag } from '$lib/types';
 
@@ -19,6 +28,7 @@
 	let showGenerateModal = $state(false);
 	let showReviewQueue = $state(false);
 	let showNoApiKeyModal = $state(false);
+	let showSummaryModal = $state(false);
 	let isGenerating = $state(false);
 	let isSaving = $state(false);
 	let generatedQuestions = $state<GeneratedQuestion[]>([]);
@@ -247,6 +257,40 @@
 					<span>{data.collection.cardCount} cards</span>
 				</div>
 			</div>
+			<div class="flex items-center gap-xs shrink-0">
+				<button
+					type="button"
+					onclick={() => {
+						if (!hasApiKey) {
+							showNoApiKeyModal = true;
+							return;
+						}
+						showSummaryModal = true;
+					}}
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Summarize highlights"
+				>
+					<FileText size={16} />
+				</button>
+				<button
+					type="button"
+					onclick={() => {
+						if (!hasApiKey) {
+							showNoApiKeyModal = true;
+							return;
+						}
+						if (data.highlights.length < 3) {
+							toast.warning('Need at least 3 highlights for a quiz');
+							return;
+						}
+						goto(`/quiz/${data.collection.id}`);
+					}}
+					class="p-sm rounded-button text-secondary hover:text-primary hover:bg-subtle transition-colors"
+					aria-label="Take quiz"
+				>
+					<GraduationCap size={16} />
+				</button>
+			</div>
 		</div>
 	</Card>
 
@@ -350,3 +394,6 @@
 		</div>
 	{/snippet}
 </Modal>
+
+<!-- Summary Modal -->
+<SummaryModal bind:open={showSummaryModal} collection={data.collection} {hasApiKey} />
